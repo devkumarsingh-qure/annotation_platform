@@ -30,6 +30,16 @@ async function ensureCsrf(): Promise<void> {
     await csrfReady;
 }
 
+/**
+ * Call after login, logout, or any response that rotates the session / csrftoken cookie.
+ * Otherwise the in-memory X-CSRFToken is stale while the browser has a new cookie (cross-site
+ * JS cannot read the API's csrftoken from document.cookie).
+ */
+export function resetCsrf(): void {
+    csrfReady = null;
+    delete apiClient.defaults.headers.common["X-CSRFToken"];
+}
+
 apiClient.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
     const method = (config.method ?? "get").toLowerCase();
     if (["post", "put", "patch", "delete"].includes(method)) {

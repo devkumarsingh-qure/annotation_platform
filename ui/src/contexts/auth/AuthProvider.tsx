@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import apiClient, { ensureCsrf } from "../../utils/apiClient";
+import apiClient, { ensureCsrf, resetCsrf } from "../../utils/apiClient";
 import { Navigate, useLocation } from "react-router-dom";
 import Loading from "../../components/Loading";
 import type { User } from "../../types/User";
@@ -33,6 +33,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             setIsLoading(true);
             await apiClient.post(API_PATHS.LOGIN(), { username, password });
+            resetCsrf();
+            await ensureCsrf();
             await refreshUser();
         } catch (error) {
             console.error(error);
@@ -44,6 +46,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         try {
             setIsLoading(true);
             await apiClient.get(API_PATHS.LOGOUT());
+            resetCsrf();
+            await ensureCsrf();
             await refreshUser();
         } catch (error) {
             console.error(error);
