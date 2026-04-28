@@ -1,4 +1,4 @@
-import { ModalContext } from "../../../contexts/ModalProvider";
+import { ModalContext } from "../../../contexts/modal/modalContext";
 import { useContext, useMemo, useRef, useState, type ChangeEvent } from "react";
 import Backdrop from "../../Backdrop";
 import XIcon from "../../../icons/XIcon";

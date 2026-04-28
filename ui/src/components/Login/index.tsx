@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useContext } from "react";
-import { AuthContext } from "../../contexts/AuthProvider";
+import { AuthContext } from "../../contexts/auth/authContext";
 
 function Login() {
     const { login } = useContext(AuthContext);

@@ -1,31 +1,19 @@
-import { createContext, useEffect, useState } from "react";
-import apiClient from "../utils/apiClient";
+import { useEffect, useState } from "react";
+import apiClient, { ensureCsrf } from "../../utils/apiClient";
 import { Navigate, useLocation } from "react-router-dom";
-import Loading from "../components/Loading";
-import type { User } from "../types/User";
-import { API_PATHS, UI_PATHS } from "../utils/urls";
+import Loading from "../../components/Loading";
+import type { User } from "../../types/User";
+import { API_PATHS, UI_PATHS } from "../../utils/urls";
+import { AuthContext } from "./authContext";
 
-type AuthContextType = {
-    user: User | null;
-    refreshUser: () => Promise<void>;
-    login: (username: string, password: string) => Promise<void>;
-    logout: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextType>({
-    user: null,
-    refreshUser: () => Promise.resolve(),
-    login: () => Promise.resolve(),
-    logout: () => Promise.resolve()
-});
-
-function AuthProvider({ children }: { children: React.ReactNode }) {
+export default function AuthProvider({ children }: { children: React.ReactNode }) {
     const location = useLocation();
 
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
+        void ensureCsrf().catch(() => { });
         refreshUser();
     }, []);
 
@@ -85,6 +73,3 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
         </AuthContext.Provider>
     )
 }
-
-export { AuthContext };
-export default AuthProvider;

@@ -1,14 +1,5 @@
-import { createContext, useState } from "react";
-
-type ModalContextType = {
-    isFileUploadOpen: boolean;
-    setIsFileUploadOpen: (isOpen: boolean) => void;
-}
-
-export const ModalContext = createContext<ModalContextType>({
-    isFileUploadOpen: false,
-    setIsFileUploadOpen: () => {}
-});
+import { useState } from "react";
+import { ModalContext } from "./modalContext";
 
 function ModalProvider({ children }: { children: React.ReactNode }) {
     const [isFileUploadOpen, setIsFileUploadOpen] = useState(false);

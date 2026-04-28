@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import ProfileIcon from "../../../icons/ProfileIcon";
-import { AuthContext } from "../../../contexts/AuthProvider";
+import { AuthContext } from "../../../contexts/auth/authContext";
 import SettingsIcon from "../../../icons/SettingsIcon";
 import LogoutIcon from "../../../icons/LogoutIcon";
 import MenuItem from "./MenuItem";

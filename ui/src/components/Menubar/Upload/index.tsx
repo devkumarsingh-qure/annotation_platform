@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ModalContext } from "../../../contexts/ModalProvider";
+import { ModalContext } from "../../../contexts/modal/modalContext";
 import UploadIcon from "../../../icons/UploadIcon";
 
 function Upload() {

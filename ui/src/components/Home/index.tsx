@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { ModalContext } from "../../contexts/ModalProvider";
+import { ModalContext } from "../../contexts/modal/modalContext";
 import FileUpload from "../Modals/FileUpload";
 import type { Patient } from "../../types/Patient";
 import apiClient from "../../utils/apiClient";
