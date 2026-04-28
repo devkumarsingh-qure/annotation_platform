@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import apiClient from "../../utils/apiClient";
+import apiClient, { ensureCsrfToken } from "../../utils/apiClient";
 import { Navigate, useLocation } from "react-router-dom";
 import Loading from "../../components/Loading";
 import type { User } from "../../types/User";
@@ -13,7 +13,14 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const [user, setUser] = useState<User | null>(null);
 
     useEffect(() => {
-        refreshUser();
+        void (async () => {
+            try {
+                await ensureCsrfToken();
+            } catch (error) {
+                console.error(error);
+            }
+            await refreshUser();
+        })();
     }, []);
 
     const refreshUser = async () => {
@@ -31,6 +38,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const login = async (username: string, password: string) => {
         try {
             setIsLoading(true);
+            await ensureCsrfToken();
             await apiClient.post(API_PATHS.LOGIN(), { username, password });
             await refreshUser();
         } catch (error) {

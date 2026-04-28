@@ -1,4 +1,7 @@
 const API_PATHS = {
+    CSRF: () => {
+        return "/csrf/"
+    },
     ME: () => {
         return "/me/"
     },
