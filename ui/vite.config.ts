@@ -6,22 +6,22 @@ import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss(), viteCommonjs()],
-  worker: {
-    format: 'es'
-  },
   optimizeDeps: {
     exclude: ["@cornerstonejs/dicom-image-loader", "@qureai/react-dicom-viewer"],
-    include: ["xmlbuilder2", "dicom-parser"]
+    include: ["xmlbuilder2", "dicom-parser"],
   },
-  resolve: {
-    alias: {
-      fs: "browserify-fs",
-      path: "path-browserify",
-      stream: "stream-browserify",
-      buffer: "buffer",
-      util: "util",
-      events: "events",
-      string_decoder: "string_decoder",
-    },
+  worker: {
+    format: 'es',
   },
+  //resolve: {
+  //  alias: {
+  //    fs: "browserify-fs",
+  //    path: "path-browserify",
+  //    stream: "stream-browserify",
+  //    buffer: "buffer",
+  //    util: "util",
+  //    events: "events",
+  //    string_decoder: "string_decoder",
+  //  },
+  //},
 })
