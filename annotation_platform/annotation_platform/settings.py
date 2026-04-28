@@ -14,6 +14,14 @@ from pathlib import Path
 import os
 
 
+def get_bool(env_var, default):
+    return os.getenv(env_var, default).strip().strip('"').lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+
+
 def get_list(env_var):
     return [item for item in os.getenv(env_var, "").split(",") if item]
 
@@ -30,6 +38,13 @@ CORS_ALLOWED_ORIGINS = get_list("CORS_ALLOWED_ORIGINS")
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
+
+SESSION_COOKIE_SAMESITE = (
+    os.getenv("SESSION_COOKIE_SAMESITE", "None").strip().strip('"')
+)
+CSRF_COOKIE_SAMESITE = os.getenv("CSRF_COOKIE_SAMESITE", "None").strip().strip('"')
+SESSION_COOKIE_SECURE = get_bool("SESSION_COOKIE_SECURE", "False")
+CSRF_COOKIE_SECURE = get_bool("CSRF_COOKIE_SECURE", "False")
 
 AWS_ACCESS_KEY_ID = os.getenv("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.getenv("AWS_SECRET_ACCESS_KEY", "")
