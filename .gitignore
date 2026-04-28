@@ -1,0 +1,77 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+
+# Django migrations (optional: keep if you want versioned schema)
+# */migrations/*
+# !*/migrations/__init__.py
+
+# Static files
+staticfiles/
+static/
+
+# Media uploads (since you're using external storage)
+media/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Secrets
+*.pem
+*.key
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs/editors
+.vscode/
+.idea/
+
+# Node (for Vite frontend if in same repo)
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+
+# Coverage / testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+
+# Packaging
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Docker (if used)
+*.pid
+*.seed
+
+# Misc
+*.swp
+
+.npmrc

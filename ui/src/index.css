@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+    --bg: #f1f5ff;
+    --bg-accent: #dbe8ff;
+    --surface: #ffffffc9;
+    --surface-strong: #ffffff;
+    --surface-soft: #eef4ff;
+    --text: #0f172a;
+    --muted: #52627f;
+    --border: #d5e0f5;
+    --accent: #4f46e5;
+    --accent-strong: #4338ca;
+    --accent-soft: #e0e7ff;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+    color-scheme: light;
+}
+
+body[data-theme="light"] {
+    --bg: #f1f5ff;
+    --bg-accent: #dbe8ff;
+    --surface: #ffffffc9;
+    --surface-strong: #ffffff;
+    --surface-soft: #eef4ff;
+    --text: #0f172a;
+    --muted: #52627f;
+    --border: #d5e0f5;
+    --accent: #4f46e5;
+    --accent-strong: #4338ca;
+    --accent-soft: #e0e7ff;
+    --danger: #ef4444;
+    --success: #10b981;
+    --warning: #f59e0b;
+    color-scheme: light;
+}
+
+body[data-theme="dark"] {
+    --bg: #070d1b;
+    --bg-accent: #0f1b33;
+    --surface: #111b31cf;
+    --surface-strong: #121f38;
+    --surface-soft: #1a2a49;
+    --text: #e2e8f0;
+    --muted: #9caecb;
+    --border: #243a63;
+    --accent: #818cf8;
+    --accent-strong: #6366f1;
+    --accent-soft: #1f2f5a;
+    --danger: #f87171;
+    --success: #34d399;
+    --warning: #fbbf24;
+    color-scheme: dark;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    color: var(--text);
+    background:
+        radial-gradient(circle at top right, var(--bg-accent), transparent 40%),
+        radial-gradient(circle at bottom left, color-mix(in srgb, var(--accent) 10%, transparent), transparent 35%),
+        var(--bg);
+    transition: background 200ms ease, color 200ms ease;
+}
