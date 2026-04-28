@@ -10,7 +10,7 @@ function PatientsList({
 }: {
     isPatientsLoading: boolean;
     patients: Patient[];
-    activePatient: Patient | null;
+    activePatient: Patient | undefined;
     handlePatientClick: (patient: Patient) => void;
 }) {
     return (

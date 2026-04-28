@@ -35,9 +35,9 @@ function Profile() {
                             </p>
                             <p
                                 className="mt-0.5 truncate text-sm font-medium text-[var(--text)]"
-                                title={user.username}
+                                title={user?.username ?? ""}
                             >
-                                {user.username}
+                                {user?.username ?? "—"}
                             </p>
                         </div>
 

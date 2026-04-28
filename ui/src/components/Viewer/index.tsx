@@ -10,10 +10,12 @@ function ViewerComponent() {
     const { patient_id, study_id, series_id } = useParams();
 
     const [isViewerInitialized, setIsViewerInitialized] = useState(false);
-    const [series, setSeries] = useState<Series>(null);
+    const [series, setSeries] = useState<Series | null>(null);
 
     useEffect(() => {
-        if (!series_id) return;
+        if (!patient_id || !study_id || !series_id) {
+            return;
+        }
 
         apiClient
             .get(API_PATHS.SERIES(patient_id, study_id, series_id))
@@ -23,7 +25,7 @@ function ViewerComponent() {
             .catch((error) => {
                 console.error(error);
             });
-    }, [series_id]);
+    }, [patient_id, study_id, series_id]);
 
     useEffect(() => {
         if (!isViewerInitialized) return;
@@ -45,6 +47,10 @@ function ViewerComponent() {
     const handleViewerInitialized = () => {
         setIsViewerInitialized(true);
     };
+
+    if (!patient_id || !study_id || !series_id) {
+        return null;
+    }
 
     return (
         <div className="flex h-full">

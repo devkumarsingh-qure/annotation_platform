@@ -13,4 +13,15 @@ export default defineConfig({
     exclude: ["@cornerstonejs/dicom-image-loader", "@qureai/react-dicom-viewer"],
     include: ["xmlbuilder2", "dicom-parser"]
   },
+  resolve: {
+    alias: {
+      fs: "browserify-fs",
+      path: "path-browserify",
+      stream: "stream-browserify",
+      buffer: "buffer",
+      util: "util",
+      events: "events",
+      string_decoder: "string_decoder",
+    },
+  },
 })

@@ -40,9 +40,9 @@ function AnnotationPanel({
             callback: () => {
                 const annotations =
                     viewerProvider.annotationHandler.getAnnotationsForActiveViewport();
-                setAnnotations(prev => ({
-                    ...prev,
-                    annotations: annotations,
+                setAnnotations((prev) => ({
+                    annotationSetId: prev?.annotationSetId,
+                    annotations: annotations ?? [],
                 }));
             },
             callbackTimeoutDelay: 1000,
@@ -75,7 +75,7 @@ function AnnotationPanel({
         const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(annotations)
         setAnnotations({
             annotationSetId: annotationSetId,
-            annotations: addedAnnotations,
+            annotations: addedAnnotations ?? [],
         });
         startAddingAnnotation();
     }
@@ -84,15 +84,23 @@ function AnnotationPanel({
         viewerProvider.annotationHandler.deleteAnnotationForActiveViewport({
             annotationUID,
         });
-        setAnnotations(prev => ({
-            ...prev,
-            annotations: prev.annotations.filter(
-                (annotation) => annotation.annotationUID !== annotationUID,
-            ),
-        }));
+        setAnnotations((prev) => {
+            if (!prev) {
+                return prev;
+            }
+            return {
+                ...prev,
+                annotations: prev.annotations.filter(
+                    (annotation) => annotation.annotationUID !== annotationUID,
+                ),
+            };
+        });
     };
 
     const handleSaveAnnotations = async () => {
+        if (!annotations) {
+            return;
+        }
         const data = {
             annotationSetId: annotations.annotationSetId,
             annotations: annotations.annotations.map((annotation) => ({
