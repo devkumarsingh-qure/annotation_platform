@@ -11,15 +11,15 @@ function formatMb(bytes: number) {
     return (bytes / 1024 / 1024).toFixed(2);
 }
 
-const UPLOAD_BATCH_SIZE = 5;
+const UPLOAD_BATCH_SIZE = 1;
 
 function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
     const { setIsFileUploadOpen } = useContext(ModalContext);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const isUploading = useRef(false);
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+    const [isUploading, setIsUploading] = useState(false);
     const [uploadFileStatuses, setUploadFileStatuses] = useState<Record<string, { success: boolean, error?: string }>>({});
 
     const totalBytes = useMemo(
@@ -37,17 +37,16 @@ function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
     };
 
     const handleUpload = async () => {
-        if (isUploading.current) return;
+        if (isUploading) return;
 
-        isUploading.current = true;
+        setIsUploading(true);
 
         for (let i = 0; i < selectedFiles.length; i += UPLOAD_BATCH_SIZE) {
             const batch = selectedFiles.slice(i, i + UPLOAD_BATCH_SIZE);
             const batchStatuses = await uploadFiles(batch);
             setUploadFileStatuses((prev) => ({ ...prev, ...batchStatuses }));
         }
-        isUploading.current = false;
-        setIsFileUploadOpen(false);
+        setIsUploading(false);
         onUploadComplete();
     };
 
@@ -60,9 +59,19 @@ function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
         return response.data;
     }
 
+    const clearSelection = () => {
+        if (isUploading) return;
+        setSelectedFiles([]);
+    }
+
+    const close = () => {
+        if (isUploading) return;
+        setIsFileUploadOpen(false);
+    }
+
     return (
         <div className="fixed top-0 left-0 z-40 h-full w-full">
-            <Backdrop onClick={() => setIsFileUploadOpen(false)} />
+            <Backdrop onClick={close} />
 
             <div
                 className="absolute top-1/2 left-1/2 z-50 flex w-[min(92vw,28rem)] max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
@@ -77,7 +86,7 @@ function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
                     <button
                         type="button"
                         className="cursor-pointer rounded-md p-1.5 text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                        onClick={() => setIsFileUploadOpen(false)}
+                        onClick={close}
                         aria-label="Close"
                     >
                         <XIcon className="size-5" />
@@ -140,14 +149,18 @@ function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
                                 <div className="flex flex-wrap items-center justify-end gap-2">
                                     <button
                                         type="button"
-                                        className="cursor-pointer inline-flex items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-sm font-medium text-[var(--text)] transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
-                                        onClick={() => setSelectedFiles([])}
+                                        className={classNames("cursor-pointer inline-flex items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-sm font-medium text-[var(--text)] transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]", {
+                                            "opacity-50 pointer-events-none": isUploading,
+                                        })}
+                                        onClick={clearSelection}
                                     >
                                         Clear selection
                                     </button>
                                     <button
                                         type="button"
-                                        className="cursor-pointer inline-flex items-center justify-center gap-2 rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
+                                        className={classNames("cursor-pointer inline-flex items-center justify-center gap-2 rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-transparent", {
+                                            "opacity-50 pointer-events-none": isUploading,
+                                        })}
                                         onClick={handleUpload}
                                     >
                                         <UploadIcon className="size-4 shrink-0 opacity-95" />

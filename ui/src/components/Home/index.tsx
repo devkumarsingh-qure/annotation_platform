@@ -14,6 +14,7 @@ function Home() {
 
     const { isFileUploadOpen } = useContext(ModalContext);
 
+    const [isPatientsLoading, setIsPatientsLoading] = useState(true);
     const [patients, setPatients] = useState<Patient[]>([]);
 
     const activePatient = patients.find((patient: Patient) => patient.id == patient_id);
@@ -23,8 +24,10 @@ function Home() {
     }, []);
 
     const fetchPatients = async () => {
+        setIsPatientsLoading(true);
         const response = await apiClient.get(API_PATHS.PATIENTS());
         setPatients(response.data);
+        setIsPatientsLoading(false);
     }
 
     const handlePatientClick = (patient: Patient) => {
@@ -34,14 +37,18 @@ function Home() {
     return (
         <>
             <div className="flex h-full min-h-0 w-full gap-4 p-4">
+                <div className="w-1/3">
+                    <PatientsList
+                        isPatientsLoading={isPatientsLoading}
+                        patients={patients}
+                        activePatient={activePatient}
+                        handlePatientClick={handlePatientClick}
+                    />
+                </div>
 
-                <PatientsList
-                    patients={patients}
-                    activePatient={activePatient}
-                    handlePatientClick={handlePatientClick}
-                />
-
-                {activePatient && <PatientDetails patient={activePatient} />}
+                <div className="w-0 grow">
+                    {activePatient && <PatientDetails patient={activePatient} />}
+                </div>
             </div>
             {isFileUploadOpen && (
                 <FileUpload

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import AuthProvider from "./contexts/auth/AuthProvider"
 import Login from "./components/Login"
 import Menubar from "./components/Menubar"
@@ -23,6 +23,8 @@ export default function App() {
           <ModalProvider>
             <Menubar>
               <Routes>
+                <Route path="/" element={<Navigate to="/patient" replace />} />
+                <Route path="/patient" element={<Home />} />
                 <Route path={UI_PATHS.LOGIN} element={<Login />} />
                 <Route path={UI_PATHS.PATIENT} element={<Home />} />
                 <Route path={UI_PATHS.PATIENTS} element={<Home />} />
