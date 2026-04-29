@@ -6,14 +6,9 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 const CSRF_UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
 let csrfToken: string | null = null;
-/** Bumps on clear; a stale in-flight /csrf/ must not restore the token. */
 let csrfEpoch = 0;
 let inflightCsrf: Promise<void> | null = null;
 
-/**
- * After login, logout, or any server-side session change, call this so the next mutating
- * request refetches /csrf/ once. Keeps a single in-memory token between calls (low traffic).
- */
 export function clearCsrfToken() {
     csrfEpoch += 1;
     csrfToken = null;
