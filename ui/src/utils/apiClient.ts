@@ -5,19 +5,21 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const CSRF_UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
-let csrfToken: string | null = null;
+/**
+ * Deduplicate concurrent fetches; do not keep a long-lived token.
+ * After a round completes, the next mutating call hits GET /csrf/ again so the value always
+ * matches the current session (login/logout/cookie rotation) without the app "forgetting" to clear.
+ */
+let inflightCsrf: Promise<string> | null = null;
 
-let inflightCsrf: Promise<void> | null = null;
-
-async function prefetchCsrfIfNeeded(): Promise<void> {
-    if (csrfToken) return;
+async function getCsrfToken(): Promise<string> {
     if (!inflightCsrf) {
-        inflightCsrf = (async () => {
-            const { data } = await apiClient.get<{ csrfToken: string }>(API_PATHS.CSRF());
-            csrfToken = data.csrfToken;
-        })().finally(() => {
-            inflightCsrf = null;
-        });
+        inflightCsrf = apiClient
+            .get<{ csrfToken: string }>(API_PATHS.CSRF())
+            .then((r) => r.data.csrfToken)
+            .finally(() => {
+                inflightCsrf = null;
+            });
     }
     return inflightCsrf;
 }
@@ -30,10 +32,8 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(async (config) => {
     const method = (config.method ?? "get").toUpperCase();
     if (CSRF_UNSAFE_METHODS.has(method)) {
-        await prefetchCsrfIfNeeded();
-    }
-    if (csrfToken && CSRF_UNSAFE_METHODS.has(method)) {
-        config.headers.set("X-CSRFToken", csrfToken);
+        const token = await getCsrfToken();
+        config.headers.set("X-CSRFToken", token);
     }
     return config;
 });

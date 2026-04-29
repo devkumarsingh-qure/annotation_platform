@@ -49,6 +49,26 @@ function Home() {
         navigate(UI_PATHS.PATIENT({ params: { patient_id: patient.id } }));
     }
 
+    const handleBatchUploadComplete = (batchStatuses: Record<string, { success: boolean, patient: Patient }>) => {
+        Object.values(batchStatuses).forEach((status) => {
+            if (status.success) {
+                const { id } = status.patient;
+                setPatients((prev) => {
+                    const patient = prev.results.find((patient: Patient) => patient.id == id);
+                    if (!patient) {
+                        return {
+                            ...prev,
+                            total_results: prev.total_results + 1,
+                            results: [status.patient, ...prev.results],
+                        }
+                    } else {
+                        return prev;
+                    }
+                })
+            }
+        })
+    }
+
     return (
         <>
             <div className="flex h-full min-h-0 w-full gap-4 p-4">
@@ -69,7 +89,7 @@ function Home() {
             </div>
             {isFileUploadOpen && (
                 <FileUpload
-                    onUploadComplete={fetchPatients}
+                    onBatchUploadComplete={handleBatchUploadComplete}
                 />
             )}
         </>

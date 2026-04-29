@@ -6,6 +6,7 @@ import UploadIcon from "../../../icons/UploadIcon";
 import { API_PATHS } from "../../../utils/urls";
 import apiClient from "../../../utils/apiClient";
 import classNames from "classnames";
+import type { Patient } from "../../../types/Patient";
 
 function formatMb(bytes: number) {
     return (bytes / 1024 / 1024).toFixed(2);
@@ -13,7 +14,11 @@ function formatMb(bytes: number) {
 
 const UPLOAD_BATCH_SIZE = 1;
 
-function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
+function FileUpload({
+    onBatchUploadComplete,
+}: {
+    onBatchUploadComplete: (batchStatuses: Record<string, { success: boolean, patient: Patient }>) => void;
+}) {
     const { setIsFileUploadOpen } = useContext(ModalContext);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,9 +50,9 @@ function FileUpload({ onUploadComplete }: { onUploadComplete: () => void }) {
             const batch = selectedFiles.slice(i, i + UPLOAD_BATCH_SIZE);
             const batchStatuses = await uploadFiles(batch);
             setUploadFileStatuses((prev) => ({ ...prev, ...batchStatuses }));
+            onBatchUploadComplete(batchStatuses);
         }
-        setIsUploading(false);
-        onUploadComplete();
+        setIsUploading(false);;
     };
 
     const uploadFiles = async (files: File[]) => {
