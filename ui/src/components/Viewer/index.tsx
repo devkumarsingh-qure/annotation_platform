@@ -55,6 +55,9 @@ function ViewerComponent() {
     };
 
     const onClickSeries = ({ study_id, series_id }: { study_id: string; series_id: string }) => {
+        if (!patient_id || !study_id || !series_id) {
+            return;
+        }
         navigate(UI_PATHS.VIEWER({ params: { patient_id, study_id, series_id }, query: { mode: VIEWER_MODES.VIEW } }));
     };
 
