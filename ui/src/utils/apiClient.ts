@@ -5,21 +5,32 @@ const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const CSRF_UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
-/**
- * Deduplicate concurrent fetches; do not keep a long-lived token.
- * After a round completes, the next mutating call hits GET /csrf/ again so the value always
- * matches the current session (login/logout/cookie rotation) without the app "forgetting" to clear.
- */
-let inflightCsrf: Promise<string> | null = null;
+let csrfToken: string | null = null;
+/** Bumps on clear; a stale in-flight /csrf/ must not restore the token. */
+let csrfEpoch = 0;
+let inflightCsrf: Promise<void> | null = null;
 
-async function getCsrfToken(): Promise<string> {
+/**
+ * After login, logout, or any server-side session change, call this so the next mutating
+ * request refetches /csrf/ once. Keeps a single in-memory token between calls (low traffic).
+ */
+export function clearCsrfToken() {
+    csrfEpoch += 1;
+    csrfToken = null;
+    inflightCsrf = null;
+}
+
+async function prefetchCsrfIfNeeded(): Promise<void> {
+    if (csrfToken) return;
+    const epochAtStart = csrfEpoch;
     if (!inflightCsrf) {
-        inflightCsrf = apiClient
-            .get<{ csrfToken: string }>(API_PATHS.CSRF())
-            .then((r) => r.data.csrfToken)
-            .finally(() => {
-                inflightCsrf = null;
-            });
+        inflightCsrf = (async () => {
+            const { data } = await apiClient.get<{ csrfToken: string }>(API_PATHS.CSRF());
+            if (epochAtStart !== csrfEpoch) return;
+            csrfToken = data.csrfToken;
+        })().finally(() => {
+            inflightCsrf = null;
+        });
     }
     return inflightCsrf;
 }
@@ -32,8 +43,10 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(async (config) => {
     const method = (config.method ?? "get").toUpperCase();
     if (CSRF_UNSAFE_METHODS.has(method)) {
-        const token = await getCsrfToken();
-        config.headers.set("X-CSRFToken", token);
+        await prefetchCsrfIfNeeded();
+    }
+    if (csrfToken && CSRF_UNSAFE_METHODS.has(method)) {
+        config.headers.set("X-CSRFToken", csrfToken);
     }
     return config;
 });
