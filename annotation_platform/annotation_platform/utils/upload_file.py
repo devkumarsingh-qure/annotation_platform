@@ -6,6 +6,10 @@ from botocore.config import Config
 from django.conf import settings
 
 
+class S3ObjectDeletionError(RuntimeError):
+    """Raised when a remote object must be removed before a DB row is deleted and removal fails."""
+
+
 def build_object_key(prefix: str, filename: str) -> str:
     return f"{prefix}/{filename}"
 
@@ -53,3 +57,11 @@ def upload_file(file_source: str, key: str):
     return {
         "object_key": key,
     }
+
+
+def delete_s3_object(key: str) -> None:
+    client = _s3_client()
+    client.delete_object(
+        Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+        Key=key,
+    )

@@ -8,7 +8,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from annotation_platform.utils.upload_file import upload_file
+from annotation_platform.utils.upload_file import S3ObjectDeletionError, upload_file
 from dicom_manager.models import AnnotationSet
 
 from .helpers import annotation_set_payload, resolve_series_for_user
@@ -74,7 +74,7 @@ def annotations_for_series(request, patient_id, study_id, series_id):
         return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
-@api_view(["GET"])
+@api_view(["GET", "DELETE"])
 @permission_classes([IsAuthenticated])
 def annotation_set(request, patient_id, study_id, series_id, annotation_set_id):
     series, error_response = resolve_series_for_user(
@@ -90,7 +90,19 @@ def annotation_set(request, patient_id, study_id, series_id, annotation_set_id):
             status=status.HTTP_404_NOT_FOUND,
         )
 
-    return Response(
-        annotation_set_payload(ann_set),
-        status=status.HTTP_200_OK,
-    )
+    if request.method == "GET":
+        return Response(
+            annotation_set_payload(ann_set),
+            status=status.HTTP_200_OK,
+        )
+    elif request.method == "DELETE":
+        try:
+            ann_set.delete()
+        except S3ObjectDeletionError as e:
+            return Response(
+                {"detail": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -107,6 +107,12 @@ function AnnotationPanel({
         await fetchAnnotationSets();
     }
 
+    const handleDeleteAnnotationSet = async(annotationSetId: string) => {
+        setIsLoading(true);
+        await apiClient.delete(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
+        await fetchAnnotationSets();
+    }
+
     return (
         <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
             <header className="shrink-0 border-b border-[var(--border)] bg-[var(--surface-strong)] px-4 py-4 flex items-center justify-between">
@@ -139,6 +145,7 @@ function AnnotationPanel({
                         annotationSets={annotationSets}
                         handleAddNewAnnotationSetClick={handleAddNewAnnotationSetClick}
                         handleAnnotationSetClick={handleAnnotationSetClick}
+                        handleDeleteAnnotationSet={handleDeleteAnnotationSet}
                     />
                 )
                 }
