@@ -1,12 +1,7 @@
 from django.urls import path
 
-from .views.patient import (
-    get_patients,
-    get_studies_for_patient,
-    get_series,
-    annotations_for_series,
-    annotation_set,
-)
+from .views.annotations import annotation_set, annotations_for_series
+from .views.patients import get_patients, get_series, get_studies_for_patient
 
 urlpatterns = [
     path("patients/", get_patients, name="get_patients"),
