@@ -29,44 +29,49 @@ def annotations_for_series(request, patient_id, study_id, series_id):
             for a in AnnotationSet.objects.filter(series=series)
         ]
         return Response(data, status=status.HTTP_200_OK)
+    elif request.method == "POST":
+        annotation_set_id = request.data.get("annotationSetId")
+        annotations_json = request.data.get("annotations")
+        if annotation_set_id is None or annotations_json is None:
+            return Response(
+                {"detail": "Annotation set ID or annotations JSON not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-    annotation_set_id = request.data.get("annotationSetId")
-    annotations_json = request.data.get("annotations")
-    if annotations_json is None:
-        return Response(
-            {"detail": "Annotations JSON not found"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+        with transaction.atomic():
+            if annotation_set_id == "new-annotation-set":
+                annotation_set = AnnotationSet.objects.create(series=series)
+            else:
+                try:
+                    annotation_set = AnnotationSet.objects.get(
+                        id=annotation_set_id, series=series
+                    )
+                except AnnotationSet.DoesNotExist:
+                    return Response(
+                        {"detail": "Annotation set not found"},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
 
-    with transaction.atomic():
-        if annotation_set_id is None:
-            annotation_set = AnnotationSet.objects.create(series=series)
-        else:
+            key = annotation_set.get_object_key()
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", suffix=".json", delete=False
+            ) as tmp:
+                json.dump(annotations_json, tmp)
+                tmp.flush()
+                temp_path = tmp.name
+
             try:
-                annotation_set = AnnotationSet.objects.get(
-                    id=annotation_set_id, series=series
-                )
-            except AnnotationSet.DoesNotExist:
-                return Response(
-                    {"detail": "Annotation set not found"},
-                    status=status.HTTP_404_NOT_FOUND,
-                )
+                upload_file(temp_path, key)
+            finally:
+                if os.path.exists(temp_path):
+                    os.remove(temp_path)
 
-        key = annotation_set.get_object_key()
-        with tempfile.NamedTemporaryFile(
-            mode="w", encoding="utf-8", suffix=".json", delete=False
-        ) as tmp:
-            json.dump(annotations_json, tmp)
-            tmp.flush()
-            temp_path = tmp.name
-
-        try:
-            upload_file(temp_path, key)
-        finally:
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-
-    return Response({"detail": "Annotations saved"}, status=status.HTTP_200_OK)
+        return Response(
+            annotation_set_payload(annotation_set),
+            status=status.HTTP_200_OK,
+        )
+    else:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(["GET"])
@@ -78,9 +83,7 @@ def annotation_set(request, patient_id, study_id, series_id, annotation_set_id):
     if error_response is not None:
         return error_response
 
-    ann_set = AnnotationSet.objects.filter(
-        id=annotation_set_id, series=series
-    ).first()
+    ann_set = AnnotationSet.objects.filter(id=annotation_set_id, series=series).first()
     if ann_set is None:
         return Response(
             {"detail": "Annotation set not found"},

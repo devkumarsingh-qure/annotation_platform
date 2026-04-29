@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import type { Patient, Study } from "../../types/Patient";
 import apiClient from "../../utils/apiClient";
-import { API_PATHS } from "../../utils/urls";
+import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { Link } from "react-router-dom";
 import Loading from "../Loading";
+import { VIEWER_MODES } from "../../utils/constants";
 
 function PatientDetails({ patient }: { patient: Patient }) {
     const [isStudiesLoading, setIsStudiesLoading] = useState(true);
@@ -144,7 +145,7 @@ function PatientDetails({ patient }: { patient: Patient }) {
                                                                             </p>
                                                                         </div>
                                                                         <Link
-                                                                            to={`/viewer/patients/${patient.id}/studies/${study.id}/series/${series.id}`}
+                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.ANNOTATE } })}
                                                                             target="_blank"
                                                                             rel="noopener noreferrer"
                                                                             className="shrink-0 self-center"
@@ -152,7 +153,7 @@ function PatientDetails({ patient }: { patient: Patient }) {
                                                                             <button
                                                                                 className="cursor-pointer rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
                                                                             >
-                                                                                Open in Viewer
+                                                                                Annotate
                                                                             </button>
                                                                         </Link>
                                                                     </div>

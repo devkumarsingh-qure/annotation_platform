@@ -5,8 +5,10 @@ export type Annotation = {
   toolName: string;
 };
 
-export type AnnotationSet = {
+export type AnnotationSetType = {
   id: string;
   created_at: string;
   url: string;
 };
+
+export type ViewerMode = "annotate" | "view";

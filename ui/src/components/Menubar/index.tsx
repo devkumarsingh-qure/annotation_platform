@@ -22,7 +22,7 @@ function Menubar({ children }: { children: React.ReactNode }) {
         localStorage.setItem(THEME_STORAGE_KEY, theme);
     }, [isDarkTheme]);
 
-    if (location.pathname === UI_PATHS.LOGIN) {
+    if (location.pathname === UI_PATHS.LOGIN()) {
         return <>{children}</>;
     }
 

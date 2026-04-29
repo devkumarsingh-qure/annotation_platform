@@ -54,11 +54,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         return <Loading />;
     }
 
-    if (!user && location.pathname !== UI_PATHS.LOGIN) {
-        return <Navigate to={UI_PATHS.LOGIN} replace />;
+    if (!user && location.pathname !== UI_PATHS.LOGIN()) {
+        return <Navigate to={UI_PATHS.LOGIN()} replace />;
     }
-    if (user && location.pathname === UI_PATHS.LOGIN) {
-        return <Navigate to={UI_PATHS.PATIENTS} replace />;
+    if (user && location.pathname === UI_PATHS.LOGIN()) {
+        return <Navigate to={UI_PATHS.PATIENTS()} replace />;
     }
 
     return (

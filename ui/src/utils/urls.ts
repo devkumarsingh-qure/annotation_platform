@@ -1,3 +1,5 @@
+import type { ViewerMode } from "../types/Viewer"
+
 const API_PATHS = {
     CSRF: () => {
         return "/csrf/"
@@ -38,10 +40,21 @@ const API_PATHS = {
 }
 
 const UI_PATHS = {
-    LOGIN: "/login",
-    PATIENTS: "/patients",
-    PATIENT: "/patients/:patient_id",
-    VIEWER: "/viewer/patients/:patient_id/studies/:study_id/series/:series_id",
+    LOGIN: () => {
+        return "/login/"
+    },
+    PATIENTS: () => {
+        return "/worklist/"
+    },
+    PATIENT: ({ params }: { params: { patient_id: string } }) => {
+        const { patient_id } = params;
+        return `${UI_PATHS.PATIENTS()}${patient_id}/`
+    },
+    VIEWER: ({ params, query }: { params: { patient_id: string; study_id: string; series_id: string }; query: { mode: ViewerMode } }) => {
+        const { patient_id, study_id, series_id } = params;
+        const { mode } = query;
+        return `/viewer/${patient_id}/studies/${study_id}/series/${series_id}/?mode=${mode}`
+    }
 }
 
 export { API_PATHS, UI_PATHS };

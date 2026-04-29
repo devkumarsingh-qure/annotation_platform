@@ -3,7 +3,7 @@ import { ModalContext } from "../../contexts/modal/modalContext";
 import FileUpload from "../Modals/FileUpload";
 import type { Patient } from "../../types/Patient";
 import apiClient from "../../utils/apiClient";
-import { API_PATHS } from "../../utils/urls";
+import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import PatientsList from "./PatientsList";
 import PatientDetails from "./PatientDetails";
 import { useNavigate, useParams } from "react-router-dom";
@@ -46,7 +46,7 @@ function Home() {
     }
 
     const handlePatientClick = (patient: Patient) => {
-        navigate(`/patients/${patient.id}`);
+        navigate(UI_PATHS.PATIENT({ params: { patient_id: patient.id } }));
     }
 
     return (

@@ -1,5 +1,5 @@
-import type { AnnotationSet } from "../../../types/Viewer";
-import Loading from "../../Loading";
+import classNames from "classnames";
+import type { AnnotationSetType } from "../../../types/Viewer";
 
 function shortId(id: string | number | null | undefined, max = 12) {
     const s = String(id ?? "");
@@ -11,14 +11,12 @@ function shortId(id: string | number | null | undefined, max = 12) {
 
 function AnnotationSets({
     annotationSets,
-    handleStartAddingAnnotationSet,
+    handleAddNewAnnotationSetClick,
     handleAnnotationSetClick,
-    isAnnotationSetsLoading,
 }: {
-    annotationSets: AnnotationSet[];
-    handleStartAddingAnnotationSet: () => void;
+    annotationSets: AnnotationSetType[];
+    handleAddNewAnnotationSetClick: () => void;
     handleAnnotationSetClick: (annotationSetId: string) => void;
-    isAnnotationSetsLoading: boolean;
 }) {
     const formatDate = (raw: string | number) => {
         const d = new Date(raw);
@@ -35,11 +33,7 @@ function AnnotationSets({
         <div className="flex h-full min-h-0 flex-col">
             <div className="grow rounded-lg overflow-y-auto p-2">
                 {
-                    isAnnotationSetsLoading ? (
-                        <div className="h-full">
-                            <Loading />
-                        </div>
-                    ) : annotationSets.length === 0 ? (
+                    annotationSets.length === 0 ? (
                         <div className="flex min-h-[10rem] flex-col items-center justify-center gap-2 px-4 py-10 text-center">
                             <p className="text-sm font-semibold text-[var(--text)]">
                                 No annotation sets yet
@@ -53,9 +47,9 @@ function AnnotationSets({
                             <button
                                 key={String(annotationSet.id)}
                                 type="button"
-                                onClick={() =>
-                                    handleAnnotationSetClick(String(annotationSet.id))
-                                }
+                                onClick={() => {
+                                    handleAnnotationSetClick(annotationSet.id);
+                                }}
                                 className="mb-2 group w-full rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-3 py-2.5 text-left shadow-sm transition hover:border-[var(--accent)]/55 hover:bg-[var(--accent-soft)] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-soft)]"
                             >
                                 <div className="flex items-start justify-between gap-2">
@@ -98,8 +92,8 @@ function AnnotationSets({
             <div className="shrink-0 border-t border-[var(--border)] bg-[var(--surface-soft)] p-2">
                 <button
                     type="button"
-                    className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/35 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-soft)]"
-                    onClick={() => handleStartAddingAnnotationSet()}
+                    className={classNames("flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/35 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-soft)]")}
+                    onClick={() => handleAddNewAnnotationSetClick()}
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

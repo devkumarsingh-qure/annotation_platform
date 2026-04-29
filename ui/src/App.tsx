@@ -2,7 +2,6 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import AuthProvider from "./contexts/auth/AuthProvider"
 import Login from "./components/Login"
 import Menubar from "./components/Menubar"
-import { UI_PATHS } from "./utils/urls"
 import Home from "./components/Home"
 import ModalProvider from "./contexts/modal/ModalProvider"
 import Viewer from "./components/Viewer"
@@ -23,17 +22,22 @@ export default function App() {
           <ModalProvider>
             <Menubar>
               <Routes>
-                <Route path="/" element={<Navigate to="/patient" replace />} />
-                <Route path="/patient" element={<Home />} />
-                <Route path={UI_PATHS.LOGIN} element={<Login />} />
-                <Route path={UI_PATHS.PATIENT} element={<Home />} />
-                <Route path={UI_PATHS.PATIENTS} element={<Home />} />
-                <Route path={UI_PATHS.VIEWER} element={<Viewer />} />
+                <Route path={"login/"} element={<Login />} />
+                <Route index element={<Navigate to="worklist/" replace />} />
+                <Route path="worklist/">
+                  <Route index element={<Home />} />
+                  <Route path=":patient_id/" element={<Home />} />
+                </Route>
+                <Route path="viewer/">
+                  <Route path=":patient_id/studies/:study_id/series/:series_id/">
+                    <Route index element={<Viewer />} />
+                  </Route>
+                </Route>
               </Routes>
             </Menubar>
           </ModalProvider>
         </AuthProvider>
       </BrowserRouter>
-    </div>
+    </div >
   )
 }

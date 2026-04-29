@@ -1,13 +1,16 @@
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import apiClient from "../../utils/apiClient";
 import { API_PATHS } from "../../utils/urls";
 import { viewerProvider, Viewer, Toolbar } from "@qureai/react-dicom-viewer";
 import type { Series } from "../../types/Patient";
-import AnnotationPanel from "./AnnotationPanel";
+import AnnotationPanel from "./AnnotationPanel/index.tsx";
+import { VIEWER_MODES } from "../../utils/constants.ts";
 
 function ViewerComponent() {
     const { patient_id, study_id, series_id } = useParams();
+    const [searchParams] = useSearchParams();
+    const mode = searchParams.get("mode");
 
     const [isViewerInitialized, setIsViewerInitialized] = useState(false);
     const [series, setSeries] = useState<Series | null>(null);
@@ -64,11 +67,23 @@ function ViewerComponent() {
             </div>
 
             <div className="w-1/4">
-                <AnnotationPanel
-                    patient_id={patient_id}
-                    study_id={study_id}
-                    series_id={series_id}
-                />
+                {
+                    isViewerInitialized && (
+                        <div className="h-full">
+                            {
+                                mode === VIEWER_MODES.ANNOTATE && (
+                                    (
+                                        <AnnotationPanel
+                                            patient_id={patient_id}
+                                            study_id={study_id}
+                                            series_id={series_id}
+                                        />
+                                    )
+                                )
+                            }
+                        </div>
+                    )
+                }
             </div>
         </div>
     );
