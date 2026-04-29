@@ -124,7 +124,7 @@ function PatientsList({
                                         }}
                                         className="h-[50px] text-xs text-[var(--muted)] flex items-center justify-center"
                                     >
-                                        Loading more patients...
+                                        <Loading />
                                     </div>
                                 )}
                             </div>
