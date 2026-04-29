@@ -6,7 +6,7 @@ import apiClient from "../../utils/apiClient";
 import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import PatientsList from "./PatientsList";
 import PatientDetails from "./PatientDetails";
-import { useNavigate, useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import type { PaginatedResponse } from "../../types/PaginatedResponse";
 import { DEFAULT_PAGE_SIZE } from "../../utils/constants";
 
@@ -67,6 +67,13 @@ function Home() {
                 })
             }
         })
+    }
+
+    if (!patient_id) {
+        const firstPatientId = patients.results[0]?.id;
+        if (firstPatientId) {
+            return <Navigate to={UI_PATHS.PATIENT({ params: { patient_id: firstPatientId } })} replace />;
+        }
     }
 
     return (
