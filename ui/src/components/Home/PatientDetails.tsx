@@ -5,6 +5,9 @@ import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { Link } from "react-router-dom";
 import Loading from "../Loading";
 import { VIEWER_MODES } from "../../utils/constants";
+import PenIcon from "../../icons/PenIcon";
+import EyeIcon from "../../icons/EyeIcon";
+import StackIcon from "../../icons/StackIcon";
 
 function PatientDetails({ patient }: { patient: Patient }) {
     const [isStudiesLoading, setIsStudiesLoading] = useState(true);
@@ -46,8 +49,8 @@ function PatientDetails({ patient }: { patient: Patient }) {
     }, [patient.id]);
 
     return (
-        <div className="flex h-full min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 backdrop-blur-[10px]">
-            <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-5">
+        <div className="flex h-full min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 backdrop-blur-[10px]">
+            <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3">
                 <div className="flex items-center justify-between gap-4">
                     <div>
                         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Patient</p>
@@ -89,7 +92,7 @@ function PatientDetails({ patient }: { patient: Patient }) {
                         ) : (
                             studies.map((study) => {
                                 return (
-                                    <div key={study.id} className="rounded-xl border border-[var(--border)]/80 bg-[var(--surface-strong)]/60 p-3.5">
+                                    <div key={study.id} className="rounded-xl border border-[var(--border)]/80 bg-[var(--surface-strong)]/60 p-3">
                                         <div className="flex items-start justify-between gap-4">
                                             <div>
                                                 <p className="text-xs text-[var(--muted)]">Study UID</p>
@@ -134,8 +137,8 @@ function PatientDetails({ patient }: { patient: Patient }) {
                                                                 >
                                                                     <div className="flex items-start justify-between gap-3">
                                                                         <div className="min-w-0 space-y-1">
-                                                                            <p className="text-xs font-medium text-[var(--text)]">
-                                                                                {series.Modality || "N/A"} | Series {series.SeriesNumber || "-"}
+                                                                            <p className="text-xs flex items-center font-medium text-[var(--text)]">
+                                                                                {series.Modality || "N/A"} | Series {series.SeriesNumber || "-"} | {series.total_instances} <StackIcon className="ml-1 size-3 shrink-0" />
                                                                             </p>
                                                                             <p className="text-xs text-[var(--muted)]">
                                                                                 Description: {series.SeriesDescription || "-"}
@@ -144,18 +147,37 @@ function PatientDetails({ patient }: { patient: Patient }) {
                                                                                 UID: {shortValue(series.SeriesInstanceUID, 36)}
                                                                             </p>
                                                                         </div>
-                                                                        <Link
-                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.ANNOTATE } })}
-                                                                            target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            className="shrink-0 self-center"
-                                                                        >
-                                                                            <button
-                                                                                className="cursor-pointer rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
+
+                                                                        <div className="inline-grid shrink-0 grid-cols-2 gap-2 self-center">
+                                                                            <Link
+                                                                                className="block w-full min-w-0"
+                                                                                to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.VIEW } })}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
                                                                             >
-                                                                                Annotate
-                                                                            </button>
-                                                                        </Link>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="flex w-full min-w-0 cursor-pointer items-center justify-center gap-2 rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
+                                                                                >
+                                                                                    <EyeIcon className="size-3 shrink-0" />
+                                                                                    <span>View</span>
+                                                                                </button>
+                                                                            </Link>
+                                                                            <Link
+                                                                                className="block w-full min-w-0"
+                                                                                to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.ANNOTATE } })}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                <button
+                                                                                    type="button"
+                                                                                    className="flex w-full min-w-0 cursor-pointer items-center justify-center gap-1 rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
+                                                                                >
+                                                                                    <PenIcon className="size-3 shrink-0" />
+                                                                                    <span>Annotate</span>
+                                                                                </button>
+                                                                            </Link>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             );

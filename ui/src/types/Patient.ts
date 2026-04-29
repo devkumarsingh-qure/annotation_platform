@@ -24,6 +24,8 @@ export type Series = {
     Modality: string;
     created_at: string;
     instances: Instance[];
+    total_instances: number;
+    num_instances?: number;
 }
 
 export type Instance = {

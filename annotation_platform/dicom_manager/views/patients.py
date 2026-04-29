@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from django.core.paginator import Paginator
+from django.db.models import Count
 from annotation_platform.utils.upload_file import get_presigned_url
 from dicom_manager.models import Instance, Patient, Series, Study
 
@@ -76,6 +77,7 @@ def get_studies_for_patient(request, patient_id):
 
     for row in (
         Series.objects.filter(study_id__in=study_ids)
+        .annotate(total_instances=Count("instance"))
         .order_by("-created_at")
         .values(
             "id",
@@ -85,6 +87,7 @@ def get_studies_for_patient(request, patient_id):
             "SeriesNumber",
             "Modality",
             "created_at",
+            "total_instances",
         )
     ):
         study_key = row["study_id"]

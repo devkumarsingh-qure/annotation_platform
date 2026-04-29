@@ -1,25 +1,28 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import apiClient from "../../utils/apiClient";
-import { API_PATHS } from "../../utils/urls";
+import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { viewerProvider, Viewer, Toolbar } from "@qureai/react-dicom-viewer";
 import type { Series } from "../../types/Patient";
 import AnnotationPanel from "./AnnotationPanel/index.tsx";
 import { VIEWER_MODES } from "../../utils/constants.ts";
+import SeriesPanel from "./SeriesPanel/index.tsx";
+import MetadataExplorer from "./MetadataExplorer/index.tsx";
 
 function ViewerComponent() {
+    const navigate = useNavigate();
     const { patient_id, study_id, series_id } = useParams();
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
 
     const [isViewerInitialized, setIsViewerInitialized] = useState(false);
     const [series, setSeries] = useState<Series | null>(null);
+    const [isMetadataExplorerOpen, setIsMetadataExplorerOpen] = useState(false);
 
     useEffect(() => {
         if (!patient_id || !study_id || !series_id) {
             return;
         }
-
         apiClient
             .get(API_PATHS.SERIES(patient_id, study_id, series_id))
             .then((response) => {
@@ -49,6 +52,10 @@ function ViewerComponent() {
 
     const handleViewerInitialized = () => {
         setIsViewerInitialized(true);
+    };
+
+    const onClickSeries = ({ study_id, series_id }: { study_id: string; series_id: string }) => {
+        navigate(UI_PATHS.VIEWER({ params: { patient_id, study_id, series_id }, query: { mode: VIEWER_MODES.VIEW } }));
     };
 
     if (!patient_id || !study_id || !series_id) {
@@ -81,10 +88,32 @@ function ViewerComponent() {
                                     )
                                 )
                             }
+                            {
+                                mode === VIEWER_MODES.VIEW && (
+                                    <SeriesPanel
+                                        patient_id={patient_id}
+                                        series_id={series_id}
+                                        onClickSeries={onClickSeries}
+                                        onOpenMetadataExplorer={() =>
+                                            setIsMetadataExplorerOpen(true)
+                                        }
+                                    />
+                                )
+                            }
                         </div>
                     )
                 }
             </div>
+
+            {
+                isViewerInitialized && isMetadataExplorerOpen && (
+                    <div className="fixed top-0 right-0 h-full w-full z-50 bg-black/50">
+                        <MetadataExplorer
+                            onClose={() => setIsMetadataExplorerOpen(false)}
+                        />
+                    </div>
+                )
+            }
         </div>
     );
 }
