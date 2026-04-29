@@ -8,8 +8,15 @@ import { VIEWER_MODES } from "../../utils/constants";
 import PenIcon from "../../icons/PenIcon";
 import EyeIcon from "../../icons/EyeIcon";
 import StackIcon from "../../icons/StackIcon";
+import TrashIcon from "../../icons/TrashIcon";
 
-function PatientDetails({ patient }: { patient: Patient }) {
+function PatientDetails({
+    patient,
+    handleDeletePatient
+}: {
+    patient: Patient;
+    handleDeletePatient: (patient_id: string) => void;
+}) {
     const [isStudiesLoading, setIsStudiesLoading] = useState(true);
     const [studies, setStudies] = useState<Study[]>([]);
 
@@ -71,16 +78,23 @@ function PatientDetails({ patient }: { patient: Patient }) {
                         <p className="font-medium text-[var(--text)]">{patient.PatientAge || "-"}</p>
                     </div>
                 </div>
+                <div className="pt-3 w-max ml-auto">
+                    <button
+                        type="button"
+                        className="flex w-full min-w-0 cursor-pointer items-center justify-center gap-1 rounded-md border border-[color:var(--danger)]/50 bg-gradient-to-br from-[color:var(--danger)] to-red-800 px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
+                        onClick={() => {
+                            handleDeletePatient(patient.id);
+                        }}
+                    >
+                        <TrashIcon className="size-3 shrink-0" />
+                        <span>Delete</span>
+                    </button>
+                </div>
             </div>
 
             <div className="mt-5 flex min-h-0 flex-1 flex-col">
-                <div className="mb-3 shrink-0 flex items-center justify-between">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Studies</h3>
-                    {
-                        !isStudiesLoading && (
-                            <span className="text-xs text-[var(--muted)]">{studies.length} total</span>
-                        )
-                    }
+                <div className="mb-3 shrink-0 flex gap-2">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Studies{!isStudiesLoading && ` (${studies.length})`}</h3>
                 </div>
 
                 <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">

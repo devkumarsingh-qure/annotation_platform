@@ -14,8 +14,8 @@ class Instance(models.Model):
     NumberOfFrames = models.CharField(max_length=255, null=True, blank=True)
 
     def get_object_key_p10(self):
-        user = self.series.study.patient.user
         patient = self.series.study.patient
         study = self.series.study
         series = self.series
-        return f"{user.id}/dicomp10/{patient.id}/studies/{study.id}/series/{series.id}/instances/{self.id}.dcm"
+        patient_dicomp10_s3_prefix = patient.get_dicomp10_s3_prefix()
+        return f"{patient_dicomp10_s3_prefix}/studies/{study.id}/series/{series.id}/instances/{self.id}.dcm"

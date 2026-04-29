@@ -65,3 +65,33 @@ def delete_s3_object(key: str) -> None:
         Bucket=settings.AWS_STORAGE_BUCKET_NAME,
         Key=key,
     )
+
+
+def delete_s3_prefix(prefix: str) -> int:
+    """Delete every object whose key starts with this prefix. Returns the number of objects removed."""
+    normalized = prefix.strip().lstrip("/")
+    if not normalized:
+        raise ValueError("prefix must be non-empty")
+
+    client = _s3_client()
+    bucket = settings.AWS_STORAGE_BUCKET_NAME
+    deleted = 0
+    paginator = client.get_paginator("list_objects_v2")
+    for page in paginator.paginate(Bucket=bucket, Prefix=normalized):
+        contents = page.get("Contents") or []
+        if not contents:
+            continue
+        objects = [{"Key": obj["Key"]} for obj in contents]
+        for i in range(0, len(objects), 1000):
+            batch = objects[i : i + 1000]
+            response = client.delete_objects(
+                Bucket=bucket,
+                Delete={"Objects": batch, "Quiet": True},
+            )
+            errors = response.get("Errors") or []
+            if errors:
+                raise S3ObjectDeletionError(
+                    f"Failed to delete {len(errors)} object(s) under prefix {normalized!r}: {errors!r}"
+                )
+            deleted += len(batch)
+    return deleted

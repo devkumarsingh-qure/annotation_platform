@@ -9,6 +9,7 @@ import PatientDetails from "./PatientDetails";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import type { PaginatedResponse } from "../../types/PaginatedResponse";
 import { DEFAULT_PAGE_SIZE } from "../../utils/constants";
+import Loading from "../Loading";
 
 function Home() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ function Home() {
     const { isFileUploadOpen } = useContext(ModalContext);
 
     const [isPatientsLoading, setIsPatientsLoading] = useState(true);
+    const [isPatientLoading, setIsPatientLoading] = useState(true);
     const [patients, setPatients] = useState<PaginatedResponse<Patient>>({
         current_page_number: 0,
         page_size: DEFAULT_PAGE_SIZE,
@@ -27,19 +29,20 @@ function Home() {
     const activePatient = patients.results.find((patient: Patient) => patient.id == patient_id);
 
     useEffect(() => {
-        fetchPatients().finally(() => {
+        fetchPatients(1).finally(() => {
             setIsPatientsLoading(false);
+            setIsPatientLoading(false);
         });
     }, []);
 
-    const fetchPatients = async () => {
+    const fetchPatients = async (page: number) => {
         const response = await apiClient.get(API_PATHS.PATIENTS({
-            page: patients.current_page_number + 1,
-            page_size: patients.page_size,
+            page,
+            page_size: DEFAULT_PAGE_SIZE,
         }));
         setPatients({
-            current_page_number: response.data.current_page_number,
-            page_size: response.data.page_size,
+            current_page_number: page,
+            page_size: DEFAULT_PAGE_SIZE,
             total_results: response.data.total_results,
             results: [...patients.results, ...response.data.results],
         });
@@ -69,6 +72,28 @@ function Home() {
         })
     }
 
+    const handleDeletePatient = async (patient_id: string) => {
+        setIsPatientLoading(true);
+        await apiClient.delete(API_PATHS.PATIENT(patient_id));
+        setPatients((prev) => {
+            return {
+                ...prev,
+                total_results: prev.total_results - 1,
+                results: prev.results.filter((patient: Patient) => patient.id != patient_id),
+            }
+        })
+        navigate(UI_PATHS.PATIENTS());
+        setIsPatientLoading(false);
+    }
+
+    const handleLoadMore = () => {
+        const nextPage = patients.current_page_number + 1;
+        const hasMore = nextPage <= Math.ceil(patients.total_results / DEFAULT_PAGE_SIZE);
+        if (hasMore) {
+            fetchPatients(nextPage);
+        }
+    }
+
     if (!patient_id) {
         const firstPatientId = patients.results[0]?.id;
         if (firstPatientId) {
@@ -86,12 +111,23 @@ function Home() {
                         totalPatients={patients.total_results}
                         activePatient={activePatient}
                         handlePatientClick={handlePatientClick}
-                        onLoadMore={fetchPatients}
+                        onLoadMore={handleLoadMore}
                     />
                 </div>
 
                 <div className="w-0 grow">
-                    {activePatient && <PatientDetails patient={activePatient} />}
+                    {activePatient && (
+                        isPatientLoading ? (
+                            <div className="h-full flex items-center justify-center">
+                                <Loading />
+                            </div>
+                        ) : (
+                            <PatientDetails
+                                patient={activePatient}
+                                handleDeletePatient={handleDeletePatient}
+                            />
+                        )
+                    )}
                 </div>
             </div>
             {isFileUploadOpen && (

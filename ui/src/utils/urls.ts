@@ -25,6 +25,9 @@ const API_PATHS = {
     }) => {
         return `/patients/?page=${page}&page_size=${page_size}`
     },
+    PATIENT: (patient_id: string) => {
+        return `/patients/${patient_id}/`
+    },
     STUDIES_FOR_PATIENT: (patient_id: string) => {
         return `/patients/${patient_id}/studies/`
     },

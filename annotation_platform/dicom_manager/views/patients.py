@@ -40,13 +40,39 @@ def get_patients(request):
 
     return Response(
         {
-            "current_page_number": page,
-            "page_size": page_size,
             "total_results": total_results,
             "results": paginated_patients,
         },
         status=status.HTTP_200_OK,
     )
+
+
+@api_view(["GET", "DELETE"])
+@permission_classes([IsAuthenticated])
+def patient_details(request, patient_id):
+    patient = Patient.objects.get(id=patient_id, user=request.user)
+    if patient is None:
+        return Response(
+            {"detail": "Patient not found"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    if request.method == "GET":
+        return Response(
+            {
+                "id": patient.id,
+                "PatientID": patient.PatientID,
+                "PatientName": patient.PatientName,
+                "PatientAge": patient.PatientAge,
+                "PatientSex": patient.PatientSex,
+                "created_at": patient.created_at,
+            },
+            status=status.HTTP_200_OK,
+        )
+    elif request.method == "DELETE":
+        patient.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    else:
+        return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(["GET"])

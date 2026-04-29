@@ -48,8 +48,10 @@ function PatientsList({
                         </div>
                     ) : (
                         patients.length === 0 ? (
-                            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-4 text-sm text-[var(--muted)]">
-                                No patients found.
+                            <div className="h-full flex items-center justify-center">
+                                <div className="text-sm text-[var(--muted)]">
+                                    No patients found
+                                </div>
                             </div>
                         ) : (
                             <div className="space-y-2">
@@ -83,16 +85,12 @@ function PatientsList({
                                                 </span>
                                             </div>
 
-                                            <div className="mt-3 grid grid-cols-2 gap-2">
+                                            <div className="mt-3 gap-2">
                                                 <div className="rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5">
                                                     <p className="text-[11px] text-[var(--muted)]">Age</p>
                                                     <p className="text-xs font-medium text-[var(--text)]">
                                                         {patient.PatientAge || "-"}
                                                     </p>
-                                                </div>
-                                                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5">
-                                                    <p className="text-[11px] text-[var(--muted)]">Internal Ref</p>
-                                                    <p className="text-xs font-medium text-[var(--text)]">{patient.id}</p>
                                                 </div>
                                             </div>
                                         </button>
