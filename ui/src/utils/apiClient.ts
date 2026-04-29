@@ -3,29 +3,39 @@ import { API_PATHS } from "./urls";
 
 const baseURL = import.meta.env.VITE_API_BASE_URL;
 
-/** Set from GET /csrf/; axios cannot read API-origin csrftoken cookies in cross-site setups. */
+const CSRF_UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
 let csrfToken: string | null = null;
+
+let inflightCsrf: Promise<void> | null = null;
+
+async function prefetchCsrfIfNeeded(): Promise<void> {
+    if (csrfToken) return;
+    if (!inflightCsrf) {
+        inflightCsrf = (async () => {
+            const { data } = await apiClient.get<{ csrfToken: string }>(API_PATHS.CSRF());
+            csrfToken = data.csrfToken;
+        })().finally(() => {
+            inflightCsrf = null;
+        });
+    }
+    return inflightCsrf;
+}
 
 const apiClient = axios.create({
     baseURL,
     withCredentials: true,
 });
 
-apiClient.interceptors.request.use((config) => {
-    if (csrfToken) {
+apiClient.interceptors.request.use(async (config) => {
+    const method = (config.method ?? "get").toUpperCase();
+    if (CSRF_UNSAFE_METHODS.has(method)) {
+        await prefetchCsrfIfNeeded();
+    }
+    if (csrfToken && CSRF_UNSAFE_METHODS.has(method)) {
         config.headers.set("X-CSRFToken", csrfToken);
     }
     return config;
 });
 
-/**
- * Fetches a CSRF token and primes the session cookie. Call on load and before login if needed.
- * Safe to call multiple times.
- */
-export async function ensureCsrfToken(): Promise<void> {
-    const { data } = await apiClient.get<{ csrfToken: string }>(API_PATHS.CSRF());
-    csrfToken = data.csrfToken;
-}
-
 export default apiClient;
-

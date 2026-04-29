@@ -1,53 +1,66 @@
-import json
-
-from django.http import JsonResponse
-from django.middleware.csrf import get_token
-from django.views.decorators.http import require_GET, require_POST
-from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth import authenticate, login, logout
+from django.middleware.csrf import get_token
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import ensure_csrf_cookie
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from .serializers import LoginSerializer
 
 
-@ensure_csrf_cookie
-@require_GET
-def csrf_cookie_view(request):
-    return JsonResponse({"csrfToken": get_token(request)})
+@method_decorator(ensure_csrf_cookie, name="dispatch")
+class CsrfCookieView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        return Response({"csrfToken": get_token(request)})
 
 
-@ensure_csrf_cookie
-@require_GET
-def me(request):
-    if request.user.is_authenticated:
-        return JsonResponse(
-            {
-                "is_authenticated": True,
-                "username": request.user.username,
-            }
+class MeView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            return Response(
+                {
+                    "is_authenticated": True,
+                    "username": request.user.username,
+                }
+            )
+        return Response(
+            {"is_authenticated": False}, status=status.HTTP_401_UNAUTHORIZED
         )
-    return JsonResponse({"is_authenticated": False}, status=401)
 
 
-@require_POST
-def login_view(request):
-    try:
-        payload = json.loads(request.body.decode("utf-8")) if request.body else {}
-    except json.JSONDecodeError:
-        return JsonResponse({"detail": "Invalid JSON payload"}, status=400)
+class LoginView(APIView):
+    permission_classes = [AllowAny]
 
-    username = payload.get("username")
-    password = payload.get("password")
-    user = authenticate(request, username=username, password=password)
-    if user is not None:
-        login(request, user)
-        return JsonResponse(
-            {
-                "is_authenticated": True,
-                "username": request.user.username,
-            }
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        username = serializer.validated_data["username"]
+        password = serializer.validated_data["password"]
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return Response(
+                {
+                    "is_authenticated": True,
+                    "username": request.user.username,
+                }
+            )
+        return Response(
+            {"is_authenticated": False}, status=status.HTTP_401_UNAUTHORIZED
         )
-    return JsonResponse({"is_authenticated": False}, status=401)
 
 
-@require_GET
-def logout_view(request):
-    logout(request)
-    return JsonResponse({"is_authenticated": False})
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        logout(request)
+        return Response({"is_authenticated": False})
