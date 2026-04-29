@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 import { viteCommonjs } from '@originjs/vite-plugin-commonjs'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ command }) => ({
   plugins: [
     react(),
     tailwindcss(),
@@ -17,15 +17,19 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
-  resolve: {
-    alias: {
-      fs: "browserify-fs",
-      path: "path-browserify",
-      stream: "stream-browserify",
-      buffer: "buffer",
-      util: "util",
-      events: "events",
-      string_decoder: "string_decoder",
-    },
-  },
-})
+  ...(command !== "serve"
+    ? {
+        resolve: {
+          alias: {
+            fs: "browserify-fs",
+            path: "path-browserify",
+            stream: "stream-browserify",
+            buffer: "buffer",
+            util: "util",
+            events: "events",
+            string_decoder: "string_decoder",
+          },
+        },
+      }
+    : {}),
+}))

@@ -80,6 +80,9 @@ function AnnotationPanel({
     }
 
     const handleAnnotationDelete = (annotationUID: string) => {
+        if (!annotations) {
+            return;
+        }
         viewerProvider.annotationHandler.deleteAnnotationForActiveViewport({
             annotationUID,
         });
@@ -88,7 +91,7 @@ function AnnotationPanel({
     }
 
     const handleSaveAnnotations = async () => {
-        if (!activeAnnotationSetId) {
+        if (!activeAnnotationSetId || !annotations) {
             return;
         }
         setIsLoading(true);
