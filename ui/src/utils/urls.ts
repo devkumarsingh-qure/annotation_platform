@@ -14,8 +14,14 @@ const API_PATHS = {
     UPLOAD: () => {
         return "/upload/"
     },
-    PATIENTS: () => {
-        return "/patients/"
+    PATIENTS: ({
+        page,
+        page_size
+    }: {
+        page: number;
+        page_size: number;
+    }) => {
+        return `/patients/?page=${page}&page_size=${page_size}`
     },
     STUDIES_FOR_PATIENT: (patient_id: string) => {
         return `/patients/${patient_id}/studies/`
