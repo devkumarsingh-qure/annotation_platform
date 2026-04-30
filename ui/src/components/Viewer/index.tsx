@@ -8,6 +8,7 @@ import AnnotationPanel from "./AnnotationPanel/index.tsx";
 import { VIEWER_MODES } from "../../utils/constants.ts";
 import SeriesPanel from "./SeriesPanel/index.tsx";
 import MetadataExplorer from "./MetadataExplorer/index.tsx";
+import Loading from "../Loading/index.tsx";
 
 function ViewerComponent() {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ function ViewerComponent() {
     const mode = searchParams.get("mode");
 
     const [isViewerInitialized, setIsViewerInitialized] = useState(false);
+    const [isSeriesLoading, setIsSeriesLoading] = useState(true);
     const [series, setSeries] = useState<Series | null>(null);
     const [isMetadataExplorerOpen, setIsMetadataExplorerOpen] = useState(false);
 
@@ -23,6 +25,7 @@ function ViewerComponent() {
         if (!patient_id || !study_id || !series_id) {
             return;
         }
+        setIsSeriesLoading(true);
         apiClient
             .get(API_PATHS.SERIES(patient_id, study_id, series_id))
             .then((response) => {
@@ -30,6 +33,9 @@ function ViewerComponent() {
             })
             .catch((error) => {
                 console.error(error);
+            })
+            .finally(() => {
+                setIsSeriesLoading(false);
             });
     }, [patient_id, study_id, series_id]);
 
@@ -67,13 +73,21 @@ function ViewerComponent() {
 
     return (
         <div className="flex h-full">
-            <div className="flex flex-col h-full w-0 grow shrink">
+            <div className="relative flex flex-col h-full w-0 grow shrink">
                 <div className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
                     <Toolbar />
                 </div>
                 <div className="grow flex bg-black">
                     <Viewer onInitialized={handleViewerInitialized} />
                 </div>
+
+                {
+                    isSeriesLoading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                            <Loading size="lg" />
+                        </div>
+                    )
+                }
             </div>
 
             <div className="w-1/4">
