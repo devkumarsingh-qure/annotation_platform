@@ -59,30 +59,28 @@ function SeriesPanel({
 
     return (
         <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-l border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px]">
-            <header className="shrink-0 border-b border-[var(--border)] px-2 py-3 sm:px-3">
-                <div className="flex items-center gap-2">
-                    <h1 className="min-w-0 font-semibold tracking-tight text-[var(--text)]">
-                        Studies
-                    </h1>
-                    {
-                        !isLoading && (
-                            <>
-                                <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                                    {studies.length}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={onOpenMetadataExplorer}
-                                    title="DICOM metadata"
-                                    aria-label="Open DICOM metadata explorer"
-                                    className="flex ml-auto h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--accent)]/50 hover:bg-[var(--accent-soft)]/50 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
-                                >
-                                    <MetadataExplorerIcon className="size-4" />
-                                </button>
-                            </>
-                        )
-                    }
-                </div>
+            <header className="flex items-center gap-2 h-14.5 px-3 shrink-0 border-b border-[var(--border)]">
+                <h1 className="min-w-0 font-semibold tracking-tight text-[var(--text)]">
+                    Studies
+                </h1>
+                {
+                    !isLoading && (
+                        <div className="grow ml-auto flex items-center justify-between">
+                            <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                                {studies.length}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={onOpenMetadataExplorer}
+                                title="DICOM metadata"
+                                aria-label="Open DICOM metadata explorer"
+                                className="flex ml-auto h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--accent)]/50 hover:bg-[var(--accent-soft)]/50 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
+                            >
+                                <MetadataExplorerIcon className="size-4" />
+                            </button>
+                        </div>
+                    )
+                }
             </header>
 
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-2">

@@ -15,7 +15,7 @@ function AnnotationSet({
 
 }) {
     return (
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] shadow-sm">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-strong)] shadow-sm">
             <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-y-contain px-1 py-2">
                 {annotations.length === 0 ? (
                     <div className="flex min-h-[8rem] flex-col items-center justify-center gap-1 px-4 py-8 text-center">
