@@ -56,11 +56,13 @@ function PatientDetails({
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-3">
-                        <p className="text-xs text-[var(--muted)]">Patient ID</p>
-                        <p className="font-medium text-[var(--text)]">{patient.PatientID || "-"}</p>
+                    <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-2">
+                        <div>
+                            <p className="text-xs text-[var(--muted)]">Patient ID</p>
+                            <p className="font-medium text-[var(--text)]">{patient.PatientID || "-"}</p>
+                        </div>
                     </div>
-                    <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+                    <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-2">
                         <div>
                             <p className="text-xs text-[var(--muted)]">Sex</p>
                             <p className="font-medium text-[var(--text)]">{patient.PatientSex || "N/A"}</p>
