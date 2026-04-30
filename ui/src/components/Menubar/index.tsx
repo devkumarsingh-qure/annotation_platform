@@ -16,7 +16,7 @@ function Menubar({ children }: { children: React.ReactNode }) {
             <div className="relative h-14 z-30 shrink-0 flex items-center border-b border-[var(--border)] bg-[color:var(--surface)]/85 px-4 backdrop-blur-[12px]">
                 <h1 className="space-x-2 text-[var(--text)]">
                     <span className="text-xl font-bold tracking-tight">
-                        AnnotationPlatform
+                        Platform
                     </span>
                     <span className="text-xs font-medium text-[var(--muted)]">
                         by Dev
