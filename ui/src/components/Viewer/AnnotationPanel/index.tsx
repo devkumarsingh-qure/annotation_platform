@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { Annotation, AnnotationSetType } from "../../../types/Viewer";
+import type { Annotation, AnnotationSetsType } from "../../../types/Viewer";
 import apiClient from "../../../utils/apiClient";
 import { API_PATHS } from "../../../utils/urls";
 import AnnotationSets from "./AnnotationSets";
@@ -8,6 +8,8 @@ import validateAnnotationsJSON from "./utils/validateAnnotationsJSON";
 
 import { viewerProvider } from "@qureai/react-dicom-viewer";
 import AnnotationSet from "./AnnotationSet";
+import { NEW_ANNOTATION_SET_ID } from "../../../utils/constants";
+
 function AnnotationPanel({
     patient_id,
     study_id,
@@ -18,8 +20,8 @@ function AnnotationPanel({
     series_id: string;
 }) {
     const [isLoading, setIsLoading] = useState(true);
-    const [annotationSets, setAnnotationSets] = useState<AnnotationSetType[]>([]);
-    const [annotations, setAnnotations] = useState<Annotation[]>();
+    const [annotationSets, setAnnotationSets] = useState<AnnotationSetsType | null>(null);
+    const [annotations, setAnnotations] = useState<Annotation[] | null>(null);
     const [activeAnnotationSetId, setActiveAnnotationSetId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -35,8 +37,17 @@ function AnnotationPanel({
         setIsLoading(false);
     }
 
+    const fetchAnnotations = async (annotationSetId: string) => {
+        const { data: { url } } = await apiClient.get(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
+        const annotations = await (await fetch(url)).json();
+        const isValid = validateAnnotationsJSON(annotations);
+        if (!isValid) {
+            return;
+        }
+        return annotations;
+    }
+
     const startAddingAnnotations = () => {
-        setAnnotations([]);
         viewerProvider.annotationHandler.startAddingAnnotation({
             callback: () => {
                 const annotations =
@@ -50,7 +61,7 @@ function AnnotationPanel({
     const stopAddingAnnotations = () => {
         viewerProvider.annotationHandler.removeAllAnnotations();
         viewerProvider.annotationHandler.stopAddingAnnotation();
-        setAnnotations(undefined);
+        setAnnotations(null);
     }
 
     const handleAnnotationSetClick = async (annotationSetId: string) => {
@@ -58,20 +69,16 @@ function AnnotationPanel({
         viewerProvider.annotationHandler.removeAllAnnotations();
         startAddingAnnotations();
         setIsLoading(true);
-        const { data: { url } } = await apiClient.get(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
-        const annotations = await (await fetch(url)).json();
-        const isValid = validateAnnotationsJSON(annotations);
-        if (!isValid) {
-            return;
-        }
+        const annotations = await fetchAnnotations(annotationSetId);
         const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(annotations)
         setAnnotations(addedAnnotations ?? []);
         setIsLoading(false);
     }
 
     const handleAddNewAnnotationSetClick = () => {
+        setAnnotations([]);
         startAddingAnnotations();
-        setActiveAnnotationSetId("new-annotation-set");
+        setActiveAnnotationSetId(NEW_ANNOTATION_SET_ID);
     }
 
     const handleCancelAddingAnnotationSet = () => {
@@ -107,10 +114,63 @@ function AnnotationPanel({
         await fetchAnnotationSets();
     }
 
-    const handleDeleteAnnotationSet = async(annotationSetId: string) => {
-        setIsLoading(true);
+    const handleDeleteAnnotationSet = async (annotationSetId: string) => {
         await apiClient.delete(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
         await fetchAnnotationSets();
+    }
+
+    const handleDownloadAnnotationSet = async (annotationSetId: string) => {
+        const PatientID = annotationSets.PatientID;
+        const StudyInstanceUID = annotationSets.StudyInstanceUID;
+        const SeriesInstanceUID = annotationSets.SeriesInstanceUID;
+
+        const annotations = await fetchAnnotations(annotationSetId);
+
+        const exportData = {
+            PatientID,
+            StudyInstanceUID,
+            SeriesInstanceUID,
+            exportedAt: new Date().toISOString(),
+            annotations: annotations.map(annotation => ({
+                toolName: annotation.toolName,
+                sliceIndex: annotation.sliceIndex,
+                points: annotation.points,
+            })),
+        };
+
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `annotations_${PatientID}_${StudyInstanceUID.slice(0, 8)}_${SeriesInstanceUID.slice(0, 8)}_${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    const handleUploadAnnotationSet = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) {
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const json = JSON.parse(e.target?.result as string);
+                const isValid = validateAnnotationsJSON(json.annotations);
+                if (isValid) {
+                    const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(json.annotations)
+                    setAnnotations([...(addedAnnotations || []), ...annotations]);
+                } else {
+                    throw new Error("Invalid annotation file");
+                }
+            } catch (error) {
+                console.error("Error parsing annotation file", error);
+            }
+        }
+        reader.readAsText(file);
     }
 
     return (
@@ -122,33 +182,35 @@ function AnnotationPanel({
                 {
                     !isLoading && (
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted)]">
-                            {annotationSets.length}
+                            {annotationSets.annotationSets.length}
                         </span>
                     )
                 }
             </header>
 
-            <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">
-                {isLoading ? (
-                    <div className="h-full">
-                        <Loading size="lg" />
-                    </div>
-                ) : annotations ? (
+            <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">
+                {annotations ? (
                     <AnnotationSet
                         annotations={annotations}
                         handleSaveAnnotations={handleSaveAnnotations}
                         handleCancelAddingAnnotationSet={handleCancelAddingAnnotationSet}
                         handleAnnotationDelete={handleAnnotationDelete}
+                        handleUploadAnnotationSet={handleUploadAnnotationSet}
                     />
                 ) : (
                     <AnnotationSets
                         annotationSets={annotationSets}
                         handleAddNewAnnotationSetClick={handleAddNewAnnotationSetClick}
                         handleAnnotationSetClick={handleAnnotationSetClick}
+                        handleDownloadAnnotationSet={handleDownloadAnnotationSet}
                         handleDeleteAnnotationSet={handleDeleteAnnotationSet}
                     />
-                )
-                }
+                )}
+                {isLoading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                        <Loading size="lg" />
+                    </div>
+                )}
             </div>
         </aside>
     )

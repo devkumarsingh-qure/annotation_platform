@@ -18,6 +18,8 @@ export type Study = {
 
 export type Series = {
     id: string;
+    PatientID: string;
+    StudyInstanceUID: string;
     SeriesInstanceUID: string;
     SeriesDescription: string;
     SeriesNumber: string;

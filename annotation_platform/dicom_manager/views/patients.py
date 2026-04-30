@@ -162,6 +162,8 @@ def get_series(request, patient_id, study_id, series_id):
     return Response(
         {
             "id": series.id,
+            "PatientID": patient.PatientID,
+            "StudyInstanceUID": study.StudyInstanceUID,
             "SeriesInstanceUID": series.SeriesInstanceUID,
             "SeriesDescription": series.SeriesDescription,
             "SeriesNumber": series.SeriesNumber,

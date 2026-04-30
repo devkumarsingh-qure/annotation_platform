@@ -24,11 +24,19 @@ def annotations_for_series(request, patient_id, study_id, series_id):
         return error_response
 
     if request.method == "GET":
-        data = [
+        PatientID = series.study.patient.PatientID
+        StudyInstanceUID = series.study.StudyInstanceUID
+        SeriesInstanceUID = series.SeriesInstanceUID
+        annotationSets = [
             annotation_set_payload(a)
             for a in AnnotationSet.objects.filter(series=series)
         ]
-        return Response(data, status=status.HTTP_200_OK)
+        return Response({
+            "PatientID": PatientID,
+            "StudyInstanceUID": StudyInstanceUID,
+            "SeriesInstanceUID": SeriesInstanceUID,
+            "annotationSets": annotationSets,
+        }, status=status.HTTP_200_OK)
     elif request.method == "POST":
         annotation_set_id = request.data.get("annotationSetId")
         annotations_json = request.data.get("annotations")
