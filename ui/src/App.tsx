@@ -16,7 +16,7 @@ try {
 
 export default function App() {
   return (
-    <div className="relative flex h-screen w-screen flex-col text-[var(--text)]">
+    <div className="relative flex h-screen w-screen flex-col text-[var(--text)] font-mono">
       <BrowserRouter>
         <AuthProvider>
           <ModalProvider>

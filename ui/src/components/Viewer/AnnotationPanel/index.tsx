@@ -107,7 +107,8 @@ function AnnotationPanel({
                 points: annotation.points,
             })),
         }
-        await apiClient.post(API_PATHS.ANNOTATIONS_FOR_SERIES(patient_id, study_id, series_id), data);
+        const { data: { id } } = await apiClient.post(API_PATHS.ANNOTATIONS_FOR_SERIES(patient_id, study_id, series_id), data);
+        setActiveAnnotationSetId(String(id));
         await fetchAnnotationSets();
     }
 
@@ -197,6 +198,7 @@ function AnnotationPanel({
             <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">
                 {annotations ? (
                     <AnnotationSet
+                        activeAnnotationSetId={activeAnnotationSetId}
                         annotations={annotations}
                         handleSaveAnnotations={handleSaveAnnotations}
                         handleCancelAddingAnnotationSet={handleCancelAddingAnnotationSet}
