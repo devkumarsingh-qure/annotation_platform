@@ -53,9 +53,6 @@ function PatientDetails({
                         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Patient</p>
                         <h2 className="text-xl font-semibold text-[var(--text)]">{patient.PatientName || "-"}</h2>
                     </div>
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-1 text-xs font-medium text-[var(--muted)]">
-                        {patient.PatientSex || "N/A"}
-                    </span>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
