@@ -37,12 +37,12 @@ function AnnotationPanel({
         setIsLoading(false);
     }
 
-    const fetchAnnotations = async (annotationSetId: string) => {
+    const fetchAnnotations = async (annotationSetId: string): Promise<Annotation[]> => {
         const { data: { url } } = await apiClient.get(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
         const annotations = await (await fetch(url)).json();
         const isValid = validateAnnotationsJSON(annotations);
         if (!isValid) {
-            return;
+            throw new Error("Invalid annotation file");
         }
         return annotations;
     }
@@ -120,11 +120,19 @@ function AnnotationPanel({
     }
 
     const handleDownloadAnnotationSet = async (annotationSetId: string) => {
+        if (!annotationSets) {
+            return;
+        }
+
         const PatientID = annotationSets.PatientID;
         const StudyInstanceUID = annotationSets.StudyInstanceUID;
         const SeriesInstanceUID = annotationSets.SeriesInstanceUID;
 
         const annotations = await fetchAnnotations(annotationSetId);
+
+        if (!annotations) {
+            return;
+        }
 
         const exportData = {
             PatientID,
@@ -162,7 +170,7 @@ function AnnotationPanel({
                 const isValid = validateAnnotationsJSON(json.annotations);
                 if (isValid) {
                     const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(json.annotations)
-                    setAnnotations([...(addedAnnotations || []), ...annotations]);
+                    setAnnotations(addedAnnotations || []);
                 } else {
                     throw new Error("Invalid annotation file");
                 }
@@ -182,7 +190,7 @@ function AnnotationPanel({
                 {
                     !isLoading && (
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted)]">
-                            {annotationSets.annotationSets.length}
+                            {annotationSets?.annotationSets.length}
                         </span>
                     )
                 }
