@@ -48,6 +48,7 @@ function AnnotationPanel({
     }
 
     const startAddingAnnotations = () => {
+        viewerProvider.annotationHandler.removeAllAnnotations();
         viewerProvider.annotationHandler.startAddingAnnotation({
             callback: () => {
                 const annotations =
@@ -56,12 +57,6 @@ function AnnotationPanel({
             },
             callbackTimeoutDelay: 1000,
         });
-    }
-
-    const stopAddingAnnotations = () => {
-        viewerProvider.annotationHandler.removeAllAnnotations();
-        viewerProvider.annotationHandler.stopAddingAnnotation();
-        setAnnotations(null);
     }
 
     const handleAnnotationSetClick = async (annotationSetId: string) => {
@@ -82,7 +77,9 @@ function AnnotationPanel({
     }
 
     const handleCancelAddingAnnotationSet = () => {
-        stopAddingAnnotations();
+        viewerProvider.annotationHandler.removeAllAnnotations();
+        viewerProvider.annotationHandler.stopAddingAnnotation();
+        setAnnotations(null);
         setActiveAnnotationSetId(null);
     }
 
@@ -169,6 +166,7 @@ function AnnotationPanel({
                 const json = JSON.parse(e.target?.result as string);
                 const isValid = validateAnnotationsJSON(json.annotations);
                 if (isValid) {
+                    viewerProvider.annotationHandler.removeAllAnnotations();
                     const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(json.annotations)
                     setAnnotations(addedAnnotations || []);
                 } else {
