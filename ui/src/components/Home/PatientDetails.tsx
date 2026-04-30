@@ -28,16 +28,6 @@ function PatientDetails({
         return date.toLocaleString();
     };
 
-    const shortValue = (value: string, maxLength = 48) => {
-        if (!value) {
-            return "-";
-        }
-        if (value.length <= maxLength) {
-            return value;
-        }
-        return `${value.slice(0, maxLength)}...`;
-    };
-
     useEffect(() => {
         setIsStudiesLoading(true);
         apiClient
@@ -73,19 +63,25 @@ function PatientDetails({
                         <p className="text-xs text-[var(--muted)]">Patient ID</p>
                         <p className="font-medium text-[var(--text)]">{patient.PatientID || "-"}</p>
                     </div>
-                    <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] p-3">
-                        <p className="text-xs text-[var(--muted)]">Age</p>
-                        <p className="font-medium text-[var(--text)]">{patient.PatientAge || "-"}</p>
+                    <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-3">
+                        <div>
+                            <p className="text-xs text-[var(--muted)]">Sex</p>
+                            <p className="font-medium text-[var(--text)]">{patient.PatientSex || "N/A"}</p>
+                        </div>
+                        <div>
+                            <p className="text-xs text-[var(--muted)]">Age</p>
+                            <p className="font-medium text-[var(--text)]">{patient.PatientAge || "-"}</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="mx-3 flex min-h-0 flex-1 flex-col">
-                <div className="mb-3 shrink-0 flex gap-2">
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Studies{!isStudiesLoading && ` (${studies.length})`}</h3>
+            <div className="mx-3 flex items-center justify-center min-h-0 flex-1 flex-col">
+                <div className="py-3 shrink-0 flex gap-2 border-t border-[var(--border)] pb-3 w-full">
+                    <h3 className="text-sm font-semibold uppercase text-center tracking-wide text-[var(--muted)]">Studies{!isStudiesLoading && ` (${studies.length})`}</h3>
                 </div>
 
-                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+                <div className="min-h-0 w-full flex-1 space-y-3 overflow-y-auto pr-1">
                     {
                         isStudiesLoading ? (
                             <div className="h-full">
@@ -95,16 +91,18 @@ function PatientDetails({
                             studies.map((study) => {
                                 return (
                                     <div key={study.id} className="rounded-xl border border-[var(--border)]/80 bg-[var(--surface-strong)]/60 p-3">
-                                        <div className="flex items-start justify-between gap-4">
-                                            <div>
+                                        <div className="grid grid-cols-12 gap-4">
+                                            <div className="col-span-10">
                                                 <p className="text-xs text-[var(--muted)]">Study UID</p>
-                                                <h4 className="text-sm font-medium text-[var(--text)]">
-                                                    {shortValue(study.StudyInstanceUID)}
+                                                <h4 className="text-sm font-medium text-[var(--text)] truncate">
+                                                    {study.StudyInstanceUID}
                                                 </h4>
                                             </div>
-                                            <span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent-soft)]/60 px-2.5 py-1 text-xs font-medium text-[var(--accent)]">
-                                                {study.series.length} series
-                                            </span>
+                                            <div className="col-span-2 flex items-center justify-end">
+                                                <span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent-soft)]/60 px-2.5 py-1 text-xs font-medium text-[var(--accent)]">
+                                                    {study.series.length} series
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
@@ -146,7 +144,7 @@ function PatientDetails({
                                                                                 Description: {series.SeriesDescription || "-"}
                                                                             </p>
                                                                             <p className="text-xs text-[var(--muted)]">
-                                                                                UID: {shortValue(series.SeriesInstanceUID, 36)}
+                                                                                UID: {series.SeriesInstanceUID}
                                                                             </p>
                                                                         </div>
 

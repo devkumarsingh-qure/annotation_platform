@@ -80,17 +80,22 @@ function PatientsList({
                                                     </p>
                                                     <p className="text-xs text-[var(--muted)]">ID: {patient.PatientID || "-"}</p>
                                                 </div>
-                                                <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted)]">
-                                                    {patient.PatientSex || "N/A"}
-                                                </span>
                                             </div>
 
                                             <div className="mt-3 gap-2">
-                                                <div className="rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5">
-                                                    <p className="text-[11px] text-[var(--muted)]">Age</p>
-                                                    <p className="text-xs font-medium text-[var(--text)]">
-                                                        {patient.PatientAge || "-"}
-                                                    </p>
+                                                <div className="rounded-md flex items-center gap-3 border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-1.5">
+                                                    <div>
+                                                        <p className="text-[11px] text-[var(--muted)]">Sex</p>
+                                                        <p className="text-xs font-medium text-[var(--text)]">
+                                                            {patient.PatientSex || "N/A"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[11px] text-[var(--muted)]">Age</p>
+                                                        <p className="text-xs font-medium text-[var(--text)]">
+                                                            {patient.PatientAge || "-"}
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </button>

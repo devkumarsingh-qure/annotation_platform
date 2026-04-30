@@ -104,7 +104,7 @@ function Home() {
     return (
         <>
             <div className="flex h-full min-h-0 w-full gap-4 p-4">
-                <div className="w-1/3">
+                <div className="w-1/4">
                     <PatientsList
                         isPatientsLoading={isPatientsLoading}
                         patients={patients.results}
