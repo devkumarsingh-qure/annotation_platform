@@ -27,6 +27,7 @@ function FileUpload({
     const { setIsFileUploadOpen } = useContext(ModalContext);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileListScrollRef = useRef<HTMLDivElement>(null);
     const fileRowRefs = useRef<Record<string, HTMLElement | null>>({});
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -63,10 +64,11 @@ function FileUpload({
     useEffect(() => {
         if (!latestCompletedFileKey) return;
         const frame = requestAnimationFrame(() => {
-            fileRowRefs.current[latestCompletedFileKey]?.scrollIntoView({
-                block: "nearest",
-                behavior: "smooth",
-            });
+            const list = fileListScrollRef.current;
+            const row = fileRowRefs.current[latestCompletedFileKey];
+            if (!list || !row) return;
+            const delta = row.getBoundingClientRect().top - list.getBoundingClientRect().top;
+            list.scrollTo({ top: list.scrollTop + delta, behavior: "smooth" });
         });
         return () => cancelAnimationFrame(frame);
     }, [latestCompletedFileKey]);
@@ -223,6 +225,7 @@ function FileUpload({
 
                             <div className="flex min-h-0 flex-1 flex-col px-4 py-3">
                                 <div
+                                    ref={fileListScrollRef}
                                     className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain rounded-lg border border-[var(--border)] bg-[var(--surface-soft)]"
                                     role="list"
                                 >

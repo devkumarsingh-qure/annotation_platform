@@ -56,8 +56,8 @@ function PatientDetails({
     }
 
     return (
-        <div className="flex h-full space-y-3 pt-3 min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]">
-            <div className="mx-3 shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3">
+        <div className="flex h-full pt-3 min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]">
+            <div className="mx-3 mb-3 shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3">
                 <div className="flex w-full items-start justify-between gap-4">
                     <div className="min-w-0 flex-1">
                         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">
@@ -102,7 +102,7 @@ function PatientDetails({
                                 <h3 className="text-sm font-semibold uppercase text-center tracking-wide text-[var(--muted)]">Studies{!isStudiesLoading && ` (${studies.length})`}</h3>
                             </div>
 
-                            <div className="min-h-0 w-full flex-1 space-y-3 overflow-y-auto rounded-xl border border-[var(--border)]/80 bg-[var(--surface-strong)]/60 p-3">
+                            <div className="min-h-0 w-full flex-1 space-y-3 pb-3 overflow-y-auto">
                                 {
                                     isStudiesLoading ? (
                                         <div className="h-full">
@@ -111,7 +111,7 @@ function PatientDetails({
                                     ) : (
                                         studies.map((study) => {
                                             return (
-                                                <div key={study.id} className="">
+                                                <div key={study.id} className="rounded-xl border border-[var(--border)]/80 bg-[var(--surface-strong)] p-3 shadow-sm">
                                                     <div className="grid grid-cols-12 gap-4">
                                                         <div className="col-span-10">
                                                             <p className="text-xs text-[var(--muted)]">Study UID</p>
