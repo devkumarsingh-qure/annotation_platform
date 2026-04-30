@@ -48,7 +48,7 @@ function ViewerComponent() {
         const imageIds: string[] = [];
         for (const instance of series.instances) {
             const imageIdBase = `wadouri:${instance.url_p10}`;
-            const numberOfFrames = parseInt(instance.NumberOfFrames);
+            const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
             for (let i = 1; i < numberOfFrames + 1; i++) {
                 const ImageId = `${imageIdBase}&frame=${i}`;
                 imageIds.push(ImageId);
