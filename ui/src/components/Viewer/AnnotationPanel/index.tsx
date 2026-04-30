@@ -182,13 +182,13 @@ function AnnotationPanel({
 
     return (
         <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
-            <header className="shrink-0 h-14.5 border-b border-[var(--border)] bg-[var(--surface-strong)] px-4 py-4 flex items-center justify-between">
+            <header className="shrink-0 h-14.5 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3 flex items-center justify-between space-x-2">
                 <h1 className="font-semibold uppercase tracking-tight text-[var(--text)]">
                     Annotations
                 </h1>
                 {
                     !isLoading && (
-                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[11px] font-medium text-[var(--muted)]">
+                        <span className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] text-[11px] font-medium text-[var(--muted)]">
                             {annotationSets?.annotationSets.length}
                         </span>
                     )

@@ -26,19 +26,29 @@ function AnnotationSet({
 
     return (
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-strong)] shadow-sm">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-2">
+            <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-y-contain">
                 {
                     activeAnnotationSetId && (
-                        <div className="mx-2 mb-2 pr-5 rounded-lg flex items-center justify-between border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2">
-                            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-                                Annotation set ID
-                            </p>
-                            <p
-                                className="mt-1 truncate font-mono text-xs font-medium text-[var(--text)]"
-                                title={activeAnnotationSetId}
-                            >
-                                {activeAnnotationSetId}
-                            </p>
+                        <div className="sticky top-0 z-10 mb-2 flex flex-wrap items-start justify-between gap-x-6 gap-y-2 border-b border-[var(--border)] bg-gradient-to-b from-[var(--surface-strong)] to-[var(--surface-soft)] p-3 text-[12px]">
+                            <div className="min-w-0 flex-1 text-right">
+                                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                                    Annotation set ID
+                                </p>
+                                <p
+                                    className="mt-0.5 truncate font-mono text-xs font-medium text-[var(--text)]"
+                                    title={activeAnnotationSetId}
+                                >
+                                    {activeAnnotationSetId}
+                                </p>
+                            </div>
+                            <div className="shrink-0 text-right">
+                                <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                                    Total annotations
+                                </p>
+                                <p className="mt-0.5 text-xs font-semibold tabular-nums text-[var(--text)]">
+                                    {annotations.length}
+                                </p>
+                            </div>
                         </div>
                     )
                 }
@@ -50,25 +60,22 @@ function AnnotationSet({
                         </p>
                     </div>
                 ) : (
-                    annotations.map((annotation) => (
-                        <React.Fragment key={annotation.annotationUID}>
-                            <AnnotationItem
-                                annotation={annotation}
-                                handleAnnotationDelete={handleAnnotationDelete}
-                            />
-                        </React.Fragment>
-                    ))
+                    <div>
+                        {
+                            annotations.map((annotation) => (
+                                <React.Fragment key={annotation.annotationUID}>
+                                    <AnnotationItem
+                                        annotation={annotation}
+                                        handleAnnotationDelete={handleAnnotationDelete}
+                                    />
+                                </React.Fragment>
+                            ))
+                        }
+                    </div>
                 )}
             </div>
             <footer className="shrink-0 space-y-2 border-t border-[var(--border)] bg-[var(--surface-soft)] px-2 py-2.5">
-                <div className="sticky top-2 flex items-center justify-between rounded-lg border border-[var(--accent)]/30 bg-gradient-to-r from-[var(--accent-soft)]/70 to-[var(--surface-strong)] px-3 py-2 shadow-sm">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--text)]/85">
-                        Annotations
-                    </p>
-                    <p className="flex items-center justify-center rounded-md border border-[var(--accent)]/25 bg-[var(--accent)]/15 px-2 py-0.5 text-sm font-semibold text-[var(--accent)]">
-                        {annotations.length}
-                    </p>
-                </div>
+
                 <button
                     type="button"
                     className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/35 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-soft)]"
