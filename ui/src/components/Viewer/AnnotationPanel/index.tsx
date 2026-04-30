@@ -131,7 +131,7 @@ function AnnotationPanel({
             <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden m-3 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)]">
                 {isLoading ? (
                     <div className="h-full">
-                        <Loading />
+                        <Loading size={8} />
                     </div>
                 ) : annotations ? (
                     <AnnotationSet

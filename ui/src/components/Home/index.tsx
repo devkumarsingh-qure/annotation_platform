@@ -119,7 +119,7 @@ function Home() {
                     {activePatient && (
                         isPatientLoading ? (
                             <div className="h-full flex items-center justify-center">
-                                <Loading />
+                                <Loading size={8} />
                             </div>
                         ) : (
                             <PatientDetails

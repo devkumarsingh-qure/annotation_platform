@@ -7,6 +7,7 @@ import { API_PATHS } from "../../../utils/urls";
 import apiClient from "../../../utils/apiClient";
 import classNames from "classnames";
 import type { Patient } from "../../../types/Patient";
+import Loading from "../../Loading";
 
 function formatMb(bytes: number) {
     return (bytes / 1024 / 1024).toFixed(2);
@@ -32,12 +33,24 @@ function FileUpload({
         [selectedFiles]
     );
 
+    const { successCount, failedCount } = useMemo(() => {
+        let ok = 0;
+        let bad = 0;
+        for (const f of selectedFiles) {
+            const st = uploadFileStatuses[f.name];
+            if (st?.success === true) ok += 1;
+            else if (st?.success === false) bad += 1;
+        }
+        return { successCount: ok, failedCount: bad };
+    }, [selectedFiles, uploadFileStatuses]);
+
     const handleSelectFiles = () => {
         fileInputRef.current?.click();
     };
 
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSelectedFiles(Array.from(e.target.files || []));
+        setUploadFileStatuses({});
         e.target.value = "";
     };
 
@@ -52,7 +65,8 @@ function FileUpload({
             setUploadFileStatuses((prev) => ({ ...prev, ...batchStatuses }));
             onBatchUploadComplete(batchStatuses);
         }
-        setIsUploading(false);;
+        setIsUploading(false);
+        close();
     };
 
     const uploadFiles = async (files: File[]) => {
@@ -67,6 +81,7 @@ function FileUpload({
     const clearSelection = () => {
         if (isUploading) return;
         setSelectedFiles([]);
+        setUploadFileStatuses({});
     }
 
     const close = () => {
@@ -79,7 +94,7 @@ function FileUpload({
             <Backdrop onClick={close} />
 
             <div
-                className="absolute top-1/2 left-1/2 z-50 flex w-[min(92vw,28rem)] max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
+                className="absolute top-1/2 left-1/2 z-50 flex w-1/2 max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
                 role="dialog"
                 aria-labelledby="file-upload-title"
                 aria-modal="true"
@@ -106,16 +121,76 @@ function FileUpload({
                                     Summary
                                 </p>
                                 <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2.5">
-                                    <p className="text-sm text-[var(--muted)]">
-                                        <span className="font-medium tabular-nums text-[var(--text)]">
-                                            {selectedFiles.length}
-                                        </span>
-                                        {" file"}
-                                        {selectedFiles.length === 1 ? "" : "s"}
-                                        {" · "}
-                                        <span className="tabular-nums text-[var(--text)]">{formatMb(totalBytes)}</span>
-                                        {" MB total"}
-                                    </p>
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div>
+                                            <p className="text-sm text-[var(--muted)]">
+                                                <span className="font-medium tabular-nums text-[var(--text)]">
+                                                    {selectedFiles.length}
+                                                </span>
+                                                {" file"}
+                                                {selectedFiles.length === 1 ? "" : "s"}
+                                                {" · "}
+                                                <span className="tabular-nums text-[var(--text)]">{formatMb(totalBytes)}</span>
+                                                {" MB total"}
+                                            </p>
+                                        </div>
+                                        {
+                                            isUploading && (
+                                                <div className="flex shrink-0 items-center justify-end gap-4 text-right">
+                                                    <div>
+                                                        <Loading size={4} />
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-sm text-[var(--muted)]">
+                                                            <span className="font-medium tabular-nums text-[color:var(--success)]">
+                                                                {successCount}
+                                                            </span>
+                                                            {" succeeded"}
+                                                            <span className="mx-1.5 text-[var(--border)]">·</span>
+                                                            <span className="font-medium tabular-nums text-[color:var(--danger)]">
+                                                                {failedCount}
+                                                            </span>
+                                                            {" failed"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    </div>
+                                    {isUploading && (
+                                        <div className="mt-3 space-y-1.5">
+                                            <div
+                                                className="h-2 w-full overflow-hidden rounded-full bg-[var(--border)]/80 ring-1 ring-inset ring-[var(--border)]/40"
+                                                role="progressbar"
+                                                aria-valuemin={0}
+                                                aria-valuemax={100}
+                                                aria-valuenow={Math.round(
+                                                    selectedFiles.length
+                                                        ? Math.min(
+                                                              100,
+                                                              ((successCount + failedCount) / selectedFiles.length) * 100
+                                                          )
+                                                        : 0
+                                                )}
+                                                aria-label="Upload progress"
+                                            >
+                                                <div
+                                                    className="h-full min-w-0 max-w-full rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] shadow-[0_0_12px_-2px_var(--accent)] transition-[width] duration-300 ease-out"
+                                                    style={{
+                                                        width: `${selectedFiles.length ? Math.min(100, ((successCount + failedCount) / selectedFiles.length) * 100) : 0}%`,
+                                                    }}
+                                                />
+                                            </div>
+                                            <p className="text-center text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">
+                                                <span className="tabular-nums text-[var(--text)]">
+                                                    {successCount + failedCount}
+                                                </span>
+                                                <span className="text-[var(--border)]"> / </span>
+                                                <span className="tabular-nums text-[var(--text)]">{selectedFiles.length}</span>
+                                                {" files processed"}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

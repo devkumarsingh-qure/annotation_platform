@@ -101,7 +101,7 @@ function PatientDetails({
                     {
                         isStudiesLoading ? (
                             <div className="h-full">
-                                <Loading />
+                                <Loading size={8} />
                             </div>
                         ) : (
                             studies.map((study) => {
