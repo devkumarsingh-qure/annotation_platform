@@ -74,7 +74,7 @@ function AnnotationSet({
                     className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-[var(--accent)]/35 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:brightness-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--surface-soft)]"
                     onClick={handleUploadAnnotationSetClick}
                 >
-                    <CloudUpIcon className="size-4 shrink-0" />
+                    <CloudUpIcon className="size-5 shrink-0" />
                     Upload
                 </button>
                 <input
