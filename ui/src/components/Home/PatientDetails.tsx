@@ -47,11 +47,13 @@ function PatientDetails({
         };
     }, [patient]);
 
-    const patientName = patient?.PatientName || "-";
-    const patientId = patient?.PatientID || "-";
-    const patientSex = patient?.PatientSex || "N/A";
-    const patientAge = patient?.PatientAge || "-";
-    const patientCreatedAt = formatDate(patient?.created_at || "-");
+    const patientDetails = {
+        PatientName: patient?.PatientName || "-",
+        PatientID: patient?.PatientID || "-",
+        PatientSex: patient?.PatientSex || "N/A",
+        PatientAge: patient?.PatientAge || "-",
+        CreatedAt: formatDate(patient?.created_at || "-"),
+    }
 
     return (
         <div className="flex h-full space-y-3 pt-3 min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]">
@@ -63,10 +65,10 @@ function PatientDetails({
                         </p>
                         <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
                             <h2 className="min-w-0 max-w-full truncate text-xl font-semibold leading-snug text-[var(--text)]">
-                                {patientName}
+                                {patientDetails.PatientName}
                             </h2>
                             <p className="shrink-0 text-xs tabular-nums leading-snug text-[var(--muted)]">
-                                {patientCreatedAt}
+                                {patientDetails.CreatedAt}
                             </p>
                         </div>
                     </div>
@@ -76,17 +78,17 @@ function PatientDetails({
                     <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-2">
                         <div>
                             <p className="text-xs text-[var(--muted)]">Patient ID</p>
-                            <p className="font-medium text-[var(--text)]">{patientId}</p>
+                            <p className="font-medium text-[var(--text)]">{patientDetails.PatientID}</p>
                         </div>
                     </div>
                     <div className="rounded-lg flex items-center gap-4 border border-[var(--border)] bg-[var(--surface-soft)] p-2">
                         <div>
                             <p className="text-xs text-[var(--muted)]">Sex</p>
-                            <p className="font-medium text-[var(--text)]">{patientSex}</p>
+                            <p className="font-medium text-[var(--text)]">{patientDetails.PatientSex}</p>
                         </div>
                         <div>
                             <p className="text-xs text-[var(--muted)]">Age</p>
-                            <p className="font-medium text-[var(--text)]">{patientAge}</p>
+                            <p className="font-medium text-[var(--text)]">{patientDetails.PatientAge}</p>
                         </div>
                     </div>
                 </div>
@@ -170,7 +172,7 @@ function PatientDetails({
                                                                                     <div className="inline-grid shrink-0 grid-cols-2 gap-2 self-center">
                                                                                         <Link
                                                                                             className="block w-full min-w-0"
-                                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patientId, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.VIEW } })}
+                                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.VIEW } })}
                                                                                             target="_blank"
                                                                                             rel="noopener noreferrer"
                                                                                         >
@@ -184,7 +186,7 @@ function PatientDetails({
                                                                                         </Link>
                                                                                         <Link
                                                                                             className="block w-full min-w-0"
-                                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patientId, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.ANNOTATE } })}
+                                                                                            to={UI_PATHS.VIEWER({ params: { patient_id: patient.id, study_id: study.id, series_id: series.id }, query: { mode: VIEWER_MODES.ANNOTATE } })}
                                                                                             target="_blank"
                                                                                             rel="noopener noreferrer"
                                                                                         >
@@ -217,7 +219,8 @@ function PatientDetails({
                                 type="button"
                                 className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
                                 onClick={() => {
-                                    handleDeletePatient(patientId);
+                                    if (!patient) return;
+                                    handleDeletePatient(patient.id);
                                 }}
                                 aria-label="Delete patient"
                             >
