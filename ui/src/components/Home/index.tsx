@@ -25,17 +25,28 @@ function Home() {
         total_results: 0,
         results: [],
     });
-
-    const activePatient = patients.results.find((patient: Patient) => patient.id == patient_id);
+    const [activePatient, setActivePatient] = useState<Patient | null>(null);
 
     useEffect(() => {
-        fetchPatients(1).finally(() => {
+        if (!patient_id) return;
+
+        fetchPatient(patient_id);
+    }, [patient_id]);
+
+    const fetchPatient = async (patient_id: string) => {
+        setIsPatientLoading(true);
+        const response = await apiClient.get(API_PATHS.PATIENT(patient_id));
+        setActivePatient(response.data);
+        setIsPatientLoading(false);
+    }
+
+    useEffect(() => {
+        fetchPatients(1, false).finally(() => {
             setIsPatientsLoading(false);
-            setIsPatientLoading(false);
         });
     }, []);
 
-    const fetchPatients = async (page: number) => {
+    const fetchPatients = async (page: number, append: boolean) => {
         const response = await apiClient.get(API_PATHS.PATIENTS({
             page,
             page_size: DEFAULT_PAGE_SIZE,
@@ -44,7 +55,7 @@ function Home() {
             current_page_number: page,
             page_size: DEFAULT_PAGE_SIZE,
             total_results: response.data.total_results,
-            results: [...patients.results, ...response.data.results],
+            results: append ? [...patients.results, ...response.data.results] : response.data.results,
         });
     }
 
@@ -90,7 +101,7 @@ function Home() {
         const nextPage = patients.current_page_number + 1;
         const hasMore = nextPage <= Math.ceil(patients.total_results / DEFAULT_PAGE_SIZE);
         if (hasMore) {
-            fetchPatients(nextPage);
+            fetchPatients(nextPage, true);
         }
     }
 
@@ -115,19 +126,18 @@ function Home() {
                     />
                 </div>
 
-                <div className="w-0 grow">
-                    {activePatient && (
-                        isPatientLoading ? (
-                            <div className="h-full flex items-center justify-center">
+                <div className="relative w-0 grow">
+                    <PatientDetails
+                        patient={activePatient}
+                        handleDeletePatient={handleDeletePatient}
+                    />
+                    {
+                        isPatientLoading && (
+                            <div className="absolute inset-0 rounded-2xl flex items-center justify-center bg-black/25">
                                 <Loading size="lg" />
                             </div>
-                        ) : (
-                            <PatientDetails
-                                patient={activePatient}
-                                handleDeletePatient={handleDeletePatient}
-                            />
                         )
-                    )}
+                    }
                 </div>
             </div>
             {isFileUploadOpen && (

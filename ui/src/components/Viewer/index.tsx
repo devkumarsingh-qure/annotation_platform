@@ -45,7 +45,7 @@ function ViewerComponent() {
 
         series.instances.sort((a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber));
 
-        const imageIds = [];
+        const imageIds: string[] = [];
         for (const instance of series.instances) {
             const imageId = `wadouri:${instance.url_p10}`;
             imageIds.push(imageId);
