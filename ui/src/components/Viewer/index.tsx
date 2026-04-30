@@ -43,6 +43,8 @@ function ViewerComponent() {
         if (!isViewerInitialized) return;
         if (!series) return;
 
+        series.instances.sort((a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber));
+
         const imageIds = [];
         for (const instance of series.instances) {
             const imageId = `wadouri:${instance.url_p10}`;
