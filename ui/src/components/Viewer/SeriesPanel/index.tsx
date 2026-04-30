@@ -85,12 +85,8 @@ function SeriesPanel({
 
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-2">
                 {isLoading ? (
-                    <div className="flex min-h-[8rem] flex-1 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-strong)]/50">
+                    <div className="flex min-h-[8rem] flex-1 items-center justify-center">
                         <Loading size="lg" />
-                    </div>
-                ) : studies.length === 0 ? (
-                    <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-soft)]/60 px-3 py-6 text-center text-xs text-[var(--muted)]">
-                        No studies for this patient.
                     </div>
                 ) : (
                     <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overflow-x-hidden pr-0.5">

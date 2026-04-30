@@ -47,8 +47,12 @@ function ViewerComponent() {
 
         const imageIds: string[] = [];
         for (const instance of series.instances) {
-            const imageId = `wadouri:${instance.url_p10}`;
-            imageIds.push(imageId);
+            const imageIdBase = `wadouri:${instance.url_p10}`;
+            const numberOfFrames = parseInt(instance.NumberOfFrames);
+            for (let i = 1; i < numberOfFrames + 1; i++) {
+                const ImageId = `${imageIdBase}&frame=${i}`;
+                imageIds.push(ImageId);
+            }
         }
 
         viewerProvider.renderSeries({
