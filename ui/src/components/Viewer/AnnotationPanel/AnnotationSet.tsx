@@ -11,7 +11,7 @@ function AnnotationSet({
     handleAnnotationDelete,
     handleUploadAnnotationSet,
 }: {
-    activeAnnotationSetId: string;
+    activeAnnotationSetId: string | null;
     annotations: Annotation[];
     handleSaveAnnotations: () => void;
     handleCancelAddingAnnotationSet: () => void;
@@ -27,17 +27,21 @@ function AnnotationSet({
     return (
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-[var(--surface-strong)] shadow-sm">
             <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-2">
-                <div className="mx-2 mb-2 pr-5 rounded-lg flex items-center justify-between border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2">
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
-                        Annotation set ID
-                    </p>
-                    <p
-                        className="mt-1 truncate font-mono text-xs font-medium text-[var(--text)]"
-                        title={activeAnnotationSetId}
-                    >
-                        {activeAnnotationSetId}
-                    </p>
-                </div>
+                {
+                    activeAnnotationSetId && (
+                        <div className="mx-2 mb-2 pr-5 rounded-lg flex items-center justify-between border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2">
+                            <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                                Annotation set ID
+                            </p>
+                            <p
+                                className="mt-1 truncate font-mono text-xs font-medium text-[var(--text)]"
+                                title={activeAnnotationSetId}
+                            >
+                                {activeAnnotationSetId}
+                            </p>
+                        </div>
+                    )
+                }
                 {annotations.length === 0 ? (
                     <div className="flex min-h-[8rem] flex-col items-center justify-center gap-1 px-4 py-8 text-center">
                         <p className="text-sm font-medium text-[var(--muted)]">No annotations yet</p>
