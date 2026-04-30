@@ -88,7 +88,7 @@ function SeriesPanel({
             <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-2">
                 {isLoading ? (
                     <div className="flex min-h-[8rem] flex-1 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-strong)]/50">
-                        <Loading size={8} />
+                        <Loading size="lg" />
                     </div>
                 ) : studies.length === 0 ? (
                     <div className="rounded-lg border border-dashed border-[var(--border)] bg-[var(--surface-soft)]/60 px-3 py-6 text-center text-xs text-[var(--muted)]">
@@ -101,7 +101,6 @@ function SeriesPanel({
                                 key={study.id}
                                 className="overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)]/90 shadow-sm ring-1 ring-black/[0.03]"
                             >
-                                {/* Study metadata: accession + description equally prominent */}
                                 <div className="grid grid-cols-1 gap-px bg-[var(--border)]/60">
                                     <div className="bg-[var(--surface-strong)] px-2 py-2">
                                         <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">

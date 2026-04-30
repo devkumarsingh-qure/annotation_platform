@@ -56,8 +56,8 @@ function PatientDetails({
     }, [patient.id]);
 
     return (
-        <div className="flex h-full min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 backdrop-blur-[10px]">
-            <div className="shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3">
+        <div className="flex h-full space-y-3 pt-3 min-h-0 w-full flex-col rounded-2xl border border-[var(--border)] bg-[var(--surface)] backdrop-blur-[10px]">
+            <div className="mx-3 shrink-0 rounded-xl border border-[var(--border)] bg-[var(--surface-strong)] p-3">
                 <div className="flex items-center justify-between gap-4">
                     <div>
                         <p className="text-xs font-medium uppercase tracking-wide text-[var(--muted)]">Patient</p>
@@ -78,21 +78,9 @@ function PatientDetails({
                         <p className="font-medium text-[var(--text)]">{patient.PatientAge || "-"}</p>
                     </div>
                 </div>
-                <div className="pt-3 w-max ml-auto">
-                    <button
-                        type="button"
-                        className="flex w-full min-w-0 cursor-pointer items-center justify-center gap-1 rounded-md border border-[color:var(--danger)]/50 bg-gradient-to-br from-[color:var(--danger)] to-red-800 px-2.5 py-1 text-xs font-medium text-white transition hover:brightness-105"
-                        onClick={() => {
-                            handleDeletePatient(patient.id);
-                        }}
-                    >
-                        <TrashIcon className="size-3 shrink-0" />
-                        <span>Delete</span>
-                    </button>
-                </div>
             </div>
 
-            <div className="mt-5 flex min-h-0 flex-1 flex-col">
+            <div className="mx-3 flex min-h-0 flex-1 flex-col">
                 <div className="mb-3 shrink-0 flex gap-2">
                     <h3 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">Studies{!isStudiesLoading && ` (${studies.length})`}</h3>
                 </div>
@@ -101,7 +89,7 @@ function PatientDetails({
                     {
                         isStudiesLoading ? (
                             <div className="h-full">
-                                <Loading size={8} />
+                                <Loading size="lg" />
                             </div>
                         ) : (
                             studies.map((study) => {
@@ -206,6 +194,19 @@ function PatientDetails({
                         )
                     }
                 </div>
+            </div>
+            <div className="text-center shrink-0 border-t border-[var(--border)]/70 px-3 py-2">
+                <button
+                    type="button"
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-md px-1.5 py-1 text-[11px] font-medium text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+                    onClick={() => {
+                        handleDeletePatient(patient.id);
+                    }}
+                    aria-label="Delete patient"
+                >
+                    <TrashIcon className="size-3 shrink-0 opacity-60" />
+                    <span>Delete patient</span>
+                </button>
             </div>
         </div>
     );

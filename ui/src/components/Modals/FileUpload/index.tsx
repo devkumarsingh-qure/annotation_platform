@@ -138,7 +138,7 @@ function FileUpload({
                                             isUploading && (
                                                 <div className="flex shrink-0 items-center justify-end gap-4 text-right">
                                                     <div>
-                                                        <Loading size={4} />
+                                                        <Loading size="sm" />
                                                     </div>
                                                     <div>
                                                         <p className="text-sm text-[var(--muted)]">

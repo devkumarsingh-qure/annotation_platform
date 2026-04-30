@@ -44,7 +44,7 @@ function PatientsList({
                 {
                     isPatientsLoading ? (
                         <div className="h-full">
-                            <Loading size={8} />
+                            <Loading size="lg" />
                         </div>
                     ) : (
                         patients.length === 0 ? (
@@ -122,7 +122,7 @@ function PatientsList({
                                         }}
                                         className="h-[50px] text-xs text-[var(--muted)] flex items-center justify-center"
                                     >
-                                        <Loading size={8} />
+                                        <Loading size="md" />
                                     </div>
                                 )}
                             </div>

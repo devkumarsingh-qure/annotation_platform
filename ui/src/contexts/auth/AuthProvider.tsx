@@ -53,7 +53,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     }
 
     if (isLoading) {
-        return <Loading size={8} />;
+        return <Loading size="lg" />;
     }
 
     if (!user && location.pathname !== UI_PATHS.LOGIN()) {
