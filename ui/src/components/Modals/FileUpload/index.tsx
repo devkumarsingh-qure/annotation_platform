@@ -1,5 +1,5 @@
 import { ModalContext } from "../../../contexts/modal/modalContext";
-import { useContext, useMemo, useRef, useState, type ChangeEvent } from "react";
+import { useContext, useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import Backdrop from "../../Backdrop";
 import XIcon from "../../../icons/XIcon";
 import UploadIcon from "../../../icons/UploadIcon";
@@ -13,6 +13,10 @@ function formatMb(bytes: number) {
     return (bytes / 1024 / 1024).toFixed(2);
 }
 
+function fileRowKey(file: File) {
+    return `${file.name}-${file.size}-${file.lastModified}`;
+}
+
 const UPLOAD_BATCH_SIZE = 1;
 
 function FileUpload({
@@ -23,6 +27,7 @@ function FileUpload({
     const { setIsFileUploadOpen } = useContext(ModalContext);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const fileRowRefs = useRef<Record<string, HTMLElement | null>>({});
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [isUploading, setIsUploading] = useState(false);
@@ -43,6 +48,28 @@ function FileUpload({
         }
         return { successCount: ok, failedCount: bad };
     }, [selectedFiles, uploadFileStatuses]);
+
+    const latestCompletedFileKey = useMemo(() => {
+        for (let i = selectedFiles.length - 1; i >= 0; i -= 1) {
+            const f = selectedFiles[i];
+            const st = uploadFileStatuses[f.name];
+            if (st?.success === true || st?.success === false) {
+                return fileRowKey(f);
+            }
+        }
+        return null;
+    }, [selectedFiles, uploadFileStatuses]);
+
+    useEffect(() => {
+        if (!latestCompletedFileKey) return;
+        const frame = requestAnimationFrame(() => {
+            fileRowRefs.current[latestCompletedFileKey]?.scrollIntoView({
+                block: "nearest",
+                behavior: "smooth",
+            });
+        });
+        return () => cancelAnimationFrame(frame);
+    }, [latestCompletedFileKey]);
 
     const handleSelectFiles = () => {
         fileInputRef.current?.click();
@@ -200,27 +227,33 @@ function FileUpload({
                                     role="list"
                                 >
                                     <ul className="divide-y divide-[var(--border)]">
-                                        {selectedFiles.map((file) => (
-                                            <li
-                                                key={`${file.name}-${file.size}-${file.lastModified}`}
-                                                role="listitem"
-                                                className={classNames("flex items-center justify-between gap-3 px-3 py-2.5 first:pt-2.5 last:pb-2.5", {
-                                                    "bg-[color:var(--danger)]/20": uploadFileStatuses[file.name]?.success === false,
-                                                    "bg-[color:var(--success)]/20": uploadFileStatuses[file.name]?.success === true,
-                                                    "bg-[color:var(--warning)]/20": uploadFileStatuses[file.name]?.success === undefined,
-                                                })}
-                                            >
-                                                <span
-                                                    className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--text)]"
-                                                    title={file.name}
+                                        {selectedFiles.map((file) => {
+                                            const rowKey = fileRowKey(file);
+                                            return (
+                                                <li
+                                                    key={rowKey}
+                                                    ref={(el) => {
+                                                        fileRowRefs.current[rowKey] = el;
+                                                    }}
+                                                    role="listitem"
+                                                    className={classNames("flex items-center justify-between gap-3 px-3 py-2.5 first:pt-2.5 last:pb-2.5", {
+                                                        "bg-[color:var(--danger)]/20": uploadFileStatuses[file.name]?.success === false,
+                                                        "bg-[color:var(--success)]/20": uploadFileStatuses[file.name]?.success === true,
+                                                        "bg-[color:var(--warning)]/20": uploadFileStatuses[file.name]?.success === undefined,
+                                                    })}
                                                 >
-                                                    {file.name}
-                                                </span>
-                                                <span className="shrink-0 text-xs tabular-nums text-[var(--muted)]">
-                                                    {formatMb(file.size)} MB
-                                                </span>
-                                            </li>
-                                        ))}
+                                                    <span
+                                                        className="min-w-0 flex-1 truncate text-sm font-medium text-[var(--text)]"
+                                                        title={file.name}
+                                                    >
+                                                        {file.name}
+                                                    </span>
+                                                    <span className="shrink-0 text-xs tabular-nums text-[var(--muted)]">
+                                                        {formatMb(file.size)} MB
+                                                    </span>
+                                                </li>
+                                            );
+                                        })}
                                     </ul>
                                 </div>
                             </div>
