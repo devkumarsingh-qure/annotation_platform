@@ -19,7 +19,7 @@ function Profile() {
                 aria-haspopup="true"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <ProfileIcon className="size-10 stroke-1" />
+                <ProfileIcon className="size-6 stroke-1" />
             </button>
 
             {isOpen && (
