@@ -1,11 +1,34 @@
 export type Patient = {
     id: string;
     PatientID: string;
-    PatientName: string;
-    PatientAge: string;
-    PatientSex: string;
+    PatientName: string | null;
+    PatientAge: string | null;
+    PatientSex: string | null;
     created_at: string;
 }
+
+export type PatientSeriesRow = {
+    id: string | number;
+    SeriesInstanceUID: string;
+    SeriesDescription: string | null;
+    SeriesNumber: string | null;
+    Modality: string | null;
+    created_at: string;
+    total_instances: number;
+};
+
+export type PatientStudyRow = {
+    id: string | number;
+    StudyInstanceUID: string;
+    AccessionNumber: string | null;
+    StudyDescription: string | null;
+    created_at: string;
+    series: PatientSeriesRow[];
+};
+
+export type PatientDetail = Patient & {
+    studies: PatientStudyRow[];
+};
 
 export type Study = {
     id: string;

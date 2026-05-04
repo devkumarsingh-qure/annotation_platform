@@ -2,33 +2,34 @@ from django.urls import path
 
 from .views.annotations import annotation_set, annotations_for_series
 from .views.patients import (
-    get_patients,
-    get_series,
-    get_studies_for_patient,
-    patient_details,
+    PatientsViewSet,
+    SeriesViewSet,
 )
 
 urlpatterns = [
-    path("patients/", get_patients, name="get_patients"),
-    path("patients/<int:patient_id>/", patient_details, name="patient_details"),
     path(
-        "patients/<int:patient_id>/studies/",
-        get_studies_for_patient,
-        name="get_studies_for_patient",
+        "patients/",
+        PatientsViewSet.as_view({"get": "list"}),
+        name="get_patients",
+    ),
+    path(
+        "patients/<int:pk>/",
+        PatientsViewSet.as_view({"get": "retrieve", "delete": "destroy"}),
+        name="patient_details",
     ),
     path(
         "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/",
-        get_series,
+        SeriesViewSet.as_view({"get": "retrieve"}),
         name="get_series",
     ),
-    path(
-        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/",
-        annotations_for_series,
-        name="annotations_for_series",
-    ),
-    path(
-        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/<int:annotation_set_id>/",
-        annotation_set,
-        name="annotation_set",
-    ),
+    # path(
+    #    "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/",
+    #    annotations_for_series,
+    #    name="annotations_for_series",
+    # ),
+    # path(
+    #    "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/<int:annotation_set_id>/",
+    #    annotation_set,
+    #    name="annotation_set",
+    # ),
 ]

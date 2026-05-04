@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import apiClient, { clearCsrfToken } from "../../utils/apiClient";
+import { toastError, toastSuccess } from "../../utils/toast";
 import { Navigate, useLocation } from "react-router-dom";
 import Loading from "../../components/Loading";
 import type { User } from "../../types/User";
+import { USER_TYPES } from "../../utils/constants";
 import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { AuthContext } from "./authContext";
 
@@ -11,10 +13,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     const [isLoading, setIsLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-
-    useEffect(() => {
-        void refreshUser();
-    }, []);
 
     const refreshUser = async () => {
         try {
@@ -26,7 +24,12 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         } finally {
             setIsLoading(false);
         }
-    }
+    };
+
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- initial session load from /me
+        void refreshUser();
+    }, []);
 
     const login = async (username: string, password: string) => {
         try {
@@ -34,8 +37,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
             await apiClient.post(API_PATHS.LOGIN(), { username, password });
             clearCsrfToken();
             await refreshUser();
+            toastSuccess("Signed in successfully.");
         } catch (error) {
             console.error(error);
+            toastError("Could not sign in. Check your username and password.");
             setIsLoading(false);
         }
     }
@@ -60,7 +65,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         return <Navigate to={UI_PATHS.LOGIN()} replace />;
     }
     if (user && location.pathname === UI_PATHS.LOGIN()) {
-        return <Navigate to={UI_PATHS.PATIENTS()} replace />;
+        const home =
+            user.user_type === USER_TYPES.WORKSPACE_ADMIN
+                ? UI_PATHS.PATIENTS()
+                : UI_PATHS.PROJECTS();
+        return <Navigate to={home} replace />;
     }
 
     return (

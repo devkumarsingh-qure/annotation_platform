@@ -21,19 +21,19 @@ function instanceCount(series: Study["series"][number]) {
 }
 
 function SeriesPanel({
-    patient_id,
-    series_id,
+    patientId,
+    seriesId,
     onClickSeries,
     onOpenMetadataExplorer,
 }: {
-    patient_id: string;
-    series_id: string;
+    patientId: string;
+    seriesId: string;
     onClickSeries: ({
-        study_id,
-        series_id,
+        studyId,
+        seriesId,
     }: {
-        study_id: string;
-        series_id: string;
+        studyId: string;
+        seriesId: string;
     }) => void;
     onOpenMetadataExplorer: () => void;
 }) {
@@ -41,13 +41,13 @@ function SeriesPanel({
     const [studies, setStudies] = useState<Study[]>([]);
 
     useEffect(() => {
-        if (!patient_id) {
+        if (!patientId) {
             return;
         }
         apiClient
-            .get(API_PATHS.STUDIES_FOR_PATIENT(patient_id))
+            .get(API_PATHS.PATIENT(patientId))
             .then((response) => {
-                setStudies(response.data);
+                setStudies(response.data.studies);
             })
             .catch((error) => {
                 console.error(error);
@@ -55,7 +55,7 @@ function SeriesPanel({
             .finally(() => {
                 setIsLoading(false);
             });
-    }, [patient_id]);
+    }, [patientId]);
 
     return (
         <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-l border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px]">
@@ -129,7 +129,7 @@ function SeriesPanel({
                                         <ul className="space-y-1">
                                             {study.series.map((studySeries) => {
                                                 const active =
-                                                    String(series_id) ===
+                                                    String(seriesId) ===
                                                     String(studySeries.id);
                                                 const n = instanceCount(studySeries);
                                                 return (
@@ -138,8 +138,8 @@ function SeriesPanel({
                                                             type="button"
                                                             onClick={() =>
                                                                 onClickSeries({
-                                                                    study_id: study.id,
-                                                                    series_id: studySeries.id,
+                                                                    studyId: study.id,
+                                                                    seriesId: studySeries.id,
                                                                 })
                                                             }
                                                             className={`w-full min-w-0 rounded-md border px-2 py-1.5 text-left transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] ${active

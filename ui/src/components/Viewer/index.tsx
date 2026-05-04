@@ -4,7 +4,7 @@ import apiClient from "../../utils/apiClient";
 import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { viewerProvider, Viewer, Toolbar } from "@qureai/react-dicom-viewer";
 import type { Series } from "../../types/Patient";
-import AnnotationPanel from "./AnnotationPanel/index.tsx";
+//import AnnotationPanel from "./AnnotationPanel/index.tsx";
 import { VIEWER_MODES } from "../../utils/constants.ts";
 import SeriesPanel from "./SeriesPanel/index.tsx";
 import MetadataExplorer from "./MetadataExplorer/index.tsx";
@@ -12,7 +12,7 @@ import Loading from "../Loading/index.tsx";
 
 function ViewerComponent() {
     const navigate = useNavigate();
-    const { patient_id, study_id, series_id } = useParams();
+    const { patientId, studyId, seriesId } = useParams();
     const [searchParams] = useSearchParams();
     const mode = searchParams.get("mode");
 
@@ -22,12 +22,12 @@ function ViewerComponent() {
     const [isMetadataExplorerOpen, setIsMetadataExplorerOpen] = useState(false);
 
     useEffect(() => {
-        if (!patient_id || !study_id || !series_id) {
+        if (!patientId || !studyId || !seriesId) {
             return;
         }
         setIsSeriesLoading(true);
         apiClient
-            .get(API_PATHS.SERIES(patient_id, study_id, series_id))
+            .get(API_PATHS.SERIES(patientId, studyId, seriesId))
             .then((response) => {
                 setSeries(response.data);
             })
@@ -37,7 +37,7 @@ function ViewerComponent() {
             .finally(() => {
                 setIsSeriesLoading(false);
             });
-    }, [patient_id, study_id, series_id]);
+    }, [patientId, studyId, seriesId]);
 
     useEffect(() => {
         if (!isViewerInitialized) return;
@@ -66,14 +66,14 @@ function ViewerComponent() {
         setIsViewerInitialized(true);
     };
 
-    const onClickSeries = ({ study_id, series_id }: { study_id: string; series_id: string }) => {
-        if (!patient_id || !study_id || !series_id) {
+    const onClickSeries = ({ studyId, seriesId }: { studyId: string; seriesId: string }) => {
+        if (!patientId || !studyId || !seriesId) {
             return;
         }
-        navigate(UI_PATHS.VIEWER({ params: { patient_id, study_id, series_id }, query: { mode: VIEWER_MODES.VIEW } }));
+        navigate(UI_PATHS.VIEWER({ patientId: patientId, studyId: studyId, seriesId: seriesId, mode: VIEWER_MODES.VIEW }));
     };
 
-    if (!patient_id || !study_id || !series_id) {
+    if (!patientId || !studyId || !seriesId) {
         return null;
     }
 
@@ -100,22 +100,22 @@ function ViewerComponent() {
                 {
                     isViewerInitialized && (
                         <div className="h-full">
-                            {
+                            {/*{
                                 mode === VIEWER_MODES.ANNOTATE && (
                                     (
                                         <AnnotationPanel
-                                            patient_id={patient_id}
-                                            study_id={study_id}
-                                            series_id={series_id}
+                                            patientId={patientId}
+                                            studyId={studyId}
+                                            seriesId={seriesId}
                                         />
                                     )
                                 )
-                            }
+                            }*/}
                             {
                                 mode === VIEWER_MODES.VIEW && (
                                     <SeriesPanel
-                                        patient_id={patient_id}
-                                        series_id={series_id}
+                                        patientId={patientId}
+                                        seriesId={seriesId}
                                         onClickSeries={onClickSeries}
                                         onOpenMetadataExplorer={() =>
                                             setIsMetadataExplorerOpen(true)

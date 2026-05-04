@@ -29,10 +29,10 @@ function Profile() {
                         className="absolute right-0 top-full z-[60] mt-1.5 w-56 overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-lg"
                         role="menu"
                     >
-                        <div className="flex items-center justify-between border-b border-[var(--border)] p-2 px-3">
-                            <p className="text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">
+                        <div className="flex items-center justify-end border-b border-[var(--border)] p-2 px-3">
+                            {/*<p className="text-[10px] font-medium uppercase tracking-wider text-[var(--muted)]">
                                 Signed in as
-                            </p>
+                            </p>*/}
                             <p
                                 className="mt-0.5 truncate text-sm font-medium text-[var(--text)]"
                                 title={user?.username ?? ""}

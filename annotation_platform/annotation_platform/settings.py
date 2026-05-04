@@ -77,6 +77,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "django_extensions",
+    "annotation_platform",
     "authentication",
     "dicom_manager",
     "storages",
@@ -179,3 +181,5 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+AUTH_USER_MODEL = "authentication.User"

@@ -1,5 +1,3 @@
-import type { ViewerMode } from "../types/Viewer"
-
 const API_PATHS = {
     CSRF: () => {
         return "/csrf/"
@@ -16,6 +14,30 @@ const API_PATHS = {
     UPLOAD: () => {
         return "/upload/"
     },
+    PROJECTS: () => {
+        return "/projects/"
+    },
+    PROJECT: (project_id: string) => {
+        return `/projects/${project_id}/`
+    },
+    PROJECT_USERS: (project_id: string) => {
+        return `/projects/${project_id}/users/`
+    },
+    PROJECT_USER: (project_id: string, user_id: string) => {
+        return `/projects/${project_id}/users/${user_id}/`
+    },
+    PROJECT_PATIENTS: (project_id: string) => {
+        return `/projects/${project_id}/patients/`
+    },
+    PROJECT_USER_PATIENTS: (project_id: string, user_id: string) => {
+        return `/projects/${project_id}/users/${user_id}/patients/`
+    },
+    USERS: () => {
+        return "/users/"
+    },
+    USER: (userId: string) => {
+        return `/users/${userId}/`
+    },
     PATIENTS: ({
         page,
         page_size
@@ -25,39 +47,64 @@ const API_PATHS = {
     }) => {
         return `/patients/?page=${page}&page_size=${page_size}`
     },
-    PATIENT: (patient_id: string) => {
-        return `/patients/${patient_id}/`
+    PATIENT: (patientId: string) => {
+        return `/patients/${patientId}/`
     },
-    STUDIES_FOR_PATIENT: (patient_id: string) => {
-        return `/patients/${patient_id}/studies/`
+    SERIES: (patientId: string, studyId: string, seriesId: string) => {
+        return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/`
     },
-    SERIES: (patient_id: string, study_id: string, series_id: string) => {
-        return `/patients/${patient_id}/studies/${study_id}/series/${series_id}/`
-    },
-    ANNOTATIONS_FOR_SERIES: (patient_id: string, study_id: string, series_id: string) => {
-        return `/patients/${patient_id}/studies/${study_id}/series/${series_id}/annotations/`
-    },
-    ANNOTATION_SET: (patient_id: string, study_id: string, series_id: string, annotationSetId: string) => {
-        return `/patients/${patient_id}/studies/${study_id}/series/${series_id}/annotations/${annotationSetId}/`
-    }
+    //ANNOTATIONS_FOR_SERIES: (patientId: string, studyId: string, seriesId: string) => {
+    //    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/`
+    //},
+    //ANNOTATION_SET: (patientId: string, studyId: string, seriesId: string, annotationSetId: string) => {
+    //    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/`
+    //}
 }
 
 const UI_PATHS = {
     LOGIN: () => {
         return "/login/"
     },
+    PROJECTS: () => {
+        return "/projects/"
+    },
+    PROJECT: (projectId: string) => {
+        return `/projects/${projectId}/`
+    },
+    PROJECT_USERS: (projectId: string) => {
+        return `/projects/${projectId}/users`
+    },
+    PROJECT_USER: (projectId: string, userId: string) => {
+        return `/projects/${projectId}/users/${userId}`
+    },
+    PROJECT_PATIENTS: (projectId: string) => {
+        return `/projects/${projectId}/patients`
+    },
     PATIENTS: () => {
-        return "/worklist/"
+        return "/patients/"
     },
-    PATIENT: ({ params }: { params: { patient_id: string } }) => {
-        const { patient_id } = params;
-        return `${UI_PATHS.PATIENTS()}${patient_id}/`
+    PATIENT: (patientId: string) => {
+        return `/patients/${patientId}/`
     },
-    VIEWER: ({ params, query }: { params: { patient_id: string; study_id: string; series_id: string }; query: { mode: ViewerMode } }) => {
-        const { patient_id, study_id, series_id } = params;
-        const { mode } = query;
-        return `/viewer/${patient_id}/studies/${study_id}/series/${series_id}/?mode=${mode}`
-    }
+    USERS: () => {
+        return "/users/"
+    },
+    USER: (userId: string) => {
+        return `/users/${userId}/`
+    },
+    VIEWER: ({
+        patientId,
+        studyId,
+        seriesId,
+        mode,
+    }: {
+        patientId: string;
+        studyId: string | number;
+        seriesId: string | number;
+        mode: string;
+    }) => {
+        return `/viewer/${patientId}/studies/${studyId}/series/${seriesId}/?mode=${encodeURIComponent(mode)}`
+    },
 }
 
 export { API_PATHS, UI_PATHS };

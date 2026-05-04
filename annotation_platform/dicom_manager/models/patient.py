@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
@@ -8,12 +7,13 @@ from annotation_platform.utils.upload_file import (
     S3ObjectDeletionError,
     delete_s3_prefix,
 )
+from annotation_platform.models.workspace import Workspace
 
 logger = logging.getLogger(__name__)
 
 
 class Patient(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     # DICOM fields
@@ -22,11 +22,25 @@ class Patient(models.Model):
     PatientAge = models.CharField(max_length=255, null=True, blank=True)
     PatientSex = models.CharField(max_length=255, null=True, blank=True)
 
+    def serialize(self) -> Dict[str, Any]:
+        return {
+            "id": str(self.id),
+            "workspace": {
+                "id": str(self.workspace.id),
+                "name": self.workspace.name,
+            },
+            "PatientID": self.PatientID,
+            "PatientName": self.PatientName,
+            "PatientAge": self.PatientAge,
+            "PatientSex": self.PatientSex,
+            "created_at": self.created_at,
+        }
+
     def get_dicomp10_s3_prefix(self):
-        return f"{self.user.id}/dicomp10/{self.id}"
+        return f"workspaces/{self.workspace.id}/dicomp10/{self.id}"
 
     def get_annotation_sets_s3_prefix(self):
-        return f"{self.user.id}/annotation-sets/{self.id}"
+        return f"workspaces/{self.workspace.id}/annotation-sets/{self.id}"
 
 
 @receiver(pre_delete, sender=Patient)
