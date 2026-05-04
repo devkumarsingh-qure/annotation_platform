@@ -1,4 +1,6 @@
+from typing import Optional
 from django.contrib.auth import authenticate, login, logout
+from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
@@ -9,23 +11,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from annotation_platform.utils.permissions.user import CanCreateUsers, CanViewUsers
+from annotation_platform.utils.helpers import check_for_admin
 from authentication.models.user import User
-from authentication.utils.user_types import UserType
 
 from .serializers import LoginSerializer
-
-
-def _workspace_user_payload(user: User) -> dict:
-    return {
-        "id": str(user.id),
-        "username": user.username,
-        "email": user.email or "",
-        "user_type": user.user_type,
-        "is_active": user.is_active,
-        "date_joined": user.date_joined,
-        "last_login": user.last_login,
-    }
 
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
@@ -42,16 +31,7 @@ class MeView(APIView):
     def get(self, request):
         user = request.user
         if user.is_authenticated:
-            return Response(
-                {
-                    "is_authenticated": True,
-                    "username": user.username,
-                    "workspace": {
-                        "name": user.workspace.name,
-                    },
-                    "user_type": user.user_type,
-                }
-            )
+            return Response(user.serialize(), status=status.HTTP_200_OK)
         return Response(
             {"is_authenticated": False}, status=status.HTTP_401_UNAUTHORIZED
         )
@@ -90,36 +70,53 @@ class LogoutView(APIView):
 
 
 class WorkspaceUsersView(APIView):
-    """List and create users in the caller's workspace."""
+    permission_classes = [IsAuthenticated]
 
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated(), CanCreateUsers()]
-        return [IsAuthenticated(), CanViewUsers()]
+    def get(self, request, user_id: Optional[int] = None):
+        user: User = request.user
+        check_for_admin(user)
 
-    def get(self, request):
-        users = (
-            User.objects.filter(workspace=request.user.workspace)
-            .order_by("username")
-            .select_related("workspace")
-        )
-        return Response([_workspace_user_payload(u) for u in users])
+        if user_id is None:
+            try:
+                page = int(request.query_params.get("page"))
+                page_size = int(request.query_params.get("page_size"))
+                if page < 1 or page_size < 1:
+                    raise ValueError("page and page_size must be positive integers")
+            except Exception as e:
+                return Response(
+                    {"detail": str(e)},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            users = (
+                User.objects.filter(workspace=user.workspace)
+                .exclude(pk=user.pk)
+                .order_by("username")
+            )
+            paginator = Paginator(users, page_size)
+            page_obj = paginator.page(page)
+            return Response(
+                {
+                    "page": page,
+                    "total": paginator.count,
+                    "results": [u.serialize() for u in page_obj.object_list],
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        user = get_object_or_404(User, id=user_id, workspace=user.workspace)
+        return Response(user.serialize(), status=status.HTTP_200_OK)
 
     def post(self, request):
+        user: User = request.user
+        check_for_admin(user)
+
         username = (request.data.get("username") or "").strip()
         password = request.data.get("password") or ""
         email = (request.data.get("email") or "").strip()
-        user_type = request.data.get("user_type")
 
         if not username or not password:
             return Response(
                 {"detail": "username and password are required."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if user_type not in [t.value for t in UserType]:
-            return Response(
-                {"detail": "Invalid user_type."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -128,8 +125,8 @@ class WorkspaceUsersView(APIView):
                 username=username,
                 password=password,
                 email=email,
-                workspace=request.user.workspace,
-                user_type=user_type,
+                workspace=user.workspace,
+                is_workspace_admin=False,
             )
         except IntegrityError:
             return Response(
@@ -138,16 +135,6 @@ class WorkspaceUsersView(APIView):
             )
 
         return Response(
-            _workspace_user_payload(user),
+            user.serialize(),
             status=status.HTTP_201_CREATED,
         )
-
-
-class WorkspaceUserView(APIView):
-    """Get a single user in the caller's workspace (same access as list)."""
-
-    permission_classes = [IsAuthenticated, CanViewUsers]
-
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id, workspace=request.user.workspace)
-        return Response(_workspace_user_payload(user))

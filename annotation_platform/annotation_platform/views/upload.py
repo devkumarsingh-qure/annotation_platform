@@ -11,13 +11,10 @@ from rest_framework.views import APIView
 from annotation_platform.utils.upload_file import upload_file
 from dicom_manager.models import Instance, Patient, Series, Study
 from dicom_manager.utils.helpers import dicom_value_to_str
-from annotation_platform.utils.permissions.patient import CanCreatePatients
 
 
 class UploadView(APIView):
-    def get_permissions(self):
-        if self.request.method == "POST":
-            return [IsAuthenticated(), CanCreatePatients()]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         file_statuses = {}
@@ -69,20 +66,20 @@ class UploadView(APIView):
                             status=status.HTTP_400_BAD_REQUEST,
                         )
 
-                    study, study_created = Study.objects.get_or_create(
+                    study, _ = Study.objects.get_or_create(
                         patient=patient,
                         StudyInstanceUID=StudyInstanceUID,
                         AccessionNumber=AccessionNumber,
                         StudyDescription=StudyDescription,
                     )
-                    series, series_created = Series.objects.get_or_create(
+                    series, _ = Series.objects.get_or_create(
                         study=study,
                         SeriesInstanceUID=SeriesInstanceUID,
                         SeriesDescription=SeriesDescription,
                         SeriesNumber=SeriesNumber,
                         Modality=Modality,
                     )
-                    instance, instance_created = Instance.objects.get_or_create(
+                    instance, _ = Instance.objects.get_or_create(
                         series=series,
                         SOPInstanceUID=SOPInstanceUID,
                         InstanceNumber=InstanceNumber,

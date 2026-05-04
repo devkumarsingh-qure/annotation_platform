@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from .series import Series
-from annotation_platform.utils.upload_file import _s3_client
 
 
 class Instance(models.Model):

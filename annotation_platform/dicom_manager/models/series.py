@@ -11,3 +11,18 @@ class Series(models.Model):
     SeriesDescription = models.CharField(max_length=255, null=True, blank=True)
     SeriesNumber = models.CharField(max_length=255, null=True, blank=True)
     Modality = models.CharField(max_length=255, null=True, blank=True)
+
+    def serialize(self):
+        return {
+            "id": str(self.id),
+            "study_id": str(self.study.id),
+            "SeriesInstanceUID": self.SeriesInstanceUID,
+            "SeriesDescription": self.SeriesDescription,
+            "SeriesNumber": self.SeriesNumber,
+            "Modality": self.Modality,
+            "created_at": self.created_at,
+            "total_instances": self.get_total_instances(),
+        }
+
+    def get_total_instances(self):
+        return self.instance_set.count()

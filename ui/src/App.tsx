@@ -1,28 +1,27 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { ToastContainer } from "react-toastify"
-import AuthProvider from "./contexts/auth/AuthProvider"
-import Login from "./components/Login"
-import Menubar from "./components/Menubar"
-import Home from "./components/Home"
-import ModalProvider from "./contexts/modal/ModalProvider"
-import Projects from "./components/Home/Projects"
-import ProjectsList from "./components/Home/Projects/ProjectsList"
-import ProjectShell from "./components/Home/Projects/ProjectShell"
-import ProjectUsersRoute from "./components/Home/Projects/ProjectUsersRoute"
-import ProjectUsersTab from "./components/Home/Projects/ProjectUsersTab"
-import ProjectUserDetailTab from "./components/Home/Projects/ProjectUserDetailTab"
-import ProjectPatientsTab from "./components/Home/Projects/ProjectPatientsTab"
-import ProjectDefaultRedirect from "./components/Home/Projects/ProjectDefaultRedirect"
-import Patients from "./components/Home/Patients"
-import Users from "./components/Home/Users"
-import ViewerComponent from "./components/Viewer"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import AuthProvider from "./contexts/auth/AuthProvider";
+import Login from "./components/Login";
+import Menubar from "./components/Menubar";
+import Home from "./components/Home";
+import ModalProvider from "./contexts/modal/ModalProvider";
+import Projects from "./components/Home/Projects";
+import ViewerComponent from "./components/Viewer";
+import Project from "./components/Home/Projects/Project/index";
+import ProjectMembers from "./components/Home/Projects/Project/ProjectMembers";
+import ProjectPatients from "./components/Home/Projects/Project/ProjectPatients";
+import Users from "./components/Home/Users";
+import UserDetails from "./components/Home/Users/UserDetails";
+import Patients from "./components/Home/Patients";
+import Patient from "./components/Home/Patients/Patient";
+import ProjectMember from "./components/Home/Projects/Project/ProjectMember";
 
-const THEME_STORAGE_KEY = "theme"
+const THEME_STORAGE_KEY = "theme";
 try {
-  const saved = localStorage.getItem(THEME_STORAGE_KEY)
-  document.body.dataset.theme = saved === "dark" ? "dark" : "light"
+  const saved = localStorage.getItem(THEME_STORAGE_KEY);
+  document.body.dataset.theme = saved === "dark" ? "dark" : "light";
 } catch {
-  document.body.dataset.theme = "light"
+  document.body.dataset.theme = "light";
 }
 
 function AppToastContainer() {
@@ -40,7 +39,7 @@ function AppToastContainer() {
       limit={5}
       icon={({ type }) => {
         const base =
-          "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] font-bold leading-none"
+          "flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[11px] font-bold leading-none";
         if (type === "success") {
           return (
             <span
@@ -49,7 +48,7 @@ function AppToastContainer() {
             >
               ✓
             </span>
-          )
+          );
         }
         if (type === "error") {
           return (
@@ -59,7 +58,7 @@ function AppToastContainer() {
             >
               !
             </span>
-          )
+          );
         }
         return (
           <span
@@ -68,10 +67,10 @@ function AppToastContainer() {
           >
             ‼
           </span>
-        )
+        );
       }}
     />
-  )
+  );
 }
 
 export default function App() {
@@ -84,23 +83,26 @@ export default function App() {
               <Routes>
                 <Route path={"login/"} element={<Login />} />
                 <Route path="/" element={<Home />}>
-                  <Route path="projects" element={<Projects />}>
-                    <Route index element={<ProjectsList />} />
-                    <Route path=":projectId" element={<ProjectShell />}>
-                      <Route index element={<ProjectDefaultRedirect />} />
-                      <Route path="users" element={<ProjectUsersRoute />}>
-                        <Route index element={<ProjectUsersTab />} />
-                        <Route path=":userId" element={<ProjectUserDetailTab />} />
-                      </Route>
-                      <Route path="patients" element={<ProjectPatientsTab />} />
-                    </Route>
-                  </Route>
-                  <Route path="patients" element={<Patients />}>
-                    <Route path=":patientId" element={<Patients />} />
-                  </Route>
-                  <Route path="users" element={<Users />}>
-                    <Route path=":userId" element={<Users />} />
-                  </Route>
+                  <Route path="projects" element={<Projects />}></Route>
+                  <Route path="projects/:projectId" element={<Project />} />
+                  <Route
+                    path="projects/:projectId/members"
+                    element={<ProjectMembers />}
+                  />
+                  <Route
+                    path="projects/:projectId/patients"
+                    element={<ProjectPatients />}
+                  />
+
+                  <Route path="users" element={<Users />} />
+                  <Route path="users/:userId" element={<UserDetails />} />
+
+                  <Route path="patients" element={<Patients />} />
+                  <Route path="patients/:patientId" element={<Patient />} />
+                  <Route
+                    path="projects/:projectId/users/:userId/patients"
+                    element={<ProjectMember />}
+                  />
                 </Route>
                 <Route path="viewer/">
                   <Route path=":patientId/studies/:studyId/series/:seriesId/">
@@ -113,6 +115,6 @@ export default function App() {
         </AuthProvider>
         <AppToastContainer />
       </BrowserRouter>
-    </div >
-  )
+    </div>
+  );
 }

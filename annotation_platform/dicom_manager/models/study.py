@@ -10,3 +10,12 @@ class Study(models.Model):
     StudyInstanceUID = models.CharField(unique=True, max_length=255)
     AccessionNumber = models.CharField(max_length=255, null=True, blank=True)
     StudyDescription = models.CharField(max_length=255, null=True, blank=True)
+
+    def serialize(self):
+        return {
+            "id": str(self.id),
+            "StudyInstanceUID": self.StudyInstanceUID,
+            "AccessionNumber": self.AccessionNumber,
+            "StudyDescription": self.StudyDescription,
+            "created_at": self.created_at,
+        }

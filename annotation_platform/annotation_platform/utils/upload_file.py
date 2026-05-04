@@ -47,12 +47,6 @@ def upload_file(file_source: str, key: str):
             settings.AWS_STORAGE_BUCKET_NAME,
             key,
         )
-    else:
-        client.upload_fileobj(
-            file_source,
-            settings.AWS_STORAGE_BUCKET_NAME,
-            key,
-        )
 
     return {
         "object_key": key,

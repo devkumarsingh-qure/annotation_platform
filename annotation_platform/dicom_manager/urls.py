@@ -2,25 +2,25 @@ from django.urls import path
 
 from .views.annotations import annotation_set, annotations_for_series
 from .views.patients import (
-    PatientsViewSet,
-    SeriesViewSet,
+    PatientsView,
+    SeriesView,
 )
 
 urlpatterns = [
     path(
         "patients/",
-        PatientsViewSet.as_view({"get": "list"}),
-        name="get_patients",
+        PatientsView.as_view(),
+        name="patients",
     ),
     path(
-        "patients/<int:pk>/",
-        PatientsViewSet.as_view({"get": "retrieve", "delete": "destroy"}),
-        name="patient_details",
+        "patients/<int:patient_id>/",
+        PatientsView.as_view(),
+        name="patient",
     ),
     path(
         "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/",
-        SeriesViewSet.as_view({"get": "retrieve"}),
-        name="get_series",
+        SeriesView.as_view(),
+        name="series",
     ),
     # path(
     #    "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/",

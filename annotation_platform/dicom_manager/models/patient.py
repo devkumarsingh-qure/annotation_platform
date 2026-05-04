@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
+from typing import Dict, Any
 
 import logging
 from annotation_platform.utils.upload_file import (
@@ -22,6 +23,14 @@ class Patient(models.Model):
     PatientAge = models.CharField(max_length=255, null=True, blank=True)
     PatientSex = models.CharField(max_length=255, null=True, blank=True)
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["workspace", "PatientID"],
+                name="unique_patient_id_per_workspace",
+            ),
+        ]
+
     def serialize(self) -> Dict[str, Any]:
         return {
             "id": str(self.id),
@@ -36,10 +45,10 @@ class Patient(models.Model):
             "created_at": self.created_at,
         }
 
-    def get_dicomp10_s3_prefix(self):
+    def get_dicomp10_s3_prefix(self) -> str:
         return f"workspaces/{self.workspace.id}/dicomp10/{self.id}"
 
-    def get_annotation_sets_s3_prefix(self):
+    def get_annotation_sets_s3_prefix(self) -> str:
         return f"workspaces/{self.workspace.id}/annotation-sets/{self.id}"
 
 
