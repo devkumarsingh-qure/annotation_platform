@@ -149,7 +149,12 @@ function FileUpload({
           </h1>
           <button
             type="button"
-            className="cursor-pointer rounded-md p-1.5 text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
+            className={classNames(
+              "cursor-pointer rounded-md p-1.5 text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+              {
+                "opacity-50 pointer-events-none": isUploading,
+              },
+            )}
             onClick={close}
             aria-label="Close"
           >
