@@ -47,12 +47,21 @@ const API_PATHS = {
   SERIES: (patientId: string, studyId: string, seriesId: string) => {
     return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/`;
   },
-  //ANNOTATIONS_FOR_SERIES: (patientId: string, studyId: string, seriesId: string) => {
-  //    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/`
-  //},
-  //ANNOTATION_SET: (patientId: string, studyId: string, seriesId: string, annotationSetId: string) => {
-  //    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/`
-  //}
+  ANNOTATIONS_FOR_SERIES: (
+    patientId: string,
+    studyId: string,
+    seriesId: string,
+  ) => {
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/`;
+  },
+  ANNOTATION_SET: (
+    patientId: string,
+    studyId: string,
+    seriesId: string,
+    annotationSetId: string,
+  ) => {
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/`;
+  },
 };
 
 const UI_PATHS = {

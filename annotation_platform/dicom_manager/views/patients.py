@@ -78,7 +78,7 @@ class SeriesView(APIView):
                 "InstanceNumber": instance.InstanceNumber,
                 "NumberOfFrames": instance.NumberOfFrames,
                 "created_at": instance.created_at,
-                "url_p10": get_presigned_url(instance.get_object_key_p10(), 1),
+                "url_p10": get_presigned_url(instance.get_object_key(), 1),
             }
             for instance in Instance.objects.filter(series=series).order_by(
                 "-created_at"

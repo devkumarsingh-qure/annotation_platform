@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import type { Annotation, AnnotationSetsType } from "../../../types/Viewer";
 import apiClient from "../../../utils/apiClient";
 import { API_PATHS } from "../../../utils/urls";
 import AnnotationSets from "./AnnotationSets";
@@ -9,219 +8,262 @@ import validateAnnotationsJSON from "./utils/validateAnnotationsJSON";
 import { viewerProvider } from "@qureai/react-dicom-viewer";
 import AnnotationSet from "./AnnotationSet";
 import { NEW_ANNOTATION_SET_ID } from "../../../utils/constants";
+import type {
+  AnnotationSetsDetails,
+  AnnotationDetails,
+} from "../../../types/Viewer";
 
 function AnnotationPanel({
-    patient_id,
-    study_id,
-    series_id,
+  patientId,
+  studyId,
+  seriesId,
 }: {
-    patient_id: string;
-    study_id: string;
-    series_id: string;
+  patientId: string;
+  studyId: string;
+  seriesId: string;
 }) {
-    const [isLoading, setIsLoading] = useState(true);
-    const [annotationSets, setAnnotationSets] = useState<AnnotationSetsType | null>(null);
-    const [annotations, setAnnotations] = useState<Annotation[] | null>(null);
-    const [activeAnnotationSetId, setActiveAnnotationSetId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [annotationSets, setAnnotationSets] =
+    useState<AnnotationSetsDetails | null>(null);
+  const [annotations, setAnnotations] = useState<AnnotationDetails[] | null>(
+    null,
+  );
+  const [activeAnnotationSetId, setActiveAnnotationSetId] = useState<
+    string | null
+  >(null);
 
-    useEffect(() => {
-        if (!patient_id || !study_id || !series_id) {
-            return;
+  useEffect(() => {
+    if (!patientId || !studyId || !seriesId) {
+      return;
+    }
+    fetchAnnotationSets();
+  }, [patientId, studyId, seriesId]);
+
+  const fetchAnnotationSets = async () => {
+    const { data } = await apiClient.get(
+      API_PATHS.ANNOTATIONS_FOR_SERIES(patientId, studyId, seriesId),
+    );
+    setAnnotationSets(data);
+    setIsLoading(false);
+  };
+
+  const fetchAnnotations = async (
+    annotationSetId: string,
+  ): Promise<AnnotationDetails[]> => {
+    const {
+      data: { url },
+    } = await apiClient.get(
+      API_PATHS.ANNOTATION_SET(patientId, studyId, seriesId, annotationSetId),
+    );
+    const annotations = await (await fetch(url)).json();
+    const isValid = validateAnnotationsJSON(annotations);
+    if (!isValid) {
+      throw new Error("Invalid annotation file");
+    }
+    return annotations;
+  };
+
+  const startAddingAnnotations = () => {
+    viewerProvider.annotationHandler.removeAllAnnotations();
+    viewerProvider.annotationHandler.startAddingAnnotation({
+      callback: () => {
+        const annotations =
+          viewerProvider.annotationHandler.getAnnotationsForActiveViewport();
+        setAnnotations(annotations ?? []);
+      },
+      callbackTimeoutDelay: 1000,
+    });
+  };
+
+  const handleAnnotationSetClick = async (annotationSetId: string) => {
+    setActiveAnnotationSetId(annotationSetId);
+    viewerProvider.annotationHandler.removeAllAnnotations();
+    startAddingAnnotations();
+    setIsLoading(true);
+    const annotations = await fetchAnnotations(annotationSetId);
+    const addedAnnotations =
+      viewerProvider.annotationHandler.addAnnotations(annotations);
+    setAnnotations(addedAnnotations ?? []);
+    setIsLoading(false);
+  };
+
+  const handleAddNewAnnotationSetClick = () => {
+    setAnnotations([]);
+    startAddingAnnotations();
+    setActiveAnnotationSetId(NEW_ANNOTATION_SET_ID);
+  };
+
+  const handleCancelAddingAnnotationSet = () => {
+    viewerProvider.annotationHandler.removeAllAnnotations();
+    viewerProvider.annotationHandler.stopAddingAnnotation();
+    setAnnotations(null);
+    setActiveAnnotationSetId(null);
+  };
+
+  const handleAnnotationDelete = (annotationUID: string) => {
+    if (!annotations) {
+      return;
+    }
+    viewerProvider.annotationHandler.deleteAnnotationForActiveViewport({
+      annotationUID,
+    });
+    const updatedAnnotations = annotations.filter(
+      (annotation) => annotation.annotationUID !== annotationUID,
+    );
+    setAnnotations(updatedAnnotations);
+  };
+
+  const handleSaveAnnotations = async () => {
+    if (!activeAnnotationSetId || !annotations) {
+      return;
+    }
+    setIsLoading(true);
+    const data = {
+      annotation_set_id: activeAnnotationSetId,
+      annotations_json: annotations.map((annotation) => ({
+        toolName: annotation.toolName,
+        sliceIndex: annotation.sliceIndex,
+        points: annotation.points,
+      })),
+    };
+    if (activeAnnotationSetId === NEW_ANNOTATION_SET_ID) {
+      const {
+        data: { id },
+      } = await apiClient.post(
+        API_PATHS.ANNOTATIONS_FOR_SERIES(patientId, studyId, seriesId),
+        data,
+      );
+      setActiveAnnotationSetId(String(id));
+    } else {
+      const {
+        data: { id },
+      } = await apiClient.put(
+        API_PATHS.ANNOTATION_SET(
+          patientId,
+          studyId,
+          seriesId,
+          activeAnnotationSetId,
+        ),
+        data,
+      );
+      setActiveAnnotationSetId(String(id));
+    }
+    await fetchAnnotationSets();
+  };
+
+  const handleDeleteAnnotationSet = async (annotationSetId: string) => {
+    await apiClient.delete(
+      API_PATHS.ANNOTATION_SET(patientId, studyId, seriesId, annotationSetId),
+    );
+    await fetchAnnotationSets();
+  };
+
+  const handleDownloadAnnotationSet = async (annotationSetId: string) => {
+    if (!annotationSets) {
+      return;
+    }
+
+    const PatientID = annotationSets.PatientID;
+    const StudyInstanceUID = annotationSets.StudyInstanceUID;
+    const SeriesInstanceUID = annotationSets.SeriesInstanceUID;
+
+    const annotations = await fetchAnnotations(annotationSetId);
+
+    if (!annotations) {
+      return;
+    }
+
+    const exportData = {
+      PatientID,
+      StudyInstanceUID,
+      SeriesInstanceUID,
+      exportedAt: new Date().toISOString(),
+      annotations: annotations.map((annotation) => ({
+        toolName: annotation.toolName,
+        sliceIndex: annotation.sliceIndex,
+        points: annotation.points,
+      })),
+    };
+
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `annotations_${PatientID}_${StudyInstanceUID.slice(0, 8)}_${SeriesInstanceUID.slice(0, 8)}_${new Date().toISOString().split("T")[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleUploadAnnotationSet = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string);
+        const isValid = validateAnnotationsJSON(json.annotations);
+        if (isValid) {
+          viewerProvider.annotationHandler.removeAllAnnotations();
+          const addedAnnotations =
+            viewerProvider.annotationHandler.addAnnotations(json.annotations);
+          setAnnotations(addedAnnotations || []);
+        } else {
+          throw new Error("Invalid annotation file");
         }
-        fetchAnnotationSets();
-    }, [patient_id, study_id, series_id]);
+      } catch (error) {
+        console.error("Error parsing annotation file", error);
+      }
+    };
+    reader.readAsText(file);
+  };
 
-    const fetchAnnotationSets = async () => {
-        const { data } = await apiClient.get(API_PATHS.ANNOTATIONS_FOR_SERIES(patient_id, study_id, series_id))
-        setAnnotationSets(data);
-        setIsLoading(false);
-    }
+  return (
+    <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
+      <header className="shrink-0 h-14.5 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3 flex items-center justify-between space-x-2">
+        <h1 className="font-semibold uppercase tracking-tight text-[var(--text)]">
+          Annotations
+        </h1>
+        {!isLoading && (
+          <span className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] text-[11px] font-medium text-[var(--muted)]">
+            {annotationSets?.annotation_sets.length}
+          </span>
+        )}
+      </header>
 
-    const fetchAnnotations = async (annotationSetId: string): Promise<Annotation[]> => {
-        const { data: { url } } = await apiClient.get(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
-        const annotations = await (await fetch(url)).json();
-        const isValid = validateAnnotationsJSON(annotations);
-        if (!isValid) {
-            throw new Error("Invalid annotation file");
-        }
-        return annotations;
-    }
-
-    const startAddingAnnotations = () => {
-        viewerProvider.annotationHandler.removeAllAnnotations();
-        viewerProvider.annotationHandler.startAddingAnnotation({
-            callback: () => {
-                const annotations =
-                    viewerProvider.annotationHandler.getAnnotationsForActiveViewport();
-                setAnnotations(annotations ?? []);
-            },
-            callbackTimeoutDelay: 1000,
-        });
-    }
-
-    const handleAnnotationSetClick = async (annotationSetId: string) => {
-        setActiveAnnotationSetId(annotationSetId);
-        viewerProvider.annotationHandler.removeAllAnnotations();
-        startAddingAnnotations();
-        setIsLoading(true);
-        const annotations = await fetchAnnotations(annotationSetId);
-        const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(annotations)
-        setAnnotations(addedAnnotations ?? []);
-        setIsLoading(false);
-    }
-
-    const handleAddNewAnnotationSetClick = () => {
-        setAnnotations([]);
-        startAddingAnnotations();
-        setActiveAnnotationSetId(NEW_ANNOTATION_SET_ID);
-    }
-
-    const handleCancelAddingAnnotationSet = () => {
-        viewerProvider.annotationHandler.removeAllAnnotations();
-        viewerProvider.annotationHandler.stopAddingAnnotation();
-        setAnnotations(null);
-        setActiveAnnotationSetId(null);
-    }
-
-    const handleAnnotationDelete = (annotationUID: string) => {
-        if (!annotations) {
-            return;
-        }
-        viewerProvider.annotationHandler.deleteAnnotationForActiveViewport({
-            annotationUID,
-        });
-        const updatedAnnotations = annotations.filter((annotation) => annotation.annotationUID !== annotationUID);
-        setAnnotations(updatedAnnotations);
-    }
-
-    const handleSaveAnnotations = async () => {
-        if (!activeAnnotationSetId || !annotations) {
-            return;
-        }
-        setIsLoading(true);
-        const data = {
-            annotationSetId: activeAnnotationSetId,
-            annotations: annotations.map((annotation) => ({
-                toolName: annotation.toolName,
-                sliceIndex: annotation.sliceIndex,
-                points: annotation.points,
-            })),
-        }
-        const { data: { id } } = await apiClient.post(API_PATHS.ANNOTATIONS_FOR_SERIES(patient_id, study_id, series_id), data);
-        setActiveAnnotationSetId(String(id));
-        await fetchAnnotationSets();
-    }
-
-    const handleDeleteAnnotationSet = async (annotationSetId: string) => {
-        await apiClient.delete(API_PATHS.ANNOTATION_SET(patient_id, study_id, series_id, annotationSetId));
-        await fetchAnnotationSets();
-    }
-
-    const handleDownloadAnnotationSet = async (annotationSetId: string) => {
-        if (!annotationSets) {
-            return;
-        }
-
-        const PatientID = annotationSets.PatientID;
-        const StudyInstanceUID = annotationSets.StudyInstanceUID;
-        const SeriesInstanceUID = annotationSets.SeriesInstanceUID;
-
-        const annotations = await fetchAnnotations(annotationSetId);
-
-        if (!annotations) {
-            return;
-        }
-
-        const exportData = {
-            PatientID,
-            StudyInstanceUID,
-            SeriesInstanceUID,
-            exportedAt: new Date().toISOString(),
-            annotations: annotations.map(annotation => ({
-                toolName: annotation.toolName,
-                sliceIndex: annotation.sliceIndex,
-                points: annotation.points,
-            })),
-        };
-
-        const jsonString = JSON.stringify(exportData, null, 2);
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `annotations_${PatientID}_${StudyInstanceUID.slice(0, 8)}_${SeriesInstanceUID.slice(0, 8)}_${new Date().toISOString().split('T')[0]}.json`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-
-    const handleUploadAnnotationSet = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) {
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                const json = JSON.parse(e.target?.result as string);
-                const isValid = validateAnnotationsJSON(json.annotations);
-                if (isValid) {
-                    viewerProvider.annotationHandler.removeAllAnnotations();
-                    const addedAnnotations = viewerProvider.annotationHandler.addAnnotations(json.annotations)
-                    setAnnotations(addedAnnotations || []);
-                } else {
-                    throw new Error("Invalid annotation file");
-                }
-            } catch (error) {
-                console.error("Error parsing annotation file", error);
-            }
-        }
-        reader.readAsText(file);
-    }
-
-    return (
-        <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
-            <header className="shrink-0 h-14.5 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3 flex items-center justify-between space-x-2">
-                <h1 className="font-semibold uppercase tracking-tight text-[var(--text)]">
-                    Annotations
-                </h1>
-                {
-                    !isLoading && (
-                        <span className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] text-[11px] font-medium text-[var(--muted)]">
-                            {annotationSets?.annotationSets.length}
-                        </span>
-                    )
-                }
-            </header>
-
-            <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">
-                {annotations ? (
-                    <AnnotationSet
-                        activeAnnotationSetId={activeAnnotationSetId}
-                        annotations={annotations}
-                        handleSaveAnnotations={handleSaveAnnotations}
-                        handleCancelAddingAnnotationSet={handleCancelAddingAnnotationSet}
-                        handleAnnotationDelete={handleAnnotationDelete}
-                        handleUploadAnnotationSet={handleUploadAnnotationSet}
-                    />
-                ) : (
-                    <AnnotationSets
-                        annotationSets={annotationSets}
-                        handleAddNewAnnotationSetClick={handleAddNewAnnotationSetClick}
-                        handleAnnotationSetClick={handleAnnotationSetClick}
-                        handleDownloadAnnotationSet={handleDownloadAnnotationSet}
-                        handleDeleteAnnotationSet={handleDeleteAnnotationSet}
-                    />
-                )}
-                {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                        <Loading size="lg" />
-                    </div>
-                )}
-            </div>
-        </aside>
-    )
+      <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">
+        {annotations ? (
+          <AnnotationSet
+            activeAnnotationSetId={activeAnnotationSetId}
+            annotations={annotations}
+            handleSaveAnnotations={handleSaveAnnotations}
+            handleCancelAddingAnnotationSet={handleCancelAddingAnnotationSet}
+            handleAnnotationDelete={handleAnnotationDelete}
+            handleUploadAnnotationSet={handleUploadAnnotationSet}
+          />
+        ) : (
+          <AnnotationSets
+            annotationSets={annotationSets}
+            handleAddNewAnnotationSetClick={handleAddNewAnnotationSetClick}
+            handleAnnotationSetClick={handleAnnotationSetClick}
+            handleDownloadAnnotationSet={handleDownloadAnnotationSet}
+            handleDeleteAnnotationSet={handleDeleteAnnotationSet}
+          />
+        )}
+        {isLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+            <Loading size="lg" />
+          </div>
+        )}
+      </div>
+    </aside>
+  );
 }
 
 export default AnnotationPanel;

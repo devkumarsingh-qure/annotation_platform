@@ -18,21 +18,21 @@ export type InstanceDetail = {
   url_p10: string;
 };
 
-export type Annotation = {
+export type AnnotationDetails = {
   annotationUID: string;
   points: [number, number, number][];
   sliceIndex: number;
   toolName: string;
 };
 
-export type AnnotationSetsType = {
+export type AnnotationSetsDetails = {
   PatientID: string;
   StudyInstanceUID: string;
   SeriesInstanceUID: string;
-  annotationSets: AnnotationSetType[];
+  annotation_sets: AnnotationSetDetails[];
 };
 
-export type AnnotationSetType = {
+export type AnnotationSetDetails = {
   id: string;
   created_at: string;
   url: string;

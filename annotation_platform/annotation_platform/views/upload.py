@@ -86,7 +86,7 @@ class UploadView(APIView):
                         NumberOfFrames=NumberOfFrames,
                     )
 
-                    key = instance.get_object_key_p10()
+                    key = instance.get_object_key()
                     upload_file(tmp_path, key)
 
                 file_statuses[file.name] = {

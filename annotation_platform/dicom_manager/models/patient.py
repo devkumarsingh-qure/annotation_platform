@@ -1,13 +1,7 @@
 from django.db import models
-from django.db.models.signals import pre_delete
-from django.dispatch import receiver
 from typing import Dict, Any
 
 import logging
-from annotation_platform.utils.upload_file import (
-    S3ObjectDeletionError,
-    delete_s3_prefix,
-)
 from annotation_platform.models.workspace import Workspace
 
 logger = logging.getLogger(__name__)
@@ -45,22 +39,5 @@ class Patient(models.Model):
             "created_at": self.created_at,
         }
 
-    def get_dicomp10_s3_prefix(self) -> str:
-        return f"workspaces/{self.workspace.id}/dicomp10/{self.id}"
-
-    def get_annotation_sets_s3_prefix(self) -> str:
-        return f"workspaces/{self.workspace.id}/annotation-sets/{self.id}"
-
-
-@receiver(pre_delete, sender=Patient)
-def delete_patient_and_related_objects(sender, instance, **kwargs):
-    try:
-        patient_dicomp10_s3_prefix = instance.get_dicomp10_s3_prefix()
-        delete_s3_prefix(patient_dicomp10_s3_prefix)
-    except Exception as e:
-        logger.exception(
-            f"Failed to delete patient and related objects id={instance.pk}", e
-        )
-        raise S3ObjectDeletionError(
-            f"Failed to delete patient and related objects id={instance.pk}"
-        ) from e
+    def get_s3_prefix(self) -> str:
+        return f"workspaces/{self.workspace.id}/patients/{self.id}"

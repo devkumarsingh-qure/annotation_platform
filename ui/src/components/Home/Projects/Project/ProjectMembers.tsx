@@ -197,7 +197,7 @@ function ProjectMembers() {
       {
         id: "username",
         header: "Username",
-        cell: (m) => (
+        cell: (m: User) => (
           <Link
             to={UI_PATHS.USER(m.id)}
             className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
@@ -210,7 +210,7 @@ function ProjectMembers() {
       {
         id: "email",
         header: "Email",
-        cell: (m) => {
+        cell: (m: User) => {
           const raw = m.email?.trim();
           if (!raw) {
             return <span className="text-[var(--muted)]">—</span>;
@@ -228,7 +228,7 @@ function ProjectMembers() {
       {
         id: "role",
         header: "Role",
-        cell: (m) =>
+        cell: (m: User) =>
           m.is_workspace_admin ? (
             <span className="rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface-soft))] px-2 py-0.5 text-xs font-semibold text-[var(--accent)]">
               Admin
@@ -240,7 +240,11 @@ function ProjectMembers() {
       {
         id: "joined",
         header: "—",
-        cell: () => <span className="text-[var(--muted)]">—</span>,
+        cell: (m: User) => (
+          <span className="text-[var(--muted)]">
+            {formatShortDate(m.date_joined)}
+          </span>
+        ),
       },
     ],
     [],

@@ -249,7 +249,7 @@ function ProjectPatients() {
       {
         id: "patientId",
         header: "Patient ID",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <Link
             to={UI_PATHS.PATIENT(p.id)}
             className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
@@ -263,7 +263,7 @@ function ProjectPatients() {
       {
         id: "name",
         header: "Name",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span
             className="block min-w-0 w-full truncate text-[var(--text)]"
             title={p.PatientName ?? undefined}
@@ -276,7 +276,7 @@ function ProjectPatients() {
       {
         id: "sex",
         header: "Sex",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span className="text-[var(--muted)]">{display(p.PatientSex)}</span>
         ),
       },
@@ -284,7 +284,7 @@ function ProjectPatients() {
       {
         id: "age",
         header: "Age",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span className="text-[var(--muted)]">{display(p.PatientAge)}</span>
         ),
       },
@@ -292,7 +292,11 @@ function ProjectPatients() {
       {
         id: "created",
         header: "—",
-        cell: () => <span className="text-[var(--muted)]">—</span>,
+        cell: (p: PatientRow) => (
+          <span className="text-[var(--muted)]">
+            {formatShortDate(p.created_at)}
+          </span>
+        ),
       },
     ],
     [],

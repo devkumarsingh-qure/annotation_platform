@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views.annotations import annotation_set, annotations_for_series
+from .views.annotations import AnnotationSetsView, AnnotationSetView
 from .views.patients import (
     PatientsView,
     SeriesView,
@@ -22,14 +22,14 @@ urlpatterns = [
         SeriesView.as_view(),
         name="series",
     ),
-    # path(
-    #    "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/",
-    #    annotations_for_series,
-    #    name="annotations_for_series",
-    # ),
-    # path(
-    #    "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/<int:annotation_set_id>/",
-    #    annotation_set,
-    #    name="annotation_set",
-    # ),
+    path(
+        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/",
+        AnnotationSetsView.as_view(),
+        name="annotations_for_series",
+    ),
+    path(
+        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/<int:annotation_set_id>/",
+        AnnotationSetView.as_view(),
+        name="annotation_set",
+    ),
 ]

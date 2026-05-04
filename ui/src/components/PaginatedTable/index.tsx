@@ -17,7 +17,7 @@ export type PaginatedTablePagination = {
   onPageSizeChange: (pageSize: number) => void;
 };
 
-export type PaginatedTableSelection<T> = {
+export type PaginatedTableSelection = {
   selectedIds: ReadonlySet<string>;
   onToggleRow: (id: string) => void;
   onTogglePageRows: (rowIds: string[], select: boolean) => void;
@@ -31,7 +31,7 @@ export type PaginatedTableProps<T> = {
   getRowId: (row: T) => string;
   pagination: PaginatedTablePagination;
   pageSizeOptions: readonly number[];
-  selection?: PaginatedTableSelection<T>;
+  selection?: PaginatedTableSelection;
 };
 
 const thBase =

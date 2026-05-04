@@ -8,25 +8,35 @@ from .series import Series
 from annotation_platform.utils.upload_file import (
     S3ObjectDeletionError,
     delete_s3_object,
+    get_presigned_url,
 )
+from authentication.models.user import User
 
 logger = logging.getLogger(__name__)
 
 
 class AnnotationSet(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     series = models.ForeignKey(Series, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "url": get_presigned_url(self.get_object_key(), 1),
+            "created_at": self.created_at,
+        }
 
     def get_object_key(self):
         patient = self.series.study.patient
         study = self.series.study
         series = self.series
-        patient_annotation_sets_s3_prefix = patient.get_annotation_sets_s3_prefix()
-        return f"{patient_annotation_sets_s3_prefix}/studies/{study.id}/series/{series.id}/annotation-sets/{self.id}.json"
+        patient_s3_prefix = patient.get_s3_prefix()
+        return f"{patient_s3_prefix}/studies/{study.id}/series/{series.id}/annotation-sets/{self.id}.json"
 
 
 @receiver(pre_delete, sender=AnnotationSet)
-def _delete_annotation_set_s3_object(sender, instance, **kwargs):
+def delete_annotation_set_s3_object(sender, instance: AnnotationSet, **kwargs):
     try:
         key = instance.get_object_key()
         delete_s3_object(key)

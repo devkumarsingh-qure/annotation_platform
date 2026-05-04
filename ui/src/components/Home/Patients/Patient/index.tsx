@@ -8,6 +8,7 @@ import { toastError, toastSuccess } from "../../../../utils/toast";
 import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import { AuthContext } from "../../../../contexts/auth/authContext";
 import { VIEWER_MODES } from "../../../../utils/constants";
+import PenIcon from "../../../../icons/PenIcon";
 
 function formatDateTime(iso: string) {
   try {
@@ -398,18 +399,19 @@ function Patient() {
                                           <EyeIcon className="size-4 shrink-0" />
                                           View
                                         </Link>
-                                        {/*<Link
-                                                                                to={UI_PATHS.VIEWER({
-                                                                                    patientId,
-                                                                                    studyId: study.id,
-                                                                                    seriesId: s.id,
-                                                                                    mode: VIEWER_MODES.ANNOTATE,
-                                                                                })}
-                                                                                className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
-                                                                            >
-                                                                                <PenIcon className="size-4 shrink-0" />
-                                                                                Annotate
-                                                                            </Link>*/}
+                                        <Link
+                                          to={UI_PATHS.VIEWER({
+                                            patientId,
+                                            studyId: study.id,
+                                            seriesId: s.id,
+                                            mode: VIEWER_MODES.ANNOTATE,
+                                          })}
+                                          target="_blank"
+                                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
+                                        >
+                                          <PenIcon className="size-4 shrink-0" />
+                                          Annotate
+                                        </Link>
                                       </div>
                                     </td>
                                   </tr>

@@ -107,9 +107,7 @@ function ProjectMember() {
     if (!projectId || !userId || !canManage) return Promise.resolve();
     setIsAssignedLoading(true);
     return apiClient
-      .get<PatientRow[]>(
-        API_PATHS.PROJECT_USER_PATIENTS(projectId, userId),
-      )
+      .get<PatientRow[]>(API_PATHS.PROJECT_USER_PATIENTS(projectId, userId))
       .then((response) => {
         setAssignedPatients(response.data);
       })
@@ -224,7 +222,7 @@ function ProjectMember() {
       {
         id: "patientId",
         header: "Patient ID",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <Link
             to={UI_PATHS.PATIENT(p.id)}
             className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
@@ -237,7 +235,7 @@ function ProjectMember() {
       {
         id: "name",
         header: "Name",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span
             className="block min-w-0 w-full truncate text-[var(--text)]"
             title={p.PatientName ?? undefined}
@@ -249,21 +247,25 @@ function ProjectMember() {
       {
         id: "sex",
         header: "Sex",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span className="text-[var(--muted)]">{display(p.PatientSex)}</span>
         ),
       },
       {
         id: "age",
         header: "Age",
-        cell: (p) => (
+        cell: (p: PatientRow) => (
           <span className="text-[var(--muted)]">{display(p.PatientAge)}</span>
         ),
       },
       {
         id: "created",
         header: "—",
-        cell: () => <span className="text-[var(--muted)]">—</span>,
+        cell: (p: PatientRow) => (
+          <span className="text-[var(--muted)]">
+            {formatShortDate(p.created_at)}
+          </span>
+        ),
       },
     ],
     [],
@@ -273,10 +275,9 @@ function ProjectMember() {
     if (!projectId || !userId || selectedAddIds.length === 0 || addBusy) return;
     setAddBusy(true);
     try {
-      await apiClient.post(
-        API_PATHS.PROJECT_USER_PATIENTS(projectId, userId),
-        { patient_ids: selectedAddIds },
-      );
+      await apiClient.post(API_PATHS.PROJECT_USER_PATIENTS(projectId, userId), {
+        patient_ids: selectedAddIds,
+      });
       toastSuccess(
         selectedAddIds.length === 1
           ? "Assigned 1 patient."
@@ -297,12 +298,7 @@ function ProjectMember() {
   };
 
   const removeSelected = async () => {
-    if (
-      !projectId ||
-      !userId ||
-      patientsToRemove.length === 0 ||
-      removeBusy
-    )
+    if (!projectId || !userId || patientsToRemove.length === 0 || removeBusy)
       return;
     setRemoveBusy(true);
     try {
@@ -332,7 +328,9 @@ function ProjectMember() {
   if (!projectId || !userId) {
     return (
       <div className="flex h-full items-center justify-center p-6">
-        <p className="text-sm text-[var(--muted)]">Missing project or user id.</p>
+        <p className="text-sm text-[var(--muted)]">
+          Missing project or user id.
+        </p>
       </div>
     );
   }
@@ -359,11 +357,7 @@ function ProjectMember() {
     );
   }
 
-  const memberLabel = memberLoading
-    ? "…"
-    : member
-      ? member.username
-      : "Member";
+  const memberLabel = memberLoading ? "…" : member ? member.username : "Member";
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden p-6">
@@ -496,9 +490,7 @@ function ProjectMember() {
                     <input
                       ref={removeHeaderRef}
                       type="checkbox"
-                      disabled={
-                        assignedPatients.length === 0 || removeBusy
-                      }
+                      disabled={assignedPatients.length === 0 || removeBusy}
                       onChange={toggleSelectAllRemove}
                       className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
                       aria-label="Select all assigned patients"

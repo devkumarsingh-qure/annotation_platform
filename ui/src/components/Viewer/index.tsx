@@ -9,6 +9,7 @@ import SeriesPanel from "./SeriesPanel/index.tsx";
 import MetadataExplorer from "./MetadataExplorer/index.tsx";
 import Loading from "../Loading/index.tsx";
 import type { SeriesDetail } from "../../types/Viewer.ts";
+import AnnotationPanel from "./AnnotationPanel/index.tsx";
 
 function ViewerComponent() {
   const navigate = useNavigate();
@@ -112,17 +113,13 @@ function ViewerComponent() {
       <div className="w-1/4">
         {isViewerInitialized && (
           <div className="h-full">
-            {/*{
-                                mode === VIEWER_MODES.ANNOTATE && (
-                                    (
-                                        <AnnotationPanel
-                                            patientId={patientId}
-                                            studyId={studyId}
-                                            seriesId={seriesId}
-                                        />
-                                    )
-                                )
-                            }*/}
+            {mode === VIEWER_MODES.ANNOTATE && (
+              <AnnotationPanel
+                patientId={patientId}
+                studyId={studyId}
+                seriesId={seriesId}
+              />
+            )}
             {mode === VIEWER_MODES.VIEW && (
               <SeriesPanel
                 patientId={patientId}
