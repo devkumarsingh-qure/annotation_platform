@@ -1,28 +1,24 @@
-import { useNavigate } from "react-router-dom";
+import { useContext, type ComponentType } from "react";
+import { NavLink } from "react-router-dom";
 import { UI_PATHS } from "../../../utils/urls";
 import { AuthContext } from "../../../contexts/auth/authContext";
-import { useContext } from "react";
+import FolderIcon from "../../../icons/FolderIcon";
+import UserGroupIcon from "../../../icons/UserGroupIcon";
+import ClipboardListIcon from "../../../icons/ClipboardListIcon";
 
-type TabItem = { label: string; path: string };
+type TabItem = {
+  label: string;
+  path: string;
+  Icon: ComponentType<{ className: string }>;
+};
 
 const TABS: TabItem[] = [
-  {
-    label: "Projects",
-    path: UI_PATHS.PROJECTS(),
-  },
-  {
-    label: "Patients",
-    path: UI_PATHS.PATIENTS(),
-  },
-  {
-    label: "Members",
-    path: UI_PATHS.USERS(),
-  },
+  { label: "Projects", path: UI_PATHS.PROJECTS(), Icon: FolderIcon },
+  { label: "Patients", path: UI_PATHS.PATIENTS(), Icon: ClipboardListIcon },
+  { label: "Members", path: UI_PATHS.USERS(), Icon: UserGroupIcon },
 ];
 
 function LeftPanel() {
-  const navigate = useNavigate();
-
   const { user } = useContext(AuthContext);
 
   if (!user) {
@@ -30,36 +26,72 @@ function LeftPanel() {
   }
 
   return (
-    <nav
-      className="flex h-full flex-col bg-[color-mix(in_srgb,var(--surface)_65%,transparent)] backdrop-blur-[8px]"
-      aria-label="Workspace sections"
-    >
-      <ul className="flex flex-1 flex-col gap-0.5 px-3 py-4">
-        {TABS.map((tab) => {
-          if (!user.is_workspace_admin && tab.label === "Members") {
-            return null;
-          }
+    <div className="flex flex-col h-full rounded-xl border border-[var(--border)] overflow-hidden divide-y">
+      <div className="p-4 shrink-0 border-t border-[color-mix(in_srgb,var(--border)_60%,transparent)] bg-[color-mix(in_srgb,var(--surface-soft)_35%,transparent)]">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+          Signed in
+        </p>
+        <p
+          className="mt-1 truncate font-mono text-xs font-medium text-[var(--text)]"
+          title={user.email}
+        >
+          {user.username}
+        </p>
+        <p className="mt-1 truncate font-mono text-[10px] text-[var(--muted)] leading-tight">
+          {user.email}
+        </p>
+      </div>
+      <nav
+        className="relative flex h-full min-h-0 flex-col bg-[color-mix(in_srgb,var(--surface)_72%,transparent)] backdrop-blur-[12px]"
+        aria-label="Workspace sections"
+      >
+        <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3">
+          {TABS.map((tab) => {
+            if (!user.is_workspace_admin && tab.label === "Members") {
+              return null;
+            }
 
-          return (
-            <li key={tab.path}>
-              <button
-                type="button"
-                onClick={() => navigate(tab.path)}
-                className={`group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 text-[var(--text)] hover:bg-[var(--surface-soft)] hover:text-[var(--text)]`}
-              >
-                <span className="min-w-0 flex-1">{tab.label}</span>
-                <span
-                  className={`text-xs opacity-0 transition group-hover:opacity-100 text-[var(--muted)]`}
-                  aria-hidden
+            const Icon = tab.Icon;
+
+            return (
+              <li key={tab.path}>
+                <NavLink
+                  to={tab.path}
+                  end={false}
+                  className={({ isActive }) =>
+                    [
+                      "group relative flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition outline-none",
+                      "focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_srgb,var(--surface)_92%,transparent)]",
+                      isActive
+                        ? "border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent-soft)_65%,transparent)] font-semibold text-[var(--text)] shadow-[inset_3px_0_0_var(--accent)]"
+                        : "border border-transparent font-medium text-[var(--muted)] hover:border-[var(--border)]/80 hover:bg-[var(--surface-soft)] hover:text-[var(--text)]",
+                    ].join(" ")
+                  }
                 >
-                  →
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
+                  {({ isActive }) => (
+                    <>
+                      <span
+                        className={[
+                          "flex size-9 shrink-0 items-center justify-center rounded-lg border transition",
+                          isActive
+                            ? "border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-[var(--accent-strong)]"
+                            : "border-[color-mix(in_srgb,var(--border)_70%,transparent)] bg-[color-mix(in_srgb,var(--surface-soft)_50%,transparent)] text-[var(--muted)] group-hover:border-[var(--border)] group-hover:text-[var(--accent)]",
+                        ].join(" ")}
+                      >
+                        <Icon className="size-5" />
+                      </span>
+                      <span className="min-w-0 flex-1 leading-snug">
+                        {tab.label}
+                      </span>
+                    </>
+                  )}
+                </NavLink>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+    </div>
   );
 }
 

@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import AuthProvider from "./contexts/auth/AuthProvider";
 import Login from "./components/Login";
@@ -15,6 +15,7 @@ import UserDetails from "./components/Home/Users/UserDetails";
 import Patients from "./components/Home/Patients";
 import Patient from "./components/Home/Patients/Patient";
 import ProjectMember from "./components/Home/Projects/Project/ProjectMember";
+import { UI_PATHS } from "./utils/urls";
 
 const THEME_STORAGE_KEY = "theme";
 try {
@@ -83,6 +84,10 @@ export default function App() {
               <Routes>
                 <Route path={"login/"} element={<Login />} />
                 <Route path="/" element={<Home />}>
+                  <Route
+                    index
+                    element={<Navigate to={UI_PATHS.PROJECTS()} replace />}
+                  />
                   <Route path="projects" element={<Projects />}></Route>
                   <Route path="projects/:projectId" element={<Project />} />
                   <Route

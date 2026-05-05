@@ -15,7 +15,7 @@ function Home() {
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
       <div className="flex min-h-0 flex-1 overflow-hidden">
-        <div className="w-[15%] shrink-0 border-r border-[var(--border)]">
+        <div className="w-[15%] shrink-0 p-6">
           <LeftPanel />
         </div>
 
