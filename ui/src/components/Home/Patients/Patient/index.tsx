@@ -1,45 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import EyeIcon from "../../../../icons/EyeIcon";
-//import PenIcon from "../../../icons/PenIcon";
 import type { PatientDetail } from "../../../../types/Patient";
 import apiClient from "../../../../utils/apiClient";
 import { toastError, toastSuccess } from "../../../../utils/toast";
 import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import { AuthContext } from "../../../../contexts/auth/authContext";
-import { VIEWER_MODES } from "../../../../utils/constants";
-import PenIcon from "../../../../icons/PenIcon";
-
-function formatDateTime(iso: string) {
-  try {
-    return new Date(iso).toLocaleString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function formatDate(iso: string) {
-  try {
-    return new Date(iso).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-function display(value: string | null | undefined, fallback = "—") {
-  if (value == null || value === "") return fallback;
-  return value;
-}
+import { display, formatDate, formatDateTime } from "../../../../utils/format";
 
 function Patient() {
   const { patientId } = useParams();
@@ -278,18 +245,12 @@ function Patient() {
               <div className="mb-2 flex shrink-0 flex-col gap-0.5 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
-                    Studies &amp; series
+                    Studies {`(${patient.studies.length})`} &amp; series
                   </h2>
                   <p className="text-[11px] text-[var(--muted)]">
                     DICOM hierarchy for this patient
                   </p>
                 </div>
-                <p className="text-xs text-[var(--muted)] sm:text-sm">
-                  <span className="font-medium text-[var(--text)]">
-                    {patient.studies.length}
-                  </span>{" "}
-                  {patient.studies.length === 1 ? "study" : "studies"}
-                </p>
               </div>
 
               <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-contain rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_85%,transparent)] p-2 shadow-[inset_0_1px_0_0_color-mix(in_srgb,var(--border)_40%,transparent)] sm:p-2.5">
@@ -391,26 +352,12 @@ function Patient() {
                                             patientId,
                                             studyId: study.id,
                                             seriesId: s.id,
-                                            mode: VIEWER_MODES.VIEW,
                                           })}
                                           className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
                                           target="_blank"
                                         >
                                           <EyeIcon className="size-4 shrink-0" />
                                           View
-                                        </Link>
-                                        <Link
-                                          to={UI_PATHS.VIEWER({
-                                            patientId,
-                                            studyId: study.id,
-                                            seriesId: s.id,
-                                            mode: VIEWER_MODES.ANNOTATE,
-                                          })}
-                                          target="_blank"
-                                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
-                                        >
-                                          <PenIcon className="size-4 shrink-0" />
-                                          Annotate
                                         </Link>
                                       </div>
                                     </td>

@@ -17,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 class AnnotationSet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(
+        "annotation_platform.Project", on_delete=models.CASCADE
+    )
     series = models.ForeignKey(Series, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 

@@ -23,7 +23,7 @@ function SeriesPanel({
   onOpenMetadataExplorer,
 }: {
   patientId: string;
-  seriesId: string;
+  seriesId: string | null;
   onClickSeries: ({
     studyId,
     seriesId,
@@ -52,6 +52,15 @@ function SeriesPanel({
         setIsLoading(false);
       });
   }, [patientId]);
+
+  useEffect(() => {
+    if (studies.length > 0 && !seriesId) {
+      onClickSeries({
+        studyId: studies[0].id,
+        seriesId: studies[0].series[0].id,
+      });
+    }
+  }, [seriesId, studies]);
 
   return (
     <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-l border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px]">

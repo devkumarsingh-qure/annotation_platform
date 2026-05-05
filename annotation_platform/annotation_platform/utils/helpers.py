@@ -7,7 +7,7 @@ from authentication.models.user import User
 from annotation_platform.models.project import Project
 from dicom_manager.models import Patient
 from django.shortcuts import get_object_or_404
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 
 
 def check_for_admin(user: User) -> None:
@@ -16,12 +16,14 @@ def check_for_admin(user: User) -> None:
 
 
 def resolve_projects_for_user(
-    user: User, page: int, page_size: int
+    user: User, page: int, page_size: int, patient_id: Optional[int] = None
 ) -> Tuple[List[Project], int]:
     if user.is_workspace_admin:
         queryset = Project.objects.filter(workspace=user.workspace).order_by(
             "-created_at"
         )
+        if patient_id:
+            queryset = queryset.filter(patients__id=patient_id)
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.page(page)
         return page_obj.object_list, page_obj.paginator.count

@@ -105,7 +105,7 @@ export default function App() {
                   />
                 </Route>
                 <Route path="viewer/">
-                  <Route path=":patientId/studies/:studyId/series/:seriesId/">
+                  <Route path=":patientId">
                     <Route index element={<ViewerComponent />} />
                   </Route>
                 </Route>

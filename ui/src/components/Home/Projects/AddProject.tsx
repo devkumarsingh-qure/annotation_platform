@@ -26,13 +26,10 @@ function AddProject({ onCancel, onCreated }: AddProjectProps) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      const { data } = await apiClient.post<Project>(
-        API_PATHS.PROJECTS({ page: 0, page_size: 0 }),
-        {
-          name: name.trim(),
-          description: description.trim(),
-        },
-      );
+      const { data } = await apiClient.post<Project>(API_PATHS.PROJECTS(), {
+        name: name.trim(),
+        description: description.trim(),
+      });
       toastSuccess("Project created");
       onCreated(data);
       setName("");

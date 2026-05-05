@@ -50,8 +50,10 @@ class ProjectView(APIView):
                     {"detail": str(e)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
-            projects, total = resolve_projects_for_user(user, page, page_size)
+            patient_id = request.query_params.get("patient_id", None)
+            projects, total = resolve_projects_for_user(
+                user, page, page_size, patient_id
+            )
             return Response(
                 {
                     "total": total,

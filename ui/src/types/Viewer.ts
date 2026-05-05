@@ -20,6 +20,7 @@ export type InstanceDetail = {
 
 export type AnnotationDetails = {
   annotationUID: string;
+  label?: string;
   points: [number, number, number][];
   sliceIndex: number;
   toolName: string;

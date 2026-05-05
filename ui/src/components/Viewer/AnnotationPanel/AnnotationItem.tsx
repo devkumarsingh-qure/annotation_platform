@@ -35,10 +35,15 @@ function AnnotationItem({
     handleAnnotationDelete(annotation.annotationUID);
   };
 
+  const handleAnnotationClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    handleScrollToSlice();
+  };
+
   return (
     <div
       key={annotation.annotationUID}
-      onClick={handleScrollToSlice}
+      onClick={handleAnnotationClick}
       className="mx-2 mb-2 flex cursor-pointer items-center gap-3 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] p-2 px-3 shadow-sm transition hover:border-[var(--accent)]/45 hover:bg-[var(--accent-soft)] hover:shadow-md"
     >
       <div className="flex min-w-0 flex-1 items-center gap-2">

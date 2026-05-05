@@ -3,19 +3,19 @@ import { useEffect, useState } from "react";
 import apiClient from "../../utils/apiClient";
 import { API_PATHS, UI_PATHS } from "../../utils/urls";
 import { viewerProvider, Viewer, Toolbar } from "@qureai/react-dicom-viewer";
-//import AnnotationPanel from "./AnnotationPanel/index.tsx";
-import { VIEWER_MODES } from "../../utils/constants.ts";
-import SeriesPanel from "./SeriesPanel/index.tsx";
 import MetadataExplorer from "./MetadataExplorer/index.tsx";
 import Loading from "../Loading/index.tsx";
 import type { SeriesDetail } from "../../types/Viewer.ts";
 import AnnotationPanel from "./AnnotationPanel/index.tsx";
+import SeriesPanel from "./SeriesPanel/index.tsx";
 
 function ViewerComponent() {
   const navigate = useNavigate();
-  const { patientId, studyId, seriesId } = useParams();
+  const { patientId } = useParams();
   const [searchParams] = useSearchParams();
-  const mode = searchParams.get("mode");
+  const studyId = searchParams.get("studyId");
+  const seriesId = searchParams.get("seriesId");
+  const projectId = searchParams.get("projectId");
 
   const [isViewerInitialized, setIsViewerInitialized] = useState(false);
   const [isSeriesLoading, setIsSeriesLoading] = useState(true);
@@ -84,18 +84,28 @@ function ViewerComponent() {
         patientId: patientId,
         studyId: studyId,
         seriesId: seriesId,
-        mode: VIEWER_MODES.VIEW,
+        projectId: projectId ?? undefined,
       }),
     );
   };
 
-  if (!patientId || !studyId || !seriesId) {
+  if (!patientId) {
     return null;
   }
 
   return (
     <div className="flex h-full">
-      <div className="relative flex flex-col h-full w-0 grow shrink">
+      <div className="w-1/5">
+        {isViewerInitialized && (
+          <SeriesPanel
+            patientId={patientId}
+            seriesId={seriesId}
+            onClickSeries={onClickSeries}
+            onOpenMetadataExplorer={() => setIsMetadataExplorerOpen(true)}
+          />
+        )}
+      </div>
+      <div className="flex flex-col h-full w-0 grow shrink">
         <div className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
           <Toolbar />
         </div>
@@ -110,27 +120,21 @@ function ViewerComponent() {
         )}
       </div>
 
-      <div className="w-1/4">
-        {isViewerInitialized && (
-          <div className="h-full">
-            {mode === VIEWER_MODES.ANNOTATE && (
+      {projectId && studyId && seriesId && (
+        <div className="w-1/4">
+          {isViewerInitialized && (
+            <div className="h-full">
               <AnnotationPanel
+                isSeriesLoading={isSeriesLoading}
+                projectId={projectId}
                 patientId={patientId}
                 studyId={studyId}
                 seriesId={seriesId}
               />
-            )}
-            {mode === VIEWER_MODES.VIEW && (
-              <SeriesPanel
-                patientId={patientId}
-                seriesId={seriesId}
-                onClickSeries={onClickSeries}
-                onOpenMetadataExplorer={() => setIsMetadataExplorerOpen(true)}
-              />
-            )}
-          </div>
-        )}
-      </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {isViewerInitialized && isMetadataExplorerOpen && (
         <div className="fixed top-0 right-0 h-full w-full z-50 bg-black/50">

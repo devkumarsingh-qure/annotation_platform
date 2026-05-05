@@ -18,12 +18,20 @@ class AnnotationSetsView(APIView):
 
     def get(self, request, patient_id, study_id, series_id):
         user: User = request.user
+
+        project_id = request.query_params.get("project_id")
+        if project_id is None:
+            return Response(
+                {"detail": "Project ID not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         patient = get_object_or_404(Patient, workspace=user.workspace, id=patient_id)
         study = get_object_or_404(Study, patient=patient, id=study_id)
         series = get_object_or_404(Series, study=study, id=series_id)
 
         annotation_sets: List[AnnotationSet] = AnnotationSet.objects.filter(
-            user=user, series=series
+            user=user, series=series, project_id=project_id
         )
 
         return Response(
@@ -39,6 +47,13 @@ class AnnotationSetsView(APIView):
         )
 
     def post(self, request, patient_id, study_id, series_id):
+        project_id = request.query_params.get("project_id")
+        if project_id is None:
+            return Response(
+                {"detail": "Project ID not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         annotations_json = request.data.get("annotations_json")
         if annotations_json is None:
             return Response(
@@ -53,7 +68,7 @@ class AnnotationSetsView(APIView):
 
         with transaction.atomic():
             annotation_set: AnnotationSet = AnnotationSet.objects.create(
-                user=user, series=series
+                user=user, series=series, project_id=project_id
             )
 
             key = annotation_set.get_object_key()
@@ -69,16 +84,34 @@ class AnnotationSetView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, patient_id, study_id, series_id, annotation_set_id):
+        project_id = request.query_params.get("project_id")
+        if project_id is None:
+            return Response(
+                {"detail": "Project ID not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user: User = request.user
         patient = get_object_or_404(Patient, workspace=user.workspace, id=patient_id)
         study = get_object_or_404(Study, patient=patient, id=study_id)
         series = get_object_or_404(Series, study=study, id=series_id)
         annotation_set: AnnotationSet = get_object_or_404(
-            AnnotationSet, id=annotation_set_id, series=series, user=user
+            AnnotationSet,
+            id=annotation_set_id,
+            series=series,
+            user=user,
+            project_id=project_id,
         )
         return Response(annotation_set.serialize(), status=status.HTTP_200_OK)
 
     def put(self, request, patient_id, study_id, series_id, annotation_set_id):
+        project_id = request.query_params.get("project_id")
+        if project_id is None:
+            return Response(
+                {"detail": "Project ID not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         annotations_json = request.data.get("annotations_json")
         if annotations_json is None:
             return Response(
@@ -90,7 +123,11 @@ class AnnotationSetView(APIView):
         study = get_object_or_404(Study, patient=patient, id=study_id)
         series = get_object_or_404(Series, study=study, id=series_id)
         annotation_set: AnnotationSet = get_object_or_404(
-            AnnotationSet, id=annotation_set_id, series=series, user=user
+            AnnotationSet,
+            id=annotation_set_id,
+            series=series,
+            user=user,
+            project_id=project_id,
         )
         with transaction.atomic():
             key = annotation_set.get_object_key()
@@ -98,12 +135,23 @@ class AnnotationSetView(APIView):
         return Response(annotation_set.serialize(), status=status.HTTP_200_OK)
 
     def delete(self, request, patient_id, study_id, series_id, annotation_set_id):
+        project_id = request.query_params.get("project_id")
+        if project_id is None:
+            return Response(
+                {"detail": "Project ID not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         user: User = request.user
         patient = get_object_or_404(Patient, workspace=user.workspace, id=patient_id)
         study = get_object_or_404(Study, patient=patient, id=study_id)
         series = get_object_or_404(Series, study=study, id=series_id)
         annotation_set: AnnotationSet = get_object_or_404(
-            AnnotationSet, id=annotation_set_id, user=user, series=series
+            AnnotationSet,
+            id=annotation_set_id,
+            user=user,
+            series=series,
+            project_id=project_id,
         )
         with transaction.atomic():
             annotation_set.delete()

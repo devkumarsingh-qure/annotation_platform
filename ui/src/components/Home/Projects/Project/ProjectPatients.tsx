@@ -19,6 +19,7 @@ import PaginatedTable, {
 import { formatShortDate } from "../../../../utils/format";
 import { toastError, toastSuccess } from "../../../../utils/toast";
 import { AuthContext } from "../../../../contexts/auth/authContext";
+import PenIcon from "../../../../icons/PenIcon";
 
 const DEFAULT_PAGE_SIZE = 5;
 const PAGE_SIZE_OPTIONS = [5, 10, 20] as const;
@@ -141,33 +142,23 @@ function ProjectPatients() {
     setWorkspaceLoading(true);
 
     apiClient
-
       .get<PaginatedResponse<PatientRow>>(
         API_PATHS.PATIENTS({
           page: workspaceAddPage,
-
           page_size: workspaceAddPageSize,
         }),
       )
-
       .then(({ data }) => {
         if (cancelled) return;
-
         setWorkspaceAddRows(data.results);
-
         setWorkspaceAddTotal(data.total);
       })
-
       .catch(() => {
         if (cancelled) return;
-
         setWorkspaceAddRows([]);
-
         setWorkspaceAddTotal(0);
-
         toastError("Could not load workspace patients.");
       })
-
       .finally(() => {
         if (!cancelled) setWorkspaceLoading(false);
       });
@@ -179,7 +170,6 @@ function ProjectPatients() {
 
   const addTotalPages = Math.max(
     1,
-
     Math.ceil(workspaceAddTotal / workspaceAddPageSize),
   );
 
@@ -540,6 +530,9 @@ function ProjectPatients() {
                   <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] last:pr-4">
                     Created
                   </th>
+                  <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] last:pr-4">
+                    Actions
+                  </th>
                 </tr>
               </thead>
 
@@ -601,6 +594,19 @@ function ProjectPatients() {
 
                       <td className="px-3 py-2.5 text-center text-sm text-[var(--text)] last:pr-4">
                         {formatShortDate(p.created_at)}
+                      </td>
+                      <td className="px-3 py-2.5 text-center text-sm text-[var(--text)] last:pr-4">
+                        <Link
+                          to={UI_PATHS.VIEWER({
+                            patientId: p.id,
+                            projectId: projectId,
+                          })}
+                          target="_blank"
+                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
+                        >
+                          <PenIcon className="size-4 shrink-0" />
+                          Annotate
+                        </Link>
                       </td>
                     </tr>
                   ))

@@ -14,8 +14,20 @@ const API_PATHS = {
   UPLOAD: () => {
     return "/upload/";
   },
-  PROJECTS: ({ page, page_size }: { page: number; page_size: number }) => {
-    return `/projects/?page=${page}&page_size=${page_size}`;
+  PROJECTS: (
+    {
+      page,
+      page_size,
+    }: {
+      page: number;
+      page_size: number;
+    } = {
+      page: 0,
+      page_size: 0,
+    },
+    patient_id: string = "",
+  ) => {
+    return `/projects/?page=${page}&page_size=${page_size}${patient_id ? `&patient_id=${patient_id}` : ""}`;
   },
   PROJECT: (project_id: string) => {
     return `/projects/${project_id}/`;
@@ -48,19 +60,21 @@ const API_PATHS = {
     return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/`;
   },
   ANNOTATIONS_FOR_SERIES: (
+    projectId: string,
     patientId: string,
     studyId: string,
     seriesId: string,
   ) => {
-    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/`;
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/?project_id=${projectId}`;
   },
   ANNOTATION_SET: (
+    projectId: string,
     patientId: string,
     studyId: string,
     seriesId: string,
     annotationSetId: string,
   ) => {
-    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/`;
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/?project_id=${projectId}`;
   },
 };
 
@@ -102,14 +116,14 @@ const UI_PATHS = {
     patientId,
     studyId,
     seriesId,
-    mode,
+    projectId,
   }: {
     patientId: string;
-    studyId: string | number;
-    seriesId: string | number;
-    mode: string;
+    studyId?: string;
+    seriesId?: string;
+    projectId?: string;
   }) => {
-    return `/viewer/${patientId}/studies/${studyId}/series/${seriesId}/?mode=${encodeURIComponent(mode)}`;
+    return `/viewer/${patientId}?${studyId ? `studyId=${studyId}` : ""}${seriesId ? `&seriesId=${seriesId}` : ""}${projectId ? `&projectId=${projectId}` : ""}`;
   },
 };
 

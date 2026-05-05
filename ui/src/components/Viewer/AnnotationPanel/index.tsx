@@ -14,10 +14,14 @@ import type {
 } from "../../../types/Viewer";
 
 function AnnotationPanel({
+  isSeriesLoading,
+  projectId,
   patientId,
   studyId,
   seriesId,
 }: {
+  isSeriesLoading: boolean;
+  projectId: string;
   patientId: string;
   studyId: string;
   seriesId: string;
@@ -33,15 +37,15 @@ function AnnotationPanel({
   >(null);
 
   useEffect(() => {
-    if (!patientId || !studyId || !seriesId) {
+    if (!projectId || !patientId || !studyId || !seriesId) {
       return;
     }
     fetchAnnotationSets();
-  }, [patientId, studyId, seriesId]);
+  }, [projectId, patientId, studyId, seriesId]);
 
   const fetchAnnotationSets = async () => {
     const { data } = await apiClient.get(
-      API_PATHS.ANNOTATIONS_FOR_SERIES(patientId, studyId, seriesId),
+      API_PATHS.ANNOTATIONS_FOR_SERIES(projectId, patientId, studyId, seriesId),
     );
     setAnnotationSets(data);
     setIsLoading(false);
@@ -53,7 +57,13 @@ function AnnotationPanel({
     const {
       data: { url },
     } = await apiClient.get(
-      API_PATHS.ANNOTATION_SET(patientId, studyId, seriesId, annotationSetId),
+      API_PATHS.ANNOTATION_SET(
+        projectId,
+        patientId,
+        studyId,
+        seriesId,
+        annotationSetId,
+      ),
     );
     const annotations = await (await fetch(url)).json();
     const isValid = validateAnnotationsJSON(annotations);
@@ -130,7 +140,12 @@ function AnnotationPanel({
       const {
         data: { id },
       } = await apiClient.post(
-        API_PATHS.ANNOTATIONS_FOR_SERIES(patientId, studyId, seriesId),
+        API_PATHS.ANNOTATIONS_FOR_SERIES(
+          projectId,
+          patientId,
+          studyId,
+          seriesId,
+        ),
         data,
       );
       setActiveAnnotationSetId(String(id));
@@ -139,6 +154,7 @@ function AnnotationPanel({
         data: { id },
       } = await apiClient.put(
         API_PATHS.ANNOTATION_SET(
+          projectId,
           patientId,
           studyId,
           seriesId,
@@ -153,7 +169,13 @@ function AnnotationPanel({
 
   const handleDeleteAnnotationSet = async (annotationSetId: string) => {
     await apiClient.delete(
-      API_PATHS.ANNOTATION_SET(patientId, studyId, seriesId, annotationSetId),
+      API_PATHS.ANNOTATION_SET(
+        projectId,
+        patientId,
+        studyId,
+        seriesId,
+        annotationSetId,
+      ),
     );
     await fetchAnnotationSets();
   };
@@ -223,6 +245,14 @@ function AnnotationPanel({
     };
     reader.readAsText(file);
   };
+
+  if (isSeriesLoading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <Loading size="lg" />
+      </div>
+    );
+  }
 
   return (
     <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
