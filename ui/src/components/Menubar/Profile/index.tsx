@@ -14,12 +14,12 @@ function Profile() {
         <div className="relative flex h-full items-center">
             <button
                 type="button"
-                className="flex cursor-pointer items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-soft)] p-1 text-[var(--muted)] transition hover:text-[var(--text)]"
+                className="flex size-10 cursor-pointer items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--accent)_28%,var(--border))] hover:text-[var(--text)]"
                 aria-expanded={isOpen}
                 aria-haspopup="true"
                 onClick={() => setIsOpen(!isOpen)}
             >
-                <ProfileIcon className="size-6 stroke-1" />
+                <ProfileIcon className="size-[1.375rem] stroke-1" />
             </button>
 
             {isOpen && (

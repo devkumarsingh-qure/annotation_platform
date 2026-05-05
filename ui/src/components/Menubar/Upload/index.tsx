@@ -6,13 +6,13 @@ function Upload() {
     const { setIsFileUploadOpen } = useContext(ModalContext);
     
     return (
-        <div className="flex items-center justify-center h-full">
+        <div className="flex h-full items-center">
             <button
                 type="button"
-                className="inline-flex h-1/2 w-full cursor-pointer items-center gap-2 rounded-md border border-[var(--accent)]/40 bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3.5 text-xs font-medium text-white shadow-sm"
+                className="inline-flex h-10 cursor-pointer items-center gap-2 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_40%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_-14px_color-mix(in_srgb,var(--accent-strong)_55%,transparent)] transition hover:brightness-[1.05] active:translate-y-px active:brightness-95"
                 onClick={() => setIsFileUploadOpen(true)}
             >
-                <UploadIcon className="size-4 shrink-0 opacity-95" />
+                <UploadIcon className="size-[1.125rem] shrink-0 opacity-95" />
                 <span>Upload</span>
             </button>
         </div>

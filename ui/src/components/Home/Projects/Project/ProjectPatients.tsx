@@ -4,7 +4,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -51,7 +50,8 @@ function ProjectPatients() {
   const [selectedAddIds, setSelectedAddIds] = useState<string[]>([]);
   const [addBusy, setAddBusy] = useState(false);
 
-  const removeHeaderRef = useRef<HTMLInputElement>(null);
+  const [assignedPage, setAssignedPage] = useState(1);
+  const [assignedPageSize, setAssignedPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   const selectedRemoveSet = useMemo(
     () => new Set(patientsToRemove),
@@ -121,20 +121,6 @@ function ProjectPatients() {
   }, [addMode, canManage, exitAddMode]);
 
   useEffect(() => {
-    const el = removeHeaderRef.current;
-
-    if (!el || addMode || !canManage) return;
-
-    const n = patients.length;
-
-    const sel = selectedRemoveSet.size;
-
-    el.indeterminate = n > 0 && sel > 0 && sel < n;
-
-    el.checked = n > 0 && sel === n;
-  }, [addMode, canManage, patients, selectedRemoveSet]);
-
-  useEffect(() => {
     if (!addMode || !canManage) return;
 
     let cancelled = false;
@@ -201,14 +187,6 @@ function ProjectPatients() {
     );
   };
 
-  const toggleSelectAllRemove = () => {
-    if (selectedRemoveSet.size === patients.length) {
-      setPatientsToRemove([]);
-    } else {
-      setPatientsToRemove(patients.map((p) => p.id));
-    }
-  };
-
   const cancelRemoval = () => setPatientsToRemove([]);
 
   const toggleAddRow = (id: string) => {
@@ -232,6 +210,120 @@ function ProjectPatients() {
     },
 
     [],
+  );
+
+  const toggleRemovePageSelection = useCallback(
+    (rowIds: string[], select: boolean) => {
+      setPatientsToRemove((prev) => {
+        const next = new Set(prev);
+        for (const id of rowIds) {
+          if (select) next.add(id);
+          else next.delete(id);
+        }
+        return Array.from(next);
+      });
+    },
+    [],
+  );
+
+  const assignedTotal = patients.length;
+  const assignedTotalPages = Math.max(
+    1,
+    Math.ceil(assignedTotal / assignedPageSize),
+  );
+  const safeAssignedPage = Math.min(
+    Math.max(1, assignedPage),
+    assignedTotalPages,
+  );
+
+  useEffect(() => {
+    if (assignedPage > assignedTotalPages) {
+      setAssignedPage(assignedTotalPages);
+    }
+  }, [assignedPage, assignedTotalPages]);
+
+  const assignedRows = useMemo(() => {
+    const start = (safeAssignedPage - 1) * assignedPageSize;
+    return patients.slice(start, start + assignedPageSize);
+  }, [patients, safeAssignedPage, assignedPageSize]);
+
+  const handleAssignedPageSizeChange = useCallback((n: number) => {
+    setAssignedPageSize(n);
+    setAssignedPage(1);
+  }, []);
+
+  const patientIds = useMemo(() => patients.map((p) => p.id), [patients]);
+
+  const assignedColumns: PaginatedTableColumn<PatientRow>[] = useMemo(
+    () => [
+      {
+        id: "patientId",
+        header: "Patient ID",
+        cell: (p: PatientRow) => (
+          <Link
+            to={UI_PATHS.PATIENT(p.id)}
+            className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
+            title={p.PatientID}
+          >
+            {p.PatientID}
+          </Link>
+        ),
+      },
+      {
+        id: "name",
+        header: "Name",
+        cell: (p: PatientRow) => (
+          <span
+            className="block min-w-0 w-full truncate text-[var(--text)]"
+            title={p.PatientName ?? undefined}
+          >
+            {display(p.PatientName)}
+          </span>
+        ),
+      },
+      {
+        id: "sex",
+        header: "Sex",
+        cell: (p: PatientRow) => (
+          <span className="text-[var(--muted)]">{display(p.PatientSex)}</span>
+        ),
+      },
+      {
+        id: "age",
+        header: "Age",
+        cell: (p: PatientRow) => (
+          <span className="text-[var(--muted)]">{display(p.PatientAge)}</span>
+        ),
+      },
+      {
+        id: "created",
+        header: "Created",
+        cell: (p: PatientRow) => (
+          <span className="text-[var(--muted)]">
+            {formatShortDate(p.created_at)}
+          </span>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: (p: PatientRow) =>
+          projectId ? (
+            <Link
+              to={UI_PATHS.VIEWER({
+                patientId: p.id,
+                projectId: projectId,
+              })}
+              target="_blank"
+              className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
+            >
+              <PenIcon className="size-4 shrink-0" />
+              Annotate
+            </Link>
+          ) : null,
+      },
+    ],
+    [projectId],
   );
 
   const addModeColumns: PaginatedTableColumn<PatientRow>[] = useMemo(
@@ -281,7 +373,7 @@ function ProjectPatients() {
 
       {
         id: "created",
-        header: "—",
+        header: "Created",
         cell: (p: PatientRow) => (
           <span className="text-[var(--muted)]">
             {formatShortDate(p.created_at)}
@@ -359,8 +451,6 @@ function ProjectPatients() {
       setRemoveBusy(false);
     }
   };
-
-  const colCount = canManage ? 6 : 5;
 
   if (!projectId) {
     return (
@@ -467,10 +557,12 @@ function ProjectPatients() {
         ) : null}
       </div>
 
-      <div className="mt-6 flex min-h-0 grow flex-col overflow-hidden rounded-xl border border-[var(--border)] bg-[color:var(--surface)]">
+      <div className="mt-6 flex min-h-0 min-w-0 grow flex-col">
         {!addMode && isPatientsLoading ? (
-          <div className="flex h-full items-center justify-center py-12">
-            <Loading size="lg" />
+          <div className="flex min-h-0 grow flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] isolate">
+            <div className="flex min-h-48 flex-1 items-center justify-center px-4 py-12 sm:min-h-64">
+              <Loading size="lg" />
+            </div>
           </div>
         ) : addMode && canManage ? (
           <PaginatedTable
@@ -494,126 +586,32 @@ function ProjectPatients() {
             }}
           />
         ) : (
-          <div className="max-h-full overflow-x-auto overflow-y-auto">
-            <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
-              <thead>
-                <tr className="sticky top-0 z-[1] border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_92%,transparent)] backdrop-blur-sm">
-                  {canManage ? (
-                    <th className="w-12 px-3 py-2.5 text-center first:pl-4">
-                      <input
-                        ref={removeHeaderRef}
-                        type="checkbox"
-                        disabled={patients.length === 0 || removeBusy}
-                        onChange={toggleSelectAllRemove}
-                        className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
-                        aria-label="Select all patients"
-                      />
-                    </th>
-                  ) : null}
-
-                  <th className="px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                    Patient ID
-                  </th>
-
-                  <th className="px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                    Name
-                  </th>
-
-                  <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                    Sex
-                  </th>
-
-                  <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                    Age
-                  </th>
-
-                  <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] last:pr-4">
-                    Created
-                  </th>
-                  <th className="px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] last:pr-4">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {patients.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={colCount}
-                      className="px-4 py-14 text-center text-sm text-[var(--muted)]"
-                    >
-                      No patients on this project yet.
-                    </td>
-                  </tr>
-                ) : (
-                  patients.map((p) => (
-                    <tr
-                      key={p.id}
-                      className="border-b border-[var(--border)] transition last:border-b-0 hover:bg-[color-mix(in_srgb,var(--surface-soft)_55%,transparent)]"
-                    >
-                      {canManage ? (
-                        <td className="px-3 py-2.5 text-center align-middle first:pl-4">
-                          <input
-                            type="checkbox"
-                            checked={selectedRemoveSet.has(p.id)}
-                            onChange={() => toggleRemoveRow(p.id)}
-                            disabled={removeBusy}
-                            className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
-                            aria-label={`Select ${p.PatientID}`}
-                          />
-                        </td>
-                      ) : null}
-
-                      <td className="max-w-0 min-w-0 overflow-hidden px-3 py-2.5 font-medium">
-                        <Link
-                          to={UI_PATHS.PATIENT(p.id)}
-                          className="block min-w-0 truncate text-[var(--accent)] underline-offset-2 hover:underline"
-                          title={p.PatientID}
-                        >
-                          {p.PatientID}
-                        </Link>
-                      </td>
-
-                      <td className="max-w-0 min-w-0 overflow-hidden px-3 py-2.5 text-[var(--text)]">
-                        <span
-                          className="block min-w-0 truncate"
-                          title={p.PatientName ?? undefined}
-                        >
-                          {display(p.PatientName)}
-                        </span>
-                      </td>
-
-                      <td className="px-3 py-2.5 text-center text-sm text-[var(--muted)]">
-                        {display(p.PatientSex)}
-                      </td>
-
-                      <td className="px-3 py-2.5 text-center text-sm text-[var(--muted)]">
-                        {display(p.PatientAge)}
-                      </td>
-
-                      <td className="px-3 py-2.5 text-center text-sm text-[var(--text)] last:pr-4">
-                        {formatShortDate(p.created_at)}
-                      </td>
-                      <td className="px-3 py-2.5 text-center text-sm text-[var(--text)] last:pr-4">
-                        <Link
-                          to={UI_PATHS.VIEWER({
-                            patientId: p.id,
-                            projectId: projectId,
-                          })}
-                          target="_blank"
-                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
-                        >
-                          <PenIcon className="size-4 shrink-0" />
-                          Annotate
-                        </Link>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+          <PaginatedTable
+            isLoading={false}
+            columns={assignedColumns}
+            rows={assignedRows}
+            getRowId={(row) => row.id}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            pagination={{
+              page: safeAssignedPage,
+              pageSize: assignedPageSize,
+              total: assignedTotal,
+              onPageChange: setAssignedPage,
+              onPageSizeChange: handleAssignedPageSizeChange,
+            }}
+            selection={
+              canManage
+                ? {
+                    selectedIds: selectedRemoveSet,
+                    onToggleRow: toggleRemoveRow,
+                    onTogglePageRows: toggleRemovePageSelection,
+                    headerToggleIds: patientIds,
+                    disabled: removeBusy,
+                  }
+                : undefined
+            }
+            emptyMessage="No patients on this project yet."
+          />
         )}
       </div>
     </div>

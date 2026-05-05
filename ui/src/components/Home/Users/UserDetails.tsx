@@ -69,7 +69,7 @@ function UserDetails() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full max-w-5xl flex-1 flex-col overflow-y-auto p-6">
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col overflow-y-auto p-6">
         <nav
           className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]"
           aria-label="Breadcrumb"

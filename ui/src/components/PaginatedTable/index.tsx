@@ -22,6 +22,8 @@ export type PaginatedTableSelection = {
   onToggleRow: (id: string) => void;
   onTogglePageRows: (rowIds: string[], select: boolean) => void;
   disabled?: boolean;
+  /** When set, the header checkbox toggles these ids (e.g. the full dataset) instead of only the current page. */
+  headerToggleIds?: readonly string[];
 };
 
 export type PaginatedTableProps<T> = {
@@ -32,6 +34,8 @@ export type PaginatedTableProps<T> = {
   pagination: PaginatedTablePagination;
   pageSizeOptions: readonly number[];
   selection?: PaginatedTableSelection;
+  /** Shown when not loading and `rows.length === 0`. */
+  emptyMessage?: ReactNode;
 };
 
 const thBase =
@@ -42,6 +46,8 @@ const tdBase =
   "max-w-0 min-w-0 px-3 py-2.5 text-center align-top text-[var(--text)] first:pl-4 last:pr-4 overflow-hidden";
 const tdSelect =
   "w-12 px-3 py-2.5 text-center align-middle text-[var(--text)] first:pl-4 overflow-hidden";
+const thNo = `${thBase} w-14 min-w-[3.25rem]`;
+const tdNo = `${tdBase} w-14 min-w-[3.25rem] text-[var(--muted)] tabular-nums`;
 
 const pageSizeSelectClass =
   "min-h-9 w-full cursor-pointer appearance-none rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] py-1 pl-2.5 pr-8 text-xs font-medium text-[var(--text)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 disabled:cursor-not-allowed disabled:opacity-60";
@@ -54,6 +60,7 @@ function PaginatedTable<T>({
   pagination,
   pageSizeOptions,
   selection,
+  emptyMessage = "No rows to display.",
 }: PaginatedTableProps<T>) {
   const { page, pageSize, total, onPageChange, onPageSizeChange } = pagination;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -63,28 +70,30 @@ function PaginatedTable<T>({
 
   const selectHeaderRef = useRef<HTMLInputElement>(null);
   const rowIdsOnPage = rows.map(getRowId);
-  const selectedInView = selection
-    ? rowIdsOnPage.filter((id) => selection.selectedIds.has(id)).length
-    : 0;
-  const nVisible = rowIdsOnPage.length;
+  const headerScopeIds = selection?.headerToggleIds ?? rowIdsOnPage;
+  const nHeaderScope = selection ? headerScopeIds.length : 0;
 
   useEffect(() => {
     if (!selection) return;
     const el = selectHeaderRef.current;
     if (!el) return;
-    el.indeterminate =
-      nVisible > 0 && selectedInView > 0 && selectedInView < nVisible;
-    el.checked = nVisible > 0 && selectedInView === nVisible;
-  }, [selection, nVisible, selectedInView]);
+    const nScope = headerScopeIds.length;
+    const selScope = headerScopeIds.filter((id) =>
+      selection.selectedIds.has(id),
+    ).length;
+    el.indeterminate = nScope > 0 && selScope > 0 && selScope < nScope;
+    el.checked = nScope > 0 && selScope === nScope;
+  }, [selection, headerScopeIds]);
 
   const togglePageSelection = () => {
     if (!selection) return;
+    const ids = [...headerScopeIds];
     const allSelected =
-      nVisible > 0 && rowIdsOnPage.every((id) => selection.selectedIds.has(id));
-    selection.onTogglePageRows(rowIdsOnPage, !allSelected);
+      ids.length > 0 && ids.every((id) => selection.selectedIds.has(id));
+    selection.onTogglePageRows(ids, !allSelected);
   };
 
-  const colCount = columns.length + (selection ? 1 : 0);
+  const colCount = columns.length + (selection ? 1 : 0) + 1;
   const showPageSizeControl = pageSizeOptions.length > 1;
 
   const root =
@@ -110,12 +119,17 @@ function PaginatedTable<T>({
                   <input
                     ref={selectHeaderRef}
                     type="checkbox"
-                    disabled={selection.disabled || nVisible === 0 || isLoading}
+                    disabled={
+                      selection.disabled || nHeaderScope === 0 || isLoading
+                    }
                     onChange={togglePageSelection}
                     className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
                   />
                 </th>
               ) : null}
+              <th scope="col" className={thNo}>
+                No.
+              </th>
               {columns.map((col) => (
                 <th key={col.id} scope="col" className={thBase}>
                   {col.header}
@@ -130,13 +144,14 @@ function PaginatedTable<T>({
                   colSpan={colCount}
                   className="px-4 py-12 text-center text-sm text-[var(--muted)]"
                 >
-                  No rows to display.
+                  {emptyMessage}
                 </td>
               </tr>
             ) : null}
             {!isLoading &&
-              rows.map((row) => {
+              rows.map((row, rowIndex) => {
                 const id = getRowId(row);
+                const rowNo = (safePage - 1) * pageSize + rowIndex + 1;
                 return (
                   <tr
                     key={id}
@@ -153,6 +168,7 @@ function PaginatedTable<T>({
                         />
                       </td>
                     ) : null}
+                    <td className={tdNo}>{rowNo}</td>
                     {columns.map((col) => (
                       <td key={col.id} className={tdBase}>
                         {col.cell(row)}
