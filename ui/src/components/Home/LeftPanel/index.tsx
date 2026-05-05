@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { UI_PATHS } from "../../../utils/urls";
+import { AuthContext } from "../../../contexts/auth/authContext";
+import { useContext } from "react";
 
 type TabItem = { label: string; path: string };
 
@@ -21,6 +23,12 @@ const TABS: TabItem[] = [
 function LeftPanel() {
   const navigate = useNavigate();
 
+  const { user } = useContext(AuthContext);
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <nav
       className="flex h-full flex-col bg-[color-mix(in_srgb,var(--surface)_65%,transparent)] backdrop-blur-[8px]"
@@ -28,6 +36,10 @@ function LeftPanel() {
     >
       <ul className="flex flex-1 flex-col gap-0.5 px-3 py-4">
         {TABS.map((tab) => {
+          if (!user.is_workspace_admin && tab.label === "Members") {
+            return null;
+          }
+
           return (
             <li key={tab.path}>
               <button

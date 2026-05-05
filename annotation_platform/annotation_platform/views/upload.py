@@ -11,12 +11,17 @@ from rest_framework.views import APIView
 from annotation_platform.utils.upload_file import upload_file
 from dicom_manager.models import Instance, Patient, Series, Study
 from dicom_manager.utils.helpers import dicom_value_to_str
+from authentication.models import User
+from annotation_platform.utils.helpers import check_for_admin
 
 
 class UploadView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        user: User = request.user
+        check_for_admin(user)
+
         file_statuses = {}
         files = request.FILES.getlist("files")
         for file in files:

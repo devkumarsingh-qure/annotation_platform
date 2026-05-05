@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
 import PaginatedTable, {
   type PaginatedTableColumn,
@@ -7,6 +7,7 @@ import type { Project } from "../../../types/Project";
 import { formatShortDate } from "../../../utils/format";
 import { UI_PATHS } from "../../../utils/urls";
 import type { PaginatedResponse } from "../../../types/PaginatedResponse";
+import { AuthContext } from "../../../contexts/auth/authContext";
 
 type ProjectListProps = {
   onAddProject: () => void;
@@ -29,6 +30,8 @@ function ProjectList({
   onPageSizeChange,
   pageSizeOptions,
 }: ProjectListProps) {
+  const { user } = useContext(AuthContext);
+
   const total = projects.total;
   const pageRows = projects.results;
 
@@ -92,13 +95,15 @@ function ProjectList({
             Projects
           </h2>
         </div>
-        <button
-          type="button"
-          onClick={onAddProject}
-          className="min-h-10 shrink-0 cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-[1.06] active:translate-y-px active:brightness-95"
-        >
-          Add project
-        </button>
+        {user?.is_workspace_admin && (
+          <button
+            type="button"
+            onClick={onAddProject}
+            className="min-h-10 shrink-0 cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-[1.06] active:translate-y-px active:brightness-95"
+          >
+            Add project
+          </button>
+        )}
       </div>
 
       <PaginatedTable
