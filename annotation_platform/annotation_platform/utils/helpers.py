@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.db.models import Count
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from authentication.models.user import User
 from annotation_platform.models.project import Project
 from dicom_manager.models import Patient
 from django.shortcuts import get_object_or_404
-from typing import List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional
 
 
 def check_for_admin(user: User) -> None:
@@ -38,6 +39,16 @@ def resolve_project_for_user(user: User, project_id: int) -> Project:
     if user.is_workspace_admin:
         return get_object_or_404(Project, id=project_id, workspace=user.workspace)
     return get_object_or_404(Project, id=project_id, members=user)
+
+
+def assigned_patient_counts_for_project(project: Project) -> Dict[int, int]:
+    """User id -> count of patients in ProjectUserPatientsAssignment for this project."""
+    rows = (
+        ProjectUserPatientsAssignment.objects.filter(project=project)
+        .annotate(_n=Count("patients", distinct=True))
+        .values_list("user_id", "_n")
+    )
+    return {uid: n for uid, n in rows}
 
 
 def resolve_project_member(project: Project, user_id: str) -> User:

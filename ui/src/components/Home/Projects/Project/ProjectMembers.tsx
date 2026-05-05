@@ -267,6 +267,20 @@ function ProjectMembers() {
           ),
       },
       {
+        id: "patients",
+        header: "Patients",
+        cell: (m: User) => (
+          <span
+            className="tabular-nums text-[var(--text)]"
+            title="Patients assigned to this member for this project"
+          >
+            {typeof m.assigned_patient_count === "number"
+              ? m.assigned_patient_count
+              : "—"}
+          </span>
+        ),
+      },
+      {
         id: "joined",
         header: "Joined",
         cell: (m: User) => (

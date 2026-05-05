@@ -7,6 +7,7 @@ from typing import List, Optional
 from dicom_manager.models.patient import Patient
 from annotation_platform.models.project import Project
 from annotation_platform.utils.helpers import (
+    assigned_patient_counts_for_project,
     check_for_admin,
     resolve_project_member,
     resolve_project_patients_for_user,
@@ -79,16 +80,23 @@ class ProjectUsersView(APIView):
         check_for_admin(user)
 
         project = resolve_project_for_user(user, project_id)
+        counts = assigned_patient_counts_for_project(project)
 
         if user_id is None:
             members: List[User] = project.members.all()
             return Response(
-                [member.serialize() for member in members],
+                [
+                    m.serialize_for_project(counts.get(m.pk, 0))
+                    for m in members
+                ],
                 status=status.HTTP_200_OK,
             )
 
         member = resolve_project_member(project, user_id)
-        return Response(member.serialize(), status=status.HTTP_200_OK)
+        return Response(
+            member.serialize_for_project(counts.get(member.pk, 0)),
+            status=status.HTTP_200_OK,
+        )
 
     def post(self, request, project_id: int):
         user: User = request.user

@@ -22,3 +22,8 @@ class User(AbstractUser):
             "date_joined": self.date_joined,
             "last_login": self.last_login,
         }
+
+    def serialize_for_project(self, assigned_patient_count: int) -> Dict[str, Any]:
+        payload = self.serialize()
+        payload["assigned_patient_count"] = assigned_patient_count
+        return payload

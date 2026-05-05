@@ -10,4 +10,5 @@ export type User = {
   is_active: boolean;
   date_joined: string;
   last_login: string | null;
+  assigned_patient_count?: number;
 };
