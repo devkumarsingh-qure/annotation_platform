@@ -358,7 +358,6 @@ function ProjectMember() {
   }
 
   const memberLabel = memberLoading ? "…" : (member?.username ?? "");
-  console.log(member);
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden p-6">
