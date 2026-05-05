@@ -1,5 +1,8 @@
 from django.db import models
 from django.shortcuts import get_object_or_404
+from annotation_platform.models.project_user_patients_assignment import (
+    ProjectUserPatientsAssignment,
+)
 from annotation_platform.models.workspace import Workspace
 from authentication.models.user import User
 from dicom_manager.models.patient import Patient
@@ -38,14 +41,19 @@ class Project(models.Model):
         return self.members.get(id=user_id)
 
     def add_member(self, user_id: str):
-        user = get_object_or_404(User, id=user_id, workspace=self.workspace)
+        user: User = get_object_or_404(User, id=user_id, workspace=self.workspace)
+        if user.is_workspace_admin:
+            return
         self.members.add(user)
         self.save()
 
     def remove_member(self, user_id: str):
-        user = self.get_member(user_id)
-        self.members.remove(user)
-        self.save()
+        with transaction.atomic():
+            user = self.get_member(user_id)
+            ProjectUserPatientsAssignment.objects.filter(
+                project=self, user=user
+            ).delete()
+            self.members.remove(user)
 
     def add_members(self, user_ids: List[str]):
         with transaction.atomic():

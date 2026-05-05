@@ -2,14 +2,13 @@ from django.db import models
 from django.shortcuts import get_object_or_404
 from authentication.models.user import User
 from dicom_manager.models.patient import Patient
-from annotation_platform.models.project import Project
 from typing import List
 from django.db import transaction
 
 
 class ProjectUserPatientsAssignment(models.Model):
     project = models.ForeignKey(
-        Project,
+        "Project",
         on_delete=models.CASCADE,
         related_name="project_user_patients_assignments",
     )

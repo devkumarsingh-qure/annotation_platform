@@ -89,8 +89,8 @@ class WorkspaceUsersView(APIView):
                 )
             users = (
                 User.objects.filter(workspace=user.workspace)
-                .exclude(pk=user.pk)
-                .order_by("username")
+                .exclude(is_workspace_admin=True)
+                .order_by("-date_joined")
             )
             paginator = Paginator(users, page_size)
             page_obj = paginator.page(page)
