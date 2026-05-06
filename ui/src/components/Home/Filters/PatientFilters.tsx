@@ -1,15 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import ChevronDownIcon from "../../../icons/ChevronDownIcon";
-
-/** Single-line controls: fixed height aligns text and custom chevron. */
-const compactInputClass =
-  "h-8 w-full min-w-0 rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_90%,transparent)] px-2.5 text-[13px] leading-normal text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--accent)]/50 focus:ring-1 focus:ring-[var(--accent)]/25";
-
-const labelChipClass =
-  "shrink-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]";
-
-const SEARCH_DEBOUNCE_MS = 320;
+import FilterBar from "./common/FilterBar";
+import FilterSelect from "./common/FilterSelect";
+import {
+  COMPACT_INPUT_CLASS,
+  LABEL_CHIP_CLASS,
+  patchParams,
+} from "./common/filterPrimitives";
+import { useDebouncedSearchParam } from "./common/useDebouncedSearchParam";
 
 function parseAgeRange(ageRange: string): { min: string; max: string } {
   if (!ageRange.trim()) return { min: "", max: "" };
@@ -28,16 +26,6 @@ function serializeAgeRange(min: string, max: string): string {
   return `${a},${b}`;
 }
 
-function patchParams(
-  params: URLSearchParams,
-  patches: Record<string, string | null>,
-) {
-  for (const [key, val] of Object.entries(patches)) {
-    if (val == null || val === "") params.delete(key);
-    else params.set(key, val);
-  }
-}
-
 function PatientFilters() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFromUrl = searchParams.get("search") ?? "";
@@ -49,36 +37,8 @@ function PatientFilters() {
     [ageRangeFromUrl],
   );
 
-  const [searchDraft, setSearchDraft] = useState(searchFromUrl);
-  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    setSearchDraft(searchFromUrl);
-  }, [searchFromUrl]);
-
-  useEffect(() => {
-    if (debounceTimer.current !== null) {
-      clearTimeout(debounceTimer.current);
-    }
-
-    debounceTimer.current = setTimeout(() => {
-      debounceTimer.current = null;
-      if (searchDraft === searchFromUrl) return;
-      setSearchParams((prev) => {
-        const next = new URLSearchParams(prev);
-        patchParams(next, { search: searchDraft.trim() || null });
-        next.set("page", "1");
-        return next;
-      });
-    }, SEARCH_DEBOUNCE_MS);
-
-    return () => {
-      if (debounceTimer.current !== null) {
-        clearTimeout(debounceTimer.current);
-        debounceTimer.current = null;
-      }
-    };
-  }, [searchDraft, searchFromUrl, setSearchParams]);
+  const { searchDraft, setSearchDraft, flushDebounceTimer } =
+    useDebouncedSearchParam(searchFromUrl, setSearchParams);
 
   const syncFiltersAndResetPage = (patches: Record<string, string | null>) => {
     setSearchParams((prev) => {
@@ -108,10 +68,7 @@ function PatientFilters() {
     Boolean(genderFromUrl.trim());
 
   const handleClear = () => {
-    if (debounceTimer.current !== null) {
-      clearTimeout(debounceTimer.current);
-      debounceTimer.current = null;
-    }
+    flushDebounceTimer();
     setSearchDraft("");
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -124,72 +81,58 @@ function PatientFilters() {
   };
 
   return (
-    <section
-      aria-label="Patient filters"
-      className="rounded-lg border border-[color-mix(in_srgb,var(--border)_82%,transparent)] bg-[color-mix(in_srgb,var(--surface-strong)_88%,transparent)] px-3 py-2 backdrop-blur-sm"
-    >
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2 sm:min-w-[200px] sm:max-w-md">
-          <label htmlFor="patient-filter-search" className={labelChipClass}>
-            Search
-          </label>
-          <input
-            id="patient-filter-search"
-            type="search"
-            value={searchDraft}
-            onChange={(e) => setSearchDraft(e.target.value)}
-            className={compactInputClass}
-            placeholder="ID or name"
-            autoComplete="off"
-            spellCheck={false}
-          />
-        </div>
-
-        <AgeInlineFields
-          minAge={minAge}
-          maxAge={maxAge}
-          compactInputClass={compactInputClass}
-          onCommit={handleAgeBlur}
+    <FilterBar ariaLabel="Patient filters">
+      <div className="flex min-w-0 flex-1 items-center gap-2 sm:min-w-[200px] sm:max-w-md">
+        <label htmlFor="patient-filter-search" className={LABEL_CHIP_CLASS}>
+          Search
+        </label>
+        <input
+          id="patient-filter-search"
+          type="search"
+          value={searchDraft}
+          onChange={(e) => setSearchDraft(e.target.value)}
+          className={COMPACT_INPUT_CLASS}
+          placeholder="ID or name"
+          autoComplete="off"
+          spellCheck={false}
         />
-
-        <div className="flex items-center gap-2">
-          <label htmlFor="patient-filter-sex" className={labelChipClass}>
-            Sex
-          </label>
-          <div className="relative">
-            <select
-              id="patient-filter-sex"
-              value={genderFromUrl}
-              onChange={(e) =>
-                syncFiltersAndResetPage({
-                  gender: e.target.value || null,
-                })
-              }
-              className={`${compactInputClass} w-[5.75rem] shrink-0 cursor-pointer appearance-none pr-9`}
-            >
-              <option value="">Any</option>
-              <option value="M">M</option>
-              <option value="F">F</option>
-              <option value="O">O</option>
-            </select>
-            <ChevronDownIcon
-              aria-hidden
-              className="pointer-events-none absolute right-2 top-1/2 size-[1.0625rem] -translate-y-1/2 text-[var(--muted)]"
-            />
-          </div>
-        </div>
-
-        {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="h-8 shrink-0 cursor-pointer rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[color-mix(in_srgb,var(--surface-soft)_100%,transparent)]"
-          >
-            Clear
-          </button>
-        )}
       </div>
-    </section>
+
+      <AgeInlineFields
+        minAge={minAge}
+        maxAge={maxAge}
+        compactInputClass={COMPACT_INPUT_CLASS}
+        onCommit={handleAgeBlur}
+      />
+
+      <FilterSelect
+        id="patient-filter-sex"
+        label="Sex"
+        value={genderFromUrl}
+        options={[
+          { value: "", label: "Any" },
+          { value: "M", label: "M" },
+          { value: "F", label: "F" },
+          { value: "O", label: "O" },
+        ]}
+        onChange={(value) =>
+          syncFiltersAndResetPage({
+            gender: value || null,
+          })
+        }
+        selectWidthClass="w-[5.75rem]"
+      />
+
+      {hasActiveFilters && (
+        <button
+          type="button"
+          onClick={handleClear}
+          className="ml-auto h-8 shrink-0 cursor-pointer rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[color-mix(in_srgb,var(--surface-soft)_100%,transparent)]"
+        >
+          Clear
+        </button>
+      )}
+    </FilterBar>
   );
 }
 
@@ -223,7 +166,7 @@ function AgeInlineFields({
 
   return (
     <div className="flex items-center gap-2">
-      <span id="patient-filter-age-desc" className={labelChipClass}>
+      <span id="patient-filter-age-desc" className={LABEL_CHIP_CLASS}>
         Age
       </span>
       <label htmlFor="patient-filter-age-min" className="sr-only">

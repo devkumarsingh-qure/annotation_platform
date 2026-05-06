@@ -44,8 +44,26 @@ const API_PATHS = {
   PROJECT_USER_PATIENTS: (project_id: string, user_id: string) => {
     return `/projects/${project_id}/users/${user_id}/patients/`;
   },
-  USERS: ({ page, page_size }: { page: number; page_size: number }) => {
-    return `/users/?page=${page}&page_size=${page_size}`;
+  USERS: ({
+    page,
+    page_size,
+    search,
+    active,
+  }: {
+    page?: number;
+    page_size?: number;
+    search?: string;
+    /** `"true"` | `"false"` — omit for no filter */
+    active?: "true" | "false";
+  } = {}) => {
+    const qs = new URLSearchParams();
+    if (page != null) qs.set("page", String(page));
+    if (page_size != null) qs.set("page_size", String(page_size));
+    const s = search?.trim();
+    if (s) qs.set("search", s);
+    if (active === "true" || active === "false") qs.set("active", active);
+    const qstr = qs.toString();
+    return qstr ? `/users/?${qstr}` : `/users/`;
   },
   USER: (userId: string) => {
     return `/users/${userId}/`;

@@ -7,6 +7,7 @@ import { toastError, toastSuccess } from "../../../../utils/toast";
 import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import { AuthContext } from "../../../../contexts/auth/authContext";
 import { display, formatDate, formatDateTime } from "../../../../utils/format";
+import DetailPageLoadingShell from "../../DetailPageLoadingShell";
 
 function Patient() {
   const { patientId } = useParams();
@@ -78,27 +79,16 @@ function Patient() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[color-mix(in_srgb,var(--bg)_40%,transparent)]">
-      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden px-5 py-5 sm:px-8 sm:py-6">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="group mb-4 w-fit px-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
+      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-6">
+        <Link
+          to={UI_PATHS.PATIENTS()}
+          className="group mb-4 w-fit pr-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
         >
-          <span className="transition group-hover:-translate-x-0.5">←</span>
-          Back
-        </button>
+          <span className="transition group-hover:-translate-x-0.5">← Back to patients</span>
+        </Link>
 
         {loading ? (
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="h-16 w-16 shrink-0 animate-pulse rounded-2xl bg-[var(--surface-soft)]" />
-              <div className="flex-1 space-y-3 pt-1">
-                <div className="h-8 max-w-md animate-pulse rounded-lg bg-[var(--surface-soft)]" />
-                <div className="h-4 max-w-sm animate-pulse rounded bg-[var(--surface-soft)]" />
-              </div>
-            </div>
-            <div className="h-40 animate-pulse rounded-xl border border-[var(--border)] bg-[var(--surface-soft)]" />
-          </div>
+          <DetailPageLoadingShell />
         ) : error || !patient ? (
           <div className="rounded-2xl border border-[var(--border)] bg-[color:var(--surface)] p-10 text-center backdrop-blur-[10px]">
             <p className="text-[var(--danger)]">

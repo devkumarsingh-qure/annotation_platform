@@ -8,11 +8,14 @@ import PatientList from "./PatientList";
 import { useSearchParams } from "react-router-dom";
 import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "../../../utils/constants";
 import PatientFilters from "../Filters/PatientFilters";
+import PageOverviewHeader from "../PageOverviewHeader";
 
 function Patients() {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
-  const pageSize = parseInt(searchParams.get("page_size") || DEFAULT_PAGE_SIZE.toString());
+  const pageSize = parseInt(
+    searchParams.get("page_size") || DEFAULT_PAGE_SIZE.toString(),
+  );
   const search = searchParams.get("search") || "";
   const ageRange = searchParams.get("age_range") || "";
   const gender = searchParams.get("gender") || "";
@@ -73,17 +76,12 @@ function Patients() {
 
   return (
     <div className="h-full min-h-0 flex flex-col p-6">
-      <header className="shrink-0 border-b border-[color-mix(in_srgb,var(--border)_75%,transparent)]">
-        <div className="min-w-0 space-y-2">
-          <h2 className="text-2xl font-bold tracking-tight text-[var(--text)]">
-            Patients
-          </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-[color-mix(in_srgb,var(--muted)_95%,var(--text))]">
-          </p>
-        </div>
-      </header>
+      <PageOverviewHeader
+        title="Patients"
+        description="Browse workspace patients, filter by demographics, and open records for annotation and review."
+      />
 
-      <div className="my-3 shrink-0">
+      <div className="mb-3 shrink-0">
         <PatientFilters />
       </div>
 

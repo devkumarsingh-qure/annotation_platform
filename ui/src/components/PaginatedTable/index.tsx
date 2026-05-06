@@ -50,7 +50,13 @@ const thNo = `${thBase} w-14 min-w-[3.25rem]`;
 const tdNo = `${tdBase} w-14 min-w-[3.25rem] text-[var(--muted)] tabular-nums`;
 
 const pageSizeSelectClass =
-  "min-h-9 w-full cursor-pointer appearance-none rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] py-1 pl-2.5 pr-8 text-xs font-medium text-[var(--text)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 disabled:cursor-not-allowed disabled:opacity-60";
+  "min-h-9 w-full cursor-pointer appearance-none rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] py-1 pl-2.5 pr-8 text-xs font-medium text-[var(--text)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_55%,var(--surface))] disabled:bg-[color-mix(in_srgb,var(--surface)_92%,var(--surface-soft))] disabled:text-[var(--muted)] disabled:opacity-100";
+
+const selectionCheckboxClass =
+  "size-4 shrink-0 rounded border border-[var(--border)] text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--border)_65%,var(--muted))] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_75%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 disabled:grayscale";
+
+const paginationNavButtonClass =
+  "min-h-9 min-w-[4.5rem] rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100";
 
 function PaginatedTable<T>({
   isLoading,
@@ -123,7 +129,7 @@ function PaginatedTable<T>({
                       selection.disabled || nHeaderScope === 0 || isLoading
                     }
                     onChange={togglePageSelection}
-                    className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
+                    className={selectionCheckboxClass}
                   />
                 </th>
               ) : null}
@@ -152,10 +158,15 @@ function PaginatedTable<T>({
               rows.map((row, rowIndex) => {
                 const id = getRowId(row);
                 const rowNo = (safePage - 1) * pageSize + rowIndex + 1;
+                const selectionLocked = Boolean(selection?.disabled);
                 return (
                   <tr
                     key={id}
-                    className="border-b border-[var(--border)] transition last:border-b-0 hover:bg-[color-mix(in_srgb,var(--surface-soft)_55%,transparent)]"
+                    className={
+                      selectionLocked
+                        ? "border-b border-[var(--border)] transition last:border-b-0"
+                        : "border-b border-[var(--border)] transition last:border-b-0 hover:bg-[color-mix(in_srgb,var(--surface-soft)_55%,transparent)]"
+                    }
                   >
                     {selection ? (
                       <td className={tdSelect}>
@@ -163,8 +174,8 @@ function PaginatedTable<T>({
                           type="checkbox"
                           checked={selection.selectedIds.has(id)}
                           onChange={() => selection.onToggleRow(id)}
-                          disabled={selection.disabled}
-                          className="size-4 rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
+                          disabled={selection.disabled || isLoading}
+                          className={selectionCheckboxClass}
                         />
                       </td>
                     ) : null}
@@ -228,8 +239,8 @@ function PaginatedTable<T>({
             <button
               type="button"
               onClick={() => onPageChange(safePage - 1)}
-              disabled={safePage <= 1}
-              className="min-h-9 min-w-[4.5rem] rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={safePage <= 1 || isLoading}
+              className={paginationNavButtonClass}
             >
               Previous
             </button>
@@ -239,8 +250,8 @@ function PaginatedTable<T>({
             <button
               type="button"
               onClick={() => onPageChange(safePage + 1)}
-              disabled={safePage >= totalPages}
-              className="min-h-9 min-w-[4.5rem] rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              disabled={safePage >= totalPages || isLoading}
+              className={paginationNavButtonClass}
             >
               Next
             </button>

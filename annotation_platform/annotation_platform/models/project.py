@@ -45,6 +45,8 @@ class Project(models.Model):
         user: User = get_object_or_404(User, id=user_id, workspace=self.workspace)
         if user.is_workspace_admin:
             return
+        if not user.is_active:
+            return
         self.members.add(user)
         self.save()
 

@@ -1,15 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import apiClient from "../../../utils/apiClient";
 import { API_PATHS } from "../../../utils/urls";
 import type { Project } from "../../../types/Project";
+import PageOverviewHeader from "../PageOverviewHeader";
 import AddProject from "./AddProject";
 import ProjectList from "./ProjectList";
 import type { PaginatedResponse } from "../../../types/PaginatedResponse";
+import { AuthContext } from "../../../contexts/auth/authContext";
 
 const DEFAULT_PROJECTS_PAGE_SIZE = 5;
 const PROJECTS_PAGE_SIZE_OPTIONS = [5, 10, 20];
 
 function Projects() {
+  const { user } = useContext(AuthContext);
+
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -60,16 +64,34 @@ function Projects() {
           }}
         />
       ) : (
-        <ProjectList
-          onAddProject={() => setIsAddingProject(true)}
-          isProjectsLoading={isProjectsLoading}
-          projects={projects}
-          page={page}
-          setPage={setPage}
-          pageSize={pageSize}
-          onPageSizeChange={handlePageSizeChange}
-          pageSizeOptions={PROJECTS_PAGE_SIZE_OPTIONS}
-        />
+        <div className="flex h-full min-h-0 flex-col p-6">
+          <PageOverviewHeader
+            title="Projects"
+            description="Organize annotation workstreams, invite collaborators, and keep patient coverage easy to audit at a glance."
+            action={
+              user?.is_workspace_admin ? (
+                <button
+                  type="button"
+                  onClick={() => setIsAddingProject(true)}
+                  className="min-h-10 shrink-0 cursor-pointer self-start rounded-xl border border-[color-mix(in_srgb,var(--accent-strong)_40%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_-16px_color-mix(in_srgb,var(--accent-strong)_68%,transparent)] transition hover:brightness-[1.07] active:translate-y-px active:brightness-95"
+                >
+                  Add project
+                </button>
+              ) : undefined
+            }
+          />
+          <div className="min-h-0 flex-1">
+          <ProjectList
+            isProjectsLoading={isProjectsLoading}
+            projects={projects}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            onPageSizeChange={handlePageSizeChange}
+            pageSizeOptions={PROJECTS_PAGE_SIZE_OPTIONS}
+          />
+          </div>
+        </div>
       )}
     </div>
   );

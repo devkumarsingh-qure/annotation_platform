@@ -1,7 +1,9 @@
 from typing import Optional
+
 from django.contrib.auth import authenticate, login, logout
 from django.core.paginator import Paginator
 from django.db import IntegrityError
+from django.db.models import Q
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -87,11 +89,20 @@ class WorkspaceUsersView(APIView):
                     {"detail": str(e)},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            users = (
-                User.objects.filter(workspace=user.workspace)
-                .exclude(is_workspace_admin=True)
-                .order_by("-date_joined")
+            users = User.objects.filter(workspace=user.workspace).exclude(
+                is_workspace_admin=True
             )
+            search = (request.query_params.get("search") or "").strip()
+            if search:
+                users = users.filter(
+                    Q(username__icontains=search) | Q(email__icontains=search)
+                )
+            active_raw = (request.query_params.get("active") or "").strip().lower()
+            if active_raw in ("true", "1", "yes"):
+                users = users.filter(is_active=True)
+            elif active_raw in ("false", "0", "no"):
+                users = users.filter(is_active=False)
+            users = users.order_by("-date_joined")
             paginator = Paginator(users, page_size)
             page_obj = paginator.page(page)
             return Response(
@@ -138,6 +149,26 @@ class WorkspaceUsersView(APIView):
             user.serialize(),
             status=status.HTTP_201_CREATED,
         )
+
+    def patch(self, request, user_id: int):
+        user: User = request.user
+        check_for_admin(user)
+
+        user = get_object_or_404(User, id=user_id, workspace=user.workspace)
+
+        is_active = request.data.get("is_active")
+        email = request.data.get("email")
+        username = request.data.get("username")
+
+        if is_active is not None:
+            user.is_active = is_active
+        if email is not None:
+            user.email = email
+        if username is not None:
+            user.username = username
+
+        user.save()
+        return Response(user.serialize(), status=status.HTTP_200_OK)
 
     def delete(self, request, user_id: int):
         user: User = request.user

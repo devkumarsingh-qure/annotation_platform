@@ -25,7 +25,7 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-      await apiClient.post<User>(API_PATHS.USERS({ page: 0, page_size: 0 }), {
+      await apiClient.post<User>(API_PATHS.USERS(), {
         username: username.trim(),
         password,
         email: email.trim(),
@@ -53,23 +53,14 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
     <div className="flex h-full min-h-0 flex-col justify-center">
       <form
         onSubmit={handleSubmit}
-        className="flex h-full w-full flex-col space-y-6 p-6"
+        className="flex h-full w-full flex-col space-y-6"
       >
         <header className="flex">
           <div className="grow space-y-3">
             <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Members
-              </p>
-              <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
-                New user
-              </h2>
-              <p className="text-sm leading-relaxed text-[var(--muted)]">
-                Create a workspace account. New users are members unless you
-                promote them later.
-              </p>
-            </div>
+            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
+              New user
+            </h2>
           </div>
 
           <div className="">
