@@ -35,10 +35,12 @@ function ProjectList({
       {
         id: "name",
         header: "Name",
+        headerClassName: "text-left",
+        cellClassName: "text-left align-top min-w-[13rem] w-[46%]",
         cell: (row) => (
           <Link
             to={UI_PATHS.PROJECT(row.id)}
-            className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
+            className="block min-w-0 truncate text-[var(--accent)] underline-offset-2 hover:underline"
             title={row.name}
           >
             {row.name}
@@ -48,10 +50,13 @@ function ProjectList({
       {
         id: "description",
         header: "Description",
+        headerClassName: "text-left",
+        cellClassName:
+          "text-left align-top w-[28%] min-w-[8rem] max-w-[17rem]",
         cell: (row) =>
           row.description ? (
             <span
-              className="block min-w-0 w-full truncate text-[var(--muted)]"
+              className="block min-w-0 truncate text-[var(--muted)]"
               title={row.description}
             >
               {row.description}
@@ -63,16 +68,19 @@ function ProjectList({
       {
         id: "members",
         header: "Members",
+        cellClassName: "whitespace-nowrap",
         cell: (row) => row.member_count,
       },
       {
         id: "patients",
         header: "Patients",
+        cellClassName: "whitespace-nowrap",
         cell: (row) => row.patient_count,
       },
       {
         id: "created",
         header: "Created",
+        cellClassName: "whitespace-nowrap",
         cell: (row) => formatShortDate(row.created_at),
       },
     ],
@@ -83,6 +91,7 @@ function ProjectList({
     <div className="flex h-full flex-col overflow-hidden">
       <PaginatedTable
         isLoading={isProjectsLoading}
+        tableClassName="table-fixed"
         columns={columns}
         rows={pageRows}
         getRowId={(row) => row.id}

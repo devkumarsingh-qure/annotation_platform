@@ -7,6 +7,8 @@ export type PaginatedTableColumn<T> = {
   id: string;
   header: ReactNode;
   cell: (row: T) => ReactNode;
+  headerClassName?: string;
+  cellClassName?: string;
 };
 
 export type PaginatedTablePagination = {
@@ -36,6 +38,8 @@ export type PaginatedTableProps<T> = {
   selection?: PaginatedTableSelection;
   /** Shown when not loading and `rows.length === 0`. */
   emptyMessage?: ReactNode;
+  /** Appended to the `<table>` class (e.g. `table-fixed` for column width control). */
+  tableClassName?: string;
 };
 
 const thBase =
@@ -67,6 +71,7 @@ function PaginatedTable<T>({
   pageSizeOptions,
   selection,
   emptyMessage = "No rows to display.",
+  tableClassName,
 }: PaginatedTableProps<T>) {
   const { page, pageSize, total, onPageChange, onPageSizeChange } = pagination;
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
@@ -117,7 +122,9 @@ function PaginatedTable<T>({
             <Loading size="md" />
           </div>
         ) : null}
-        <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
+        <table
+          className={`w-full min-w-[36rem] border-collapse text-left text-sm${tableClassName ? ` ${tableClassName}` : ""}`}
+        >
           <thead>
             <tr className="sticky rounded-t-lg top-0 z-10 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_88%,transparent)] backdrop-blur-sm">
               {selection ? (
@@ -137,7 +144,15 @@ function PaginatedTable<T>({
                 No.
               </th>
               {columns.map((col) => (
-                <th key={col.id} scope="col" className={thBase}>
+                <th
+                  key={col.id}
+                  scope="col"
+                  className={
+                    col.headerClassName
+                      ? `${thBase} ${col.headerClassName}`
+                      : thBase
+                  }
+                >
                   {col.header}
                 </th>
               ))}
@@ -181,7 +196,14 @@ function PaginatedTable<T>({
                     ) : null}
                     <td className={tdNo}>{rowNo}</td>
                     {columns.map((col) => (
-                      <td key={col.id} className={tdBase}>
+                      <td
+                        key={col.id}
+                        className={
+                          col.cellClassName
+                            ? `${tdBase} ${col.cellClassName}`
+                            : tdBase
+                        }
+                      >
                         {col.cell(row)}
                       </td>
                     ))}
