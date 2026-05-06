@@ -4,23 +4,28 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import type { Project as ProjectType } from "../../../../types/Project";
 import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import apiClient from "../../../../utils/apiClient";
+import { toastError, toastSuccess } from "../../../../utils/toast";
 import { formatShortDate } from "../../../../utils/format";
 import { statBlock } from "./StatBlock";
 import ProjectError from "./ProjectError";
-import Loading from "../../../Loading";
 import { AuthContext } from "../../../../contexts/auth/authContext";
 import UserGroupIcon from "../../../../icons/UserGroupIcon";
 import FolderIcon from "../../../../icons/FolderIcon";
+import DetailPageLoadingShell from "../../DetailPageLoadingShell";
 
 function Project() {
   const navigate = useNavigate();
   const { projectId } = useParams();
 
   const { user } = useContext(AuthContext);
+  const canDelete = Boolean(user?.is_workspace_admin);
 
   const [isLoading, setIsLoading] = useState(!!projectId);
   const [project, setProject] = useState<ProjectType | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchProject = useCallback(() => {
     if (!projectId) {
@@ -52,6 +57,33 @@ function Project() {
     fetchProject();
   }, [fetchProject]);
 
+  useEffect(() => {
+    setConfirmDelete(false);
+    setDeleteError(null);
+  }, [projectId]);
+
+  const handleDelete = async () => {
+    if (!projectId || deleting) return;
+    setDeleteError(null);
+    setDeleting(true);
+    try {
+      await apiClient.delete(API_PATHS.PROJECT(projectId));
+      toastSuccess("Project deleted.");
+      navigate(UI_PATHS.PROJECTS());
+    } catch (err) {
+      let msg = "Could not delete project. Try again or check permissions.";
+      if (axios.isAxiosError(err) && err.response?.data) {
+        const d = err.response.data as { detail?: unknown };
+        if (typeof d.detail === "string") msg = d.detail;
+      }
+      setDeleteError(msg);
+      toastError(msg);
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  };
+
   if (!projectId) {
     return (
       <div className="flex h-full items-center justify-center p-6">
@@ -81,11 +113,7 @@ function Project() {
           </span>
         </nav>
 
-        {isLoading && (
-          <div className="min-h-0 flex-1 overflow-y-auto">
-            <Loading size="lg" />
-          </div>
-        )}
+        {isLoading && <DetailPageLoadingShell />}
 
         {!isLoading && loadError && (
           <div className="min-h-0 flex-1 overflow-y-auto">
@@ -95,14 +123,71 @@ function Project() {
 
         {!isLoading && project && !loadError && (
           <div className="flex w-full min-h-0 flex-1 flex-col gap-8 overflow-hidden">
-            <header className="shrink-0 space-y-3">
-              <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-                Project
-              </p>
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
-                {project.name}
-              </h1>
+            <header
+              className={`shrink-0 space-y-3 border-b border-[var(--border)] pb-4${confirmDelete ? " relative z-40" : ""}`}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div className="space-y-3">
+                  <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                    Project
+                  </p>
+                  <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
+                    {project.name}
+                  </h1>
+                </div>
+                {canDelete ? (
+                  <div className="relative isolate flex min-h-[2.75rem] shrink-0 flex-col items-stretch sm:items-end">
+                    {!confirmDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setConfirmDelete(true);
+                          setDeleteError(null);
+                        }}
+                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end"
+                      >
+                        Delete project
+                      </button>
+                    ) : (
+                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-2rem,22rem)] flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-lg">
+                        <p className="text-sm text-[var(--text)]">
+                          Delete{" "}
+                          <span className="font-semibold">{project.name}</span>{" "}
+                          from this workspace? Member and patient links for this
+                          project will be removed. This cannot be undone.
+                        </p>
+                        {deleteError ? (
+                          <p
+                            className="text-xs text-[var(--danger)]"
+                            role="alert"
+                          >
+                            {deleteError}
+                          </p>
+                        ) : null}
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            disabled={deleting}
+                            onClick={() => setConfirmDelete(false)}
+                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={deleting}
+                            onClick={() => void handleDelete()}
+                            className="rounded-lg grow bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                          >
+                            {deleting ? "Deleting…" : "Delete permanently"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : null}
+              </div>
             </header>
 
             <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-4">

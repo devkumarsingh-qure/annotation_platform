@@ -66,6 +66,14 @@ class ProjectView(APIView):
         project = resolve_project_for_user(user, project_id)
         return Response(project.serialize(), status=status.HTTP_200_OK)
 
+    def delete(self, request, project_id: int):
+        user: User = request.user
+        check_for_admin(user)
+
+        project = resolve_project_for_user(user, project_id)
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class ProjectUsersView(APIView):
     permission_classes = [IsAuthenticated]
@@ -85,10 +93,7 @@ class ProjectUsersView(APIView):
         if user_id is None:
             members: List[User] = project.members.all()
             return Response(
-                [
-                    m.serialize_for_project(counts.get(m.pk, 0))
-                    for m in members
-                ],
+                [m.serialize_for_project(counts.get(m.pk, 0)) for m in members],
                 status=status.HTTP_200_OK,
             )
 
