@@ -5,9 +5,7 @@ import type { User } from "../../../types/User";
 import AddUser from "./AddUser";
 import UserList from "./UserList";
 import type { PaginatedResponse } from "../../../types/PaginatedResponse";
-
-const DEFAULT_PAGE_SIZE = 5;
-const PAGE_SIZE_OPTIONS = [5, 10, 20] as const;
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "../../../utils/constants";
 
 function Users() {
   const [isAddingUser, setIsAddingUser] = useState(false);

@@ -1,27 +1,22 @@
 import axios from "axios";
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
-import type { PatientRow } from "../../../../types/Patient";
-import type { PaginatedResponse } from "../../../../types/PaginatedResponse";
-import apiClient from "../../../../utils/apiClient";
-import Loading from "../../../Loading";
+import { API_PATHS, UI_PATHS } from "../../../../../utils/urls";
+import type { PatientRow } from "../../../../../types/Patient";
+import type { PaginatedResponse } from "../../../../../types/PaginatedResponse";
+import apiClient from "../../../../../utils/apiClient";
+import Loading from "../../../../Loading";
 import PaginatedTable, {
   type PaginatedTableColumn,
-} from "../../../PaginatedTable";
-import { formatShortDate } from "../../../../utils/format";
-import { toastError, toastSuccess } from "../../../../utils/toast";
-import { AuthContext } from "../../../../contexts/auth/authContext";
-import PenIcon from "../../../../icons/PenIcon";
-
-const DEFAULT_PAGE_SIZE = 5;
-const PAGE_SIZE_OPTIONS = [5, 10, 20] as const;
+} from "../../../../PaginatedTable";
+import { formatShortDate } from "../../../../../utils/format";
+import { toastError, toastSuccess } from "../../../../../utils/toast";
+import { AuthContext } from "../../../../../contexts/auth/authContext";
+import PenIcon from "../../../../../icons/PenIcon";
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+} from "../../../../../utils/constants";
 
 function display(value: string | null | undefined) {
   if (value == null || value === "") return "—";
@@ -132,6 +127,9 @@ function ProjectPatients() {
         API_PATHS.PATIENTS({
           page: workspaceAddPage,
           page_size: workspaceAddPageSize,
+          search: "",
+          age_range: "",
+          gender: "",
         }),
       )
       .then(({ data }) => {

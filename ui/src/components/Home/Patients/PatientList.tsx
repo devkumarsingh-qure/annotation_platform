@@ -84,22 +84,7 @@ function PatientList({
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden px-6 py-7">
-      <header className="mb-7 shrink-0 border-b border-[color-mix(in_srgb,var(--border)_75%,transparent)] pb-7">
-        <div className="min-w-0 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-            Directory
-          </p>
-          <h2 className="text-2xl font-bold tracking-tight text-[var(--text)]">
-            Patients
-          </h2>
-          <p className="max-w-2xl text-sm leading-relaxed text-[color-mix(in_srgb,var(--muted)_95%,var(--text))]">
-            Patients available in your workspace—open a record for details or to
-            launch the viewer when you have access.
-          </p>
-        </div>
-      </header>
-
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <PaginatedTable
         isLoading={isLoading}
         columns={columns}

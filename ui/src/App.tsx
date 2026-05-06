@@ -9,7 +9,7 @@ import Projects from "./components/Home/Projects";
 import ViewerComponent from "./components/Viewer";
 import Project from "./components/Home/Projects/Project/index";
 import ProjectMembers from "./components/Home/Projects/Project/ProjectMembers";
-import ProjectPatients from "./components/Home/Projects/Project/ProjectPatients";
+import ProjectPatients from "./components/Home/Projects/Project/ProjectPatients/index";
 import Users from "./components/Home/Users";
 import UserDetails from "./components/Home/Users/UserDetails";
 import Patients from "./components/Home/Patients";

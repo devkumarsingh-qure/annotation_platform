@@ -113,7 +113,7 @@ function PaginatedTable<T>({
         ) : null}
         <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_88%,transparent)]">
+            <tr className="sticky rounded-t-lg top-0 z-10 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_88%,transparent)] backdrop-blur-sm">
               {selection ? (
                 <th scope="col" className={thSelect}>
                   <input

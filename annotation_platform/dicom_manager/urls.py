@@ -3,6 +3,7 @@ from django.urls import path
 from .views.annotations import AnnotationSetsView, AnnotationSetView
 from .views.patients import (
     PatientsView,
+    PatientView,
     SeriesView,
 )
 
@@ -14,7 +15,7 @@ urlpatterns = [
     ),
     path(
         "patients/<int:patient_id>/",
-        PatientsView.as_view(),
+        PatientView.as_view(),
         name="patient",
     ),
     path(

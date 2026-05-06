@@ -50,8 +50,27 @@ const API_PATHS = {
   USER: (userId: string) => {
     return `/users/${userId}/`;
   },
-  PATIENTS: ({ page, page_size }: { page: number; page_size: number }) => {
-    return `/patients/?page=${page}&page_size=${page_size}`;
+  PATIENTS: ({
+    page,
+    page_size,
+    search,
+    age_range,
+    gender,
+  }: {
+    page: number;
+    page_size: number;
+    search: string;
+    age_range: string;
+    gender: string;
+  }) => {
+    const qs = new URLSearchParams({
+      page: String(page),
+      page_size: String(page_size),
+      search,
+      age_range,
+      gender,
+    });
+    return `/patients/?${qs.toString()}`;
   },
   PATIENT: (patientId: string) => {
     return `/patients/${patientId}/`;

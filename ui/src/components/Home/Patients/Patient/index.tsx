@@ -82,7 +82,7 @@ function Patient() {
         <button
           type="button"
           onClick={() => navigate(-1)}
-          className="group mb-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
+          className="group mb-4 w-fit px-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
         >
           <span className="transition group-hover:-translate-x-0.5">←</span>
           Back
@@ -113,7 +113,9 @@ function Patient() {
           </div>
         ) : (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-            <header className="shrink-0 border-b border-[var(--border)] pb-4">
+            <header
+              className={`shrink-0 border-b border-[var(--border)] pb-4${confirmDelete ? " relative z-40" : ""}`}
+            >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
@@ -131,7 +133,7 @@ function Patient() {
                   </div>
                 </div>
                 {canDelete ? (
-                  <div className="flex shrink-0 flex-col items-stretch gap-2 sm:items-end">
+                  <div className="relative isolate flex min-h-[2.75rem] shrink-0 flex-col items-stretch sm:items-end">
                     {!confirmDelete ? (
                       <button
                         type="button"
@@ -139,12 +141,12 @@ function Patient() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))]"
+                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end"
                       >
                         Delete patient
                       </button>
                     ) : (
-                      <div className="flex max-w-sm flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-sm">
+                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-2rem,20rem)] flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-lg">
                         <p className="text-sm text-[var(--text)]">
                           Delete this patient and related studies, series, and
                           instances? This cannot be undone.
@@ -170,7 +172,7 @@ function Patient() {
                             type="button"
                             disabled={deleting}
                             onClick={() => void handleDelete()}
-                            className="rounded-lg bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="rounded-lg grow bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
                           >
                             {deleting ? "Deleting…" : "Delete permanently"}
                           </button>

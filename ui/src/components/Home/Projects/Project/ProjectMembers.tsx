@@ -11,9 +11,10 @@ import PaginatedTable, {
 } from "../../../PaginatedTable";
 import { formatShortDate } from "../../../../utils/format";
 import { toastError, toastSuccess } from "../../../../utils/toast";
-
-const DEFAULT_PAGE_SIZE = 5;
-const PAGE_SIZE_OPTIONS = [5, 10, 20] as const;
+import {
+  DEFAULT_PAGE_SIZE,
+  PAGE_SIZE_OPTIONS,
+} from "../../../../utils/constants";
 
 function ProjectMembers() {
   const { projectId } = useParams();

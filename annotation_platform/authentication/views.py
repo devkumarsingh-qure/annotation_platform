@@ -138,3 +138,11 @@ class WorkspaceUsersView(APIView):
             user.serialize(),
             status=status.HTTP_201_CREATED,
         )
+
+    def delete(self, request, user_id: int):
+        user: User = request.user
+        check_for_admin(user)
+
+        user = get_object_or_404(User, id=user_id, workspace=user.workspace)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

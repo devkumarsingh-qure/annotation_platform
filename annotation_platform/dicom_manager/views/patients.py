@@ -1,9 +1,12 @@
 from typing import Optional
 
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView, status
 
+from annotation_platform.utils.helpers import check_for_admin
+from dicom_manager.models.patient import Patient
 from dicom_manager.models.series import Series
 from dicom_manager.models.study import Study
 from dicom_manager.utils.helpers import (
@@ -18,30 +21,40 @@ from authentication.models.user import User
 class PatientsView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, patient_id: Optional[int] = None):
+    def get(self, request):
         user: User = request.user
 
-        if patient_id is None:
-            try:
-                page = int(request.query_params.get("page"))
-                page_size = int(request.query_params.get("page_size"))
-                if page < 1 or page_size < 1:
-                    raise ValueError("page and page_size must be positive integers")
-            except Exception as e:
-                return Response(
-                    {"detail": str(e)},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
-            patients, total = resolve_patients_for_user(user, page, page_size)
+        try:
+            page = int(request.query_params.get("page"))
+            page_size = int(request.query_params.get("page_size"))
+            if page < 1 or page_size < 1:
+                raise ValueError("page and page_size must be positive integers")
+        except Exception as e:
             return Response(
-                {
-                    "page": page,
-                    "total": total,
-                    "results": [patient.serialize() for patient in patients],
-                },
-                status=status.HTTP_200_OK,
+                {"detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
             )
+        
+        search = request.query_params.get("search", "")
+        age_range = request.query_params.get("age_range", "")
+        gender = request.query_params.get("gender", "")
+        
+        patients, total = resolve_patients_for_user(user, page, page_size, search, age_range, gender)
+        return Response(
+            {
+                "page": page,
+                "total": total,
+                "results": [patient.serialize() for patient in patients],
+            },
+            status=status.HTTP_200_OK,
+        )
 
+
+class PatientView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, patient_id: int):
+        user: User = request.user
         patient = resolve_patient_for_user(user, patient_id)
         studies = []
         for study in patient.study_set.all():
@@ -61,6 +74,14 @@ class PatientsView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+    def delete(self, request, patient_id: int):
+        user: User = request.user
+        check_for_admin(user)
+
+        patient = get_object_or_404(Patient, id=patient_id, workspace=user.workspace)
+        patient.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SeriesView(APIView):

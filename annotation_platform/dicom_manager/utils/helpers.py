@@ -1,4 +1,5 @@
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from typing import List, Tuple
 
@@ -25,11 +26,33 @@ def dicom_value_to_str(raw) -> str | None:
 
 
 def resolve_patients_for_user(
-    user: User, page: int, page_size: int
+    user: User,
+    page: int,
+    page_size: int,
+    search: str,
+    age_range: str,
+    gender: str,
 ) -> Tuple[List[Patient], int]:
+    filter_params = {}
+    search_q = (
+        Q(PatientID__icontains=search) | Q(PatientName__icontains=search)
+        if search
+        else Q()
+    )
+    if age_range:
+        min_age, max_age = age_range.split(",")
+        if min_age:
+            filter_params["PatientAge__gte"] = min_age
+        if max_age:
+            filter_params["PatientAge__lte"] = max_age
+    if gender:
+        filter_params["PatientSex__icontains"] = gender
+
     if user.is_workspace_admin:
-        queryset = Patient.objects.filter(workspace=user.workspace).order_by(
-            "-created_at"
+        queryset = (
+            Patient.objects.filter(workspace=user.workspace, **filter_params)
+            .filter(search_q)
+            .order_by("-created_at")
         )
         paginator = Paginator(queryset, page_size)
         page_obj = paginator.page(page)
@@ -39,7 +62,9 @@ def resolve_patients_for_user(
         Patient.objects.filter(
             workspace=user.workspace,
             project_user_patients_assignments__user=user,
+            **filter_params,
         )
+        .filter(search_q)
         .distinct()
         .order_by("-created_at")
     )
