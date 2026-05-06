@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import type { PatientRow } from "../../../../../types/Patient";
 import type { PaginatedResponse } from "../../../../../types/PaginatedResponse";
+import type { User } from "../../../../../types/User";
 import { API_PATHS, UI_PATHS } from "../../../../../utils/urls";
 import apiClient from "../../../../../utils/apiClient";
 import PaginatedTable, {
@@ -14,42 +14,36 @@ import {
   DEFAULT_PAGE_SIZE,
   PAGE_SIZE_OPTIONS,
 } from "../../../../../utils/constants";
-import PatientFilters from "../../../Filters/PatientFilters";
+import UserFilters from "../../../Filters/UserFilters";
 
-function display(value: string | null | undefined) {
-  if (value == null || value === "") return "—";
-
-  return value;
-}
-
-export type AddPatientsProps = {
+export type AddMembersProps = {
   projectId: string;
-  assignedPatientIds: readonly string[];
+  /** Already project members — excluded from picker display */
+  assignedMemberIds: readonly string[];
   onClose: () => void;
-  onPatientsAdded: () => Promise<void>;
+  onMembersAdded: () => Promise<void>;
 };
 
-export default function AddPatients({
+export default function AddMembers({
   projectId,
-  assignedPatientIds,
+  assignedMemberIds,
   onClose,
-  onPatientsAdded,
-}: AddPatientsProps) {
+  onMembersAdded,
+}: AddMembersProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(
     searchParams.get("page_size") || DEFAULT_PAGE_SIZE.toString(),
   );
   const search = searchParams.get("search") || "";
-  const ageRange = searchParams.get("age_range") || "";
-  const gender = searchParams.get("gender") || "";
+  const activeRaw = searchParams.get("active") || "";
+  const activeFilter: "true" | "false" | undefined =
+    activeRaw === "true" || activeRaw === "false" ? activeRaw : undefined;
 
-  const [workspaceAddRows, setWorkspaceAddRows] = useState<PatientRow[]>([]);
+  const [workspaceAddRows, setWorkspaceAddRows] = useState<User[]>([]);
   const [workspaceAddTotal, setWorkspaceAddTotal] = useState(0);
-  const [patientsLoading, setPatientsLoading] = useState(true);
-  const [selectedAddIds, setSelectedAddIds] = useState<string[]>(
-    assignedPatientIds.map((id) => id.toString()),
-  );
+  const [workspaceLoading, setWorkspaceLoading] = useState(true);
+  const [selectedAddIds, setSelectedAddIds] = useState<string[]>(assignedMemberIds.map((id) => id.toString()));
   const [addBusy, setAddBusy] = useState(false);
 
   const selectedAddSet = useMemo(
@@ -73,16 +67,15 @@ export default function AddPatients({
 
   useEffect(() => {
     const controller = new AbortController();
-    setPatientsLoading(true);
+    setWorkspaceLoading(true);
 
     apiClient
-      .get<PaginatedResponse<PatientRow>>(
-        API_PATHS.PATIENTS({
+      .get<PaginatedResponse<User>>(
+        API_PATHS.USERS({
           page,
           page_size: pageSize,
-          search: search,
-          age_range: ageRange,
-          gender: gender,
+          search: search.trim() || undefined,
+          active: activeFilter,
         }),
         { signal: controller.signal },
       )
@@ -90,20 +83,18 @@ export default function AddPatients({
         setWorkspaceAddRows(data.results);
         setWorkspaceAddTotal(data.total);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (axios.isCancel(err)) return;
         setWorkspaceAddRows([]);
         setWorkspaceAddTotal(0);
-        toastError("Could not load workspace patients.");
+        toastError("Could not load workspace users.");
       })
       .finally(() => {
-        if (!controller.signal.aborted) setPatientsLoading(false);
+        if (!controller.signal.aborted) setWorkspaceLoading(false);
       });
 
-    return () => {
-      controller.abort();
-    };
-  }, [page, pageSize, search, ageRange, gender]);
+    return () => controller.abort();
+  }, [page, pageSize, search, activeFilter]);
 
   const handlePageSizeChange = (next: number) => {
     setSearchParams((prev) => {
@@ -114,10 +105,10 @@ export default function AddPatients({
     });
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (nextPage: number) => {
     setSearchParams((prev) => {
       const params = new URLSearchParams(prev);
-      params.set("page", page.toString());
+      params.set("page", String(nextPage));
       return params;
     });
   };
@@ -144,54 +135,57 @@ export default function AddPatients({
     [],
   );
 
-  const addModeColumns: PaginatedTableColumn<PatientRow>[] = useMemo(
+  const columns: PaginatedTableColumn<User>[] = useMemo(
     () => [
       {
-        id: "patientId",
-        header: "Patient ID",
-        cell: (p: PatientRow) => (
+        id: "username",
+        header: "Username",
+        cell: (m: User) => (
           <Link
-            to={UI_PATHS.PATIENT(p.id)}
+            to={UI_PATHS.USER(m.id)}
             className="block min-w-0 w-full truncate text-[var(--accent)] underline-offset-2 hover:underline"
-            title={p.PatientID}
-            target="_blank"
+            title={m.username}
           >
-            {p.PatientID}
+            {m.username}
           </Link>
         ),
       },
       {
-        id: "name",
-        header: "Name",
-        cell: (p: PatientRow) => (
-          <span
-            className="block min-w-0 w-full truncate text-[var(--text)]"
-            title={p.PatientName ?? undefined}
-          >
-            {display(p.PatientName)}
-          </span>
-        ),
+        id: "email",
+        header: "Email",
+        cell: (m: User) => {
+          const raw = m.email?.trim();
+          if (!raw) {
+            return <span className="text-[var(--muted)]">—</span>;
+          }
+          return (
+            <span
+              className="block min-w-0 w-full truncate text-[var(--muted)]"
+              title={raw}
+            >
+              {raw}
+            </span>
+          );
+        },
       },
       {
-        id: "sex",
-        header: "Sex",
-        cell: (p: PatientRow) => (
-          <span className="text-[var(--muted)]">{display(p.PatientSex)}</span>
-        ),
+        id: "role",
+        header: "Role",
+        cell: (m: User) =>
+          m.is_workspace_admin ? (
+            <span className="rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface-soft))] px-2 py-0.5 text-xs font-semibold text-[var(--accent)]">
+              Admin
+            </span>
+          ) : (
+            <span className="text-[var(--muted)]">Member</span>
+          ),
       },
       {
-        id: "age",
-        header: "Age",
-        cell: (p: PatientRow) => (
-          <span className="text-[var(--muted)]">{display(p.PatientAge)}</span>
-        ),
-      },
-      {
-        id: "created",
-        header: "Created",
-        cell: (p: PatientRow) => (
+        id: "joined",
+        header: "Joined",
+        cell: (m: User) => (
           <span className="text-[var(--muted)]">
-            {formatShortDate(p.created_at)}
+            {formatShortDate(m.date_joined)}
           </span>
         ),
       },
@@ -205,17 +199,17 @@ export default function AddPatients({
     setAddBusy(true);
 
     try {
-      await apiClient.post(API_PATHS.PROJECT_PATIENTS(projectId), {
-        patient_ids: selectedAddIds,
+      await apiClient.post(API_PATHS.PROJECT_USERS(projectId), {
+        user_ids: selectedAddIds,
       });
 
-      toastSuccess(`Added ${selectedAddIds.length - assignedPatientIds.length} patient/s.`);
+      toastSuccess(`Added ${selectedAddIds.length - assignedMemberIds.length} member/s.`);
 
       exitAddMode();
 
-      await onPatientsAdded();
+      await onMembersAdded();
     } catch (err) {
-      let msg = "Could not add patients.";
+      let msg = "Could not add members.";
 
       if (axios.isAxiosError(err) && err.response?.data) {
         const d = err.response.data as { detail?: unknown };
@@ -234,11 +228,11 @@ export default function AddPatients({
       <div className="mt-4 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
-            Manage cases linked to this project.
+            Manage the team that works on this project.
           </h3>
 
           <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">
-            Select workspace patients below, then add them to this project.
+            Select workspace users below, then add them to this project.
           </p>
         </div>
 
@@ -255,8 +249,8 @@ export default function AddPatients({
 
             <button
               type="button"
-              onClick={addSelected}
-              disabled={addBusy || patientsLoading}
+              onClick={() => void addSelected()}
+              disabled={addBusy || workspaceLoading}
               className="min-h-9 w-20 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {addBusy ? "Adding…" : "Add"}
@@ -267,7 +261,7 @@ export default function AddPatients({
             <button
               type="button"
               onClick={exitAddMode}
-              disabled={addBusy || patientsLoading}
+              disabled={addBusy || workspaceLoading}
               className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               Cancel
@@ -277,19 +271,19 @@ export default function AddPatients({
       </div>
 
       <div className="my-3 shrink-0">
-        <PatientFilters />
+        <UserFilters />
       </div>
 
       <div className="flex min-h-0 min-w-0 grow flex-col">
         <PaginatedTable
-          isLoading={patientsLoading}
-          columns={addModeColumns}
+          isLoading={workspaceLoading}
+          columns={columns}
           rows={workspaceAddRows}
           getRowId={(row) => row.id}
           pageSizeOptions={PAGE_SIZE_OPTIONS}
           pagination={{
-            page: page,
-            pageSize: pageSize,
+            page,
+            pageSize,
             total: workspaceAddTotal,
             onPageChange: handlePageChange,
             onPageSizeChange: handlePageSizeChange,

@@ -14,7 +14,7 @@ import Users from "./components/Home/Users";
 import UserDetails from "./components/Home/Users/UserDetails";
 import Patients from "./components/Home/Patients";
 import Patient from "./components/Home/Patients/Patient";
-import ProjectMember from "./components/Home/Projects/Project/ProjectMember";
+import ProjectMember from "./components/Home/Projects/Project/ProjectMembers/ProjectMember/index";
 import { UI_PATHS } from "./utils/urls";
 
 const THEME_STORAGE_KEY = "theme";
