@@ -1,6 +1,8 @@
 from typing import Optional
 
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
 from django.db import IntegrityError
 from django.db.models import Q
@@ -166,6 +168,32 @@ class WorkspaceUsersView(APIView):
             user.email = email
         if username is not None:
             user.username = username
+        if "password" in request.data:
+            raw = request.data.get("password")
+            if not isinstance(raw, str):
+                return Response(
+                    {"detail": "Password must be a string."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            pwd = raw.strip()
+            if not pwd:
+                return Response(
+                    {"detail": "Password cannot be empty."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            try:
+                validate_password(pwd, user=user)
+            except ValidationError as exc:
+                msg = (
+                    exc.messages[0]
+                    if getattr(exc, "messages", None)
+                    else "Password does not meet requirements."
+                )
+                return Response(
+                    {"detail": msg},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            user.set_password(pwd)
 
         user.save()
         return Response(user.serialize(), status=status.HTTP_200_OK)

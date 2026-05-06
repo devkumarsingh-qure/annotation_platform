@@ -17,13 +17,15 @@ export default function AuthProvider({
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
 
-  const refreshUser = async () => {
+  const refreshUser = async (): Promise<User | null> => {
     try {
-      const response = await apiClient.get(API_PATHS.ME());
+      const response = await apiClient.get<User>(API_PATHS.ME());
       setUser(response.data);
+      return response.data;
     } catch (error) {
       console.error(error);
       setUser(null);
+      return null;
     } finally {
       setIsLoading(false);
     }
@@ -38,7 +40,13 @@ export default function AuthProvider({
       setIsLoading(true);
       await apiClient.post(API_PATHS.LOGIN(), { username, password });
       clearCsrfToken();
-      await refreshUser();
+      const nextUser = await refreshUser();
+      if (!nextUser) {
+        toastError(
+          "Your browser blocked the session cookie. Allow cookies for this site (and third-party cookies if the API is on another domain), then try again.",
+        );
+        return;
+      }
       toastSuccess("Signed in successfully.");
     } catch (error) {
       console.error(error);
@@ -74,7 +82,6 @@ export default function AuthProvider({
     <AuthContext.Provider
       value={{
         user,
-        refreshUser,
         login,
         logout,
       }}

@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import AuthProvider from "./contexts/auth/AuthProvider";
+import CookieNoticeBar from "./components/CookieNoticeBar";
 import Login from "./components/Login";
 import Menubar from "./components/Menubar";
 import Home from "./components/Home";
@@ -78,6 +79,7 @@ export default function App() {
   return (
     <div className="relative flex h-screen w-screen flex-col text-[var(--text)] font-mono">
       <BrowserRouter>
+        <CookieNoticeBar />
         <AuthProvider>
           <ModalProvider>
             <Menubar>
