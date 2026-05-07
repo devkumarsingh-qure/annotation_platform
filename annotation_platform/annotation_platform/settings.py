@@ -183,3 +183,5 @@ REST_FRAMEWORK = {
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 AUTH_USER_MODEL = "authentication.User"
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

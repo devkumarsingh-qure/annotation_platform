@@ -8,7 +8,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from annotation_platform.utils.upload_file import upload_file
 from dicom_manager.models import Instance, Patient, Series, Study
 from dicom_manager.utils.helpers import dicom_value_to_str
 from authentication.models import User
@@ -91,8 +90,7 @@ class UploadView(APIView):
                         NumberOfFrames=NumberOfFrames,
                     )
 
-                    key = instance.get_object_key()
-                    upload_file(tmp_path, key)
+                    instance.upload_p10_to_s3(tmp_path)
 
                 file_statuses[file.name] = {
                     "success": True,

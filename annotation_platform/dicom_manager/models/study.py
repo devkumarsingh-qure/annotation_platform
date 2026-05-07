@@ -19,3 +19,8 @@ class Study(models.Model):
             "StudyDescription": self.StudyDescription,
             "created_at": self.created_at,
         }
+
+    def get_s3_prefix(self):
+        patient = self.patient
+        patient_s3_prefix = patient.get_s3_prefix()
+        return f"{patient_s3_prefix}/studies/{self.id}"

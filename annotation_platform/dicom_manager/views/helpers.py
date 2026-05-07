@@ -13,7 +13,7 @@ def upload_annotation_set(s3_key: str, annotations_json: dict):
         temp_path = tmp.name
 
     try:
-        upload_file(temp_path, s3_key)
+        upload_file(temp_path, s3_key, content_type="application/json")
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)

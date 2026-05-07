@@ -19,17 +19,17 @@ export default defineConfig(({ command }) => ({
   },
   ...(command !== "serve"
     ? {
-        resolve: {
-          alias: {
-            fs: "browserify-fs",
-            path: "path-browserify",
-            stream: "stream-browserify",
-            buffer: "buffer",
-            util: "util",
-            events: "events",
-            string_decoder: "string_decoder",
-          },
+      resolve: {
+        alias: {
+          fs: "browserify-fs",
+          path: "path-browserify",
+          stream: "stream-browserify",
+          buffer: "buffer",
+          util: "util",
+          events: "events",
+          string_decoder: "string_decoder",
         },
-      }
+      },
+    }
     : {}),
 }))

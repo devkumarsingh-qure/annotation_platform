@@ -7,6 +7,7 @@ export type SeriesDetail = {
   created_at: string;
   total_instances: number;
   instances: InstanceDetail[];
+  metadata_url: string;
 };
 
 export type InstanceDetail = {
@@ -16,6 +17,7 @@ export type InstanceDetail = {
   NumberOfFrames: string;
   created_at: string;
   url_p10: string;
+  urls_dicomweb: string[];
 };
 
 export type AnnotationDetails = {

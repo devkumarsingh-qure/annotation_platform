@@ -34,12 +34,14 @@ class PatientsView(APIView):
                 {"detail": str(e)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         search = request.query_params.get("search", "")
         age_range = request.query_params.get("age_range", "")
         gender = request.query_params.get("gender", "")
-        
-        patients, total = resolve_patients_for_user(user, page, page_size, search, age_range, gender)
+
+        patients, total = resolve_patients_for_user(
+            user, page, page_size, search, age_range, gender
+        )
         return Response(
             {
                 "page": page,
@@ -99,7 +101,23 @@ class SeriesView(APIView):
                 "InstanceNumber": instance.InstanceNumber,
                 "NumberOfFrames": instance.NumberOfFrames,
                 "created_at": instance.created_at,
-                "url_p10": get_presigned_url(instance.get_object_key(), 1),
+                "url_p10": get_presigned_url(instance.get_p10_object_key(), 1),
+                "urls_dicomweb": (
+                    [
+                        get_presigned_url(
+                            key=instance.get_dicomweb_object_key(frame_number=1),
+                            expires_in_hrs=1,
+                        )
+                    ]
+                    if instance.NumberOfFrames is None
+                    else [
+                        get_presigned_url(
+                            key=instance.get_dicomweb_object_key(frame_number=i + 1),
+                            expires_in_hrs=1,
+                        )
+                        for i in range(int(instance.NumberOfFrames))
+                    ]
+                ),
             }
             for instance in Instance.objects.filter(series=series).order_by(
                 "-created_at"
@@ -117,6 +135,7 @@ class SeriesView(APIView):
                 "Modality": series.Modality,
                 "created_at": series.created_at,
                 "instances": instances,
+                "metadata_url": get_presigned_url(series.get_metadata_object_key(), 1),
             },
             status=status.HTTP_200_OK,
         )

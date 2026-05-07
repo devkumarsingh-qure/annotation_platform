@@ -446,10 +446,10 @@
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.126.0.tgz#9d9fa6fe9af5bc6c45996c6d9b9a3b3a4cd500e5"
   integrity sha512-oGfVtjAgwQVVpfBrbtk4e1XDyWHRFta6BS3GWVzrF8xYBT2VGQAk39yJS/wFSMrZqoiCU4oghT3Ch0HaHGIHcQ==
 
-"@qureai/react-dicom-viewer@1.7.41-main.1":
-  version "1.7.41-main.1"
-  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.41-main.1/4500f2a83a64ef6a4c98aecf6208924d9968146a#4500f2a83a64ef6a4c98aecf6208924d9968146a"
-  integrity sha512-qbR3ULWsefQYYz6rnxqMoG8UqdlcOmfqdB/km0ahZR2bwO4djiISVjpgZlVxL+rY0Z2AAuy/HPt7QVmOXA08Xg==
+"@qureai/react-dicom-viewer@1.7.43-main":
+  version "1.7.43-main"
+  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.43-main/b26e90a70b094c07e5acf731f9204703b9db8ad5#b26e90a70b094c07e5acf731f9204703b9db8ad5"
+  integrity sha512-VnDSZBYWvvNKBaXDnLOtdhuhFLKWnNIiU2Yp6Bfwy4nPauPoeJaGYAcitGryOnSmKCNmidGWs5ggic/LDEwoYg==
   dependencies:
     react-hotkeys-hook "^5.1.0"
 
@@ -2418,9 +2418,9 @@ react-dom@^19.2.5:
     scheduler "^0.27.0"
 
 react-hotkeys-hook@^5.1.0:
-  version "5.2.4"
-  resolved "https://registry.yarnpkg.com/react-hotkeys-hook/-/react-hotkeys-hook-5.2.4.tgz#45ad54d78823b2a929963d482aff98efad0530f2"
-  integrity sha512-BgKg+A1+TawkYluh5Bo4cTmcgMN5L29uhJbDUQdHwPX+qgXRjIPYU5kIDHyxnAwCkCBiu9V5OpB2mpyeluVF2A==
+  version "5.3.2"
+  resolved "https://registry.yarnpkg.com/react-hotkeys-hook/-/react-hotkeys-hook-5.3.2.tgz#7715fcc43dc4be6efefe04eca22f8faa0f799567"
+  integrity sha512-DDDy9xK6mbTQ6aPlQvIl0dA/a90T/AWml4Rm21JXFDLlRHalIg4/Rv3equUQYs5xPTWq+oEl6RD7mi/nBpU3Uw==
 
 react-router-dom@^7.14.2:
   version "7.14.2"
