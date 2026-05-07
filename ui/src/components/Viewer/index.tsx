@@ -8,10 +8,16 @@ import Loading from "../Loading/index.tsx";
 import type { SeriesDetail } from "../../types/Viewer.ts";
 import AnnotationPanel from "./AnnotationPanel/index.tsx";
 import SeriesPanel from "./SeriesPanel/index.tsx";
+import {
+  stackViewportRetrieveConfiguration,
+  volumeViewportRetrieveConfiguration,
+} from "./utils/configs.ts";
+import { VOLUME_MODALITIES } from "./utils/constants.ts";
 
 function ViewerComponent() {
   const navigate = useNavigate();
   const { patientId } = useParams();
+
   const [searchParams] = useSearchParams();
   const studyId = searchParams.get("studyId");
   const seriesId = searchParams.get("seriesId");
@@ -44,25 +50,83 @@ function ViewerComponent() {
     if (!isViewerInitialized) return;
     if (!series) return;
 
-    series.instances.sort(
-      (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
-    );
+    const metadataUrl = series.metadata_url;
+    fetch(metadataUrl)
+      .then((res) => res.json())
+      .then((metadata) => {
+        const imageIds: string[] = [];
 
-    const imageIds: string[] = [];
-    for (const instance of series.instances) {
-      const imageIdBase = `wadouri:${instance.url_p10}`;
-      const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
-      for (let i = 1; i < numberOfFrames + 1; i++) {
-        const ImageId = `${imageIdBase}&frame=${i}`;
-        imageIds.push(ImageId);
-      }
-    }
+        for (const instance of series.instances) {
+          const instanceId = instance.id;
+          metadata[instanceId]["00280008"] = {
+            vr: "IS",
+            Value: [1],
+          };
 
-    viewerProvider.renderSeries({
-      imageIds,
-      scanIdentifier: series.SeriesInstanceUID,
-      viewportType: viewerProvider.utils.viewportTypes.STACK,
-    });
+          const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
+          for (let i = 0; i < numberOfFrames; i++) {
+            const imageId = "wadors:" + instance.urls_dicomweb[i];
+            imageIds.push(imageId);
+            viewerProvider.metadata.wadors.addMetadataForImageId({
+              imageId,
+              metadata: metadata[instanceId],
+            });
+          }
+        }
+
+        if (VOLUME_MODALITIES.includes(series.Modality)) {
+          viewerProvider.retrieveConfiguration.setVolumeViewportRetrieveConfiguration(
+            volumeViewportRetrieveConfiguration,
+          );
+          viewerProvider.renderSeries({
+            imageIds,
+            scanIdentifier: series.SeriesInstanceUID,
+            viewportType: viewerProvider.utils.viewportTypes.ORTHOGRAPHIC,
+          });
+        } else {
+          if (series.instances.length > 1) {
+            viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
+              {},
+            );
+            viewerProvider.renderSeries({
+              imageIds,
+              scanIdentifier: series.SeriesInstanceUID,
+              viewportType: viewerProvider.utils.viewportTypes.STACK,
+            });
+          } else {
+            viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
+              stackViewportRetrieveConfiguration,
+            );
+            viewerProvider.renderSeries({
+              imageIds,
+              scanIdentifier: series.SeriesInstanceUID,
+              viewportType: viewerProvider.utils.viewportTypes.STACK,
+            });
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching metadata:", error);
+        series.instances.sort(
+          (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
+        );
+
+        const imageIds: string[] = [];
+        for (const instance of series.instances) {
+          const imageIdBase = `wadouri:${instance.url_p10}`;
+          const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
+          for (let i = 1; i < numberOfFrames + 1; i++) {
+            const ImageId = `${imageIdBase}&frame=${i}`;
+            imageIds.push(ImageId);
+          }
+        }
+
+        viewerProvider.renderSeries({
+          imageIds,
+          scanIdentifier: series.SeriesInstanceUID,
+          viewportType: viewerProvider.utils.viewportTypes.STACK,
+        });
+      });
   }, [isViewerInitialized, series]);
 
   const handleViewerInitialized = () => {

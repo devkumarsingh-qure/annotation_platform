@@ -3,7 +3,7 @@ export type SeriesDetail = {
   SeriesInstanceUID: string;
   SeriesDescription: string | null;
   SeriesNumber: string | null;
-  Modality: string | null;
+  Modality: string;
   created_at: string;
   total_instances: number;
   instances: InstanceDetail[];

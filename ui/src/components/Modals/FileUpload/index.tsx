@@ -107,7 +107,7 @@ function FileUpload({
       onBatchUploadComplete(batchStatuses);
     }
     setIsUploading(false);
-    close();
+    // close();
   };
 
   const uploadFiles = async (files: File[]) => {
@@ -135,7 +135,7 @@ function FileUpload({
       <Backdrop onClick={close} />
 
       <div
-        className="absolute top-1/2 left-1/2 z-50 flex w-1/2 max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
+        className="absolute top-1/2 left-1/2 z-50 flex w-2/3 max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
         role="dialog"
         aria-labelledby="file-upload-title"
         aria-modal="true"
@@ -218,11 +218,11 @@ function FileUpload({
                         aria-valuenow={Math.round(
                           selectedFiles.length
                             ? Math.min(
-                                100,
-                                ((successCount + failedCount) /
-                                  selectedFiles.length) *
-                                  100,
-                              )
+                              100,
+                              ((successCount + failedCount) /
+                                selectedFiles.length) *
+                              100,
+                            )
                             : 0,
                         )}
                         aria-label="Upload progress"
@@ -285,6 +285,11 @@ function FileUpload({
                           >
                             {file.name}
                           </span>
+                          {uploadFileStatuses[file.name]?.error && (
+                            <span className="text-red-500 text-[10px] italic">
+                              {uploadFileStatuses[file.name].error}
+                            </span>
+                          )}
                           <span className="shrink-0 text-xs tabular-nums text-[var(--muted)]">
                             {formatMb(file.size)} MB
                           </span>

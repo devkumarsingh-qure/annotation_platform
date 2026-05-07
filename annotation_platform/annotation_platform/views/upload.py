@@ -12,6 +12,7 @@ from dicom_manager.models import Instance, Patient, Series, Study
 from dicom_manager.utils.helpers import dicom_value_to_str
 from authentication.models import User
 from annotation_platform.utils.helpers import check_for_admin
+from annotation_platform.utils.validate_dicom import validate_dicom
 
 
 class UploadView(APIView):
@@ -49,6 +50,17 @@ class UploadView(APIView):
                 SOPInstanceUID = dicom_value_to_str(ds.get("SOPInstanceUID"))
                 InstanceNumber = dicom_value_to_str(ds.get("InstanceNumber"))
                 NumberOfFrames = dicom_value_to_str(ds.get("NumberOfFrames"))
+
+                is_valid_dicom, dicom_validation_error = validate_dicom(
+                    PatientID=PatientID,
+                    StudyInstanceUID=StudyInstanceUID,
+                    SeriesInstanceUID=SeriesInstanceUID,
+                    SopInstanceUID=SOPInstanceUID,
+                    Modality=Modality,
+                )
+
+                if not is_valid_dicom:
+                    raise ValueError(f"Invalid DICOM file: {dicom_validation_error}")
 
                 user = request.user
                 with transaction.atomic():

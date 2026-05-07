@@ -80,7 +80,7 @@ def transcode_instance(instance: Instance):
                 )
 
                 logger.info(
-                    f"Successfully transcoded and uploaded frame {frame_number}/{len(frame_files)} for instance {instance_id}"
+                    f"Successfully transcoded and uploaded frame {frame_number}/{len(frame_files)} for instance id {instance_id}"
                 )
     return instance_metadata
 

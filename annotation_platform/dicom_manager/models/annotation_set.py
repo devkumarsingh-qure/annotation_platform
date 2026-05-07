@@ -29,11 +29,9 @@ class AnnotationSet(models.Model):
         }
 
     def get_object_key(self):
-        patient = self.series.study.patient
-        study = self.series.study
-        series = self.series
-        patient_s3_prefix = patient.get_s3_prefix()
-        return f"{patient_s3_prefix}/studies/{study.id}/series/{series.id}/annotation-sets/{self.id}.json"
+        series: Series = self.series
+        series_s3_prefix = series.get_s3_prefix()
+        return f"{series_s3_prefix}/annotation-sets/{self.id}.json"
 
 
 @receiver(pre_delete, sender=AnnotationSet)
