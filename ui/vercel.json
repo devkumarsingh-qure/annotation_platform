@@ -1,11 +1,11 @@
 {
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://annotation-platform-u2nb.onrender.com/:path*"
+      "source": "/api/(.*)",
+      "destination": "https://annotation-platform-u2nb.onrender.com/$1"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]
