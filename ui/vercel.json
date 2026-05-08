@@ -5,7 +5,7 @@
       "destination": "https://annotation-platform-u2nb.onrender.com/$1"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
