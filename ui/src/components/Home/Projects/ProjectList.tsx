@@ -36,7 +36,7 @@ function ProjectList({
         id: "name",
         header: "Name",
         headerClassName: "text-left",
-        cellClassName: "text-left align-top min-w-[13rem] w-[46%]",
+        cellClassName: "text-left align-middle min-w-[13rem] w-[46%]",
         cell: (row) => (
           <Link
             to={UI_PATHS.PROJECT(row.id)}
@@ -52,7 +52,7 @@ function ProjectList({
         header: "Description",
         headerClassName: "text-left",
         cellClassName:
-          "text-left align-top w-[28%] min-w-[8rem] max-w-[17rem]",
+          "text-left align-middle w-[28%] min-w-[8rem] max-w-[17rem]",
         cell: (row) =>
           row.description ? (
             <span

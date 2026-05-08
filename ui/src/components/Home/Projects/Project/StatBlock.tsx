@@ -1,10 +1,10 @@
 function statBlock(label: string, value: string | number) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-3 py-2.5 text-center sm:text-left">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--muted)]">
+    <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-2.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left">
+      <p className="text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-[0.65rem]">
         {label}
       </p>
-      <p className="mt-0.5 text-sm font-semibold tabular-nums text-[var(--text)]">
+      <p className="mt-0.5 truncate text-xs font-semibold tabular-nums text-[var(--text)] sm:text-sm">
         {value}
       </p>
     </div>
@@ -13,8 +13,8 @@ function statBlock(label: string, value: string | number) {
 
 function statBlockSkeleton(label: string) {
   return (
-    <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-3 py-2.5 text-center sm:text-left">
-      <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--muted)]">
+    <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-2.5 py-2 text-center sm:px-3 sm:py-2.5 sm:text-left">
+      <p className="text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-[0.65rem]">
         {label}
       </p>
       <div

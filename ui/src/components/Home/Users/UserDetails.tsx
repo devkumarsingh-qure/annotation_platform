@@ -19,7 +19,7 @@ import EyeIcon from "../../../icons/EyeIcon";
 import EyeSlashIcon from "../../../icons/EyeSlashIcon";
 
 const fieldClass =
-  "w-full min-h-10 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 py-2 text-sm text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--accent)]/45 focus:ring-2 focus:ring-[var(--accent)]/20 disabled:opacity-60";
+  "w-full min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 py-1.5 text-xs text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--accent)]/45 focus:ring-2 focus:ring-[var(--accent)]/20 disabled:opacity-60 sm:min-h-10 sm:px-3 sm:py-2 sm:text-sm";
 
 function passwordFieldWithToggle(props: {
   id: string;
@@ -70,8 +70,8 @@ function passwordFieldWithToggle(props: {
 
 function profileRow(label: string, control: ReactNode) {
   return (
-    <div className="grid gap-2 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-4 py-4 last:border-b-0 sm:grid-cols-[minmax(0,8.5rem)_1fr] sm:items-center sm:gap-8 sm:px-5">
-      <span className="text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--muted)]">
+    <div className="grid gap-1.5 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-3 py-3 last:border-b-0 sm:grid-cols-[minmax(0,8.5rem)_1fr] sm:items-center sm:gap-8 sm:px-5 sm:py-4">
+      <span className="text-[0.6rem] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-[0.65rem]">
         {label}
       </span>
       <div className="min-w-0">{control}</div>
@@ -282,10 +282,10 @@ function UserDetails() {
       : (user?.username ?? "");
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6">
-      <div className="min-h-0 grow flex flex-col pb-4 sm:pb-6">
+    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col px-3 pb-3 pt-3 sm:px-6 sm:pb-6 sm:pt-6">
+      <div className="min-h-0 grow flex flex-col pb-3 sm:pb-6">
         <nav
-          className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]"
+          className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6"
           aria-label="Breadcrumb"
         >
           <button
@@ -313,26 +313,26 @@ function UserDetails() {
         ) : null}
 
         {!isLoading && user && !loadError && (
-          <div className="grow flex w-full flex-col gap-8">
+          <div className="grow flex w-full flex-col gap-4 sm:gap-8">
             <header
-              className={`shrink-0 space-y-3${confirmDelete ? " relative z-40" : ""}`}
+              className={`shrink-0 space-y-2 sm:space-y-3${confirmDelete ? " relative z-40" : ""}`}
             >
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-3">
-                  <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <div className="min-w-0 space-y-2 sm:space-y-3">
+                  <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] sm:h-1 sm:w-10" />
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:text-xs sm:tracking-[0.2em]">
                     Member
                   </p>
-                  <div className="flex min-w-0 flex-wrap items-center gap-3">
-                    <h1 className="min-w-0 max-w-full truncate text-2xl font-bold tracking-tight text-[var(--text)] sm:max-w-xl sm:text-3xl">
+                  <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
+                    <h1 className="min-w-0 max-w-full truncate text-xl font-bold tracking-tight text-[var(--text)] sm:max-w-xl sm:text-3xl">
                       {titleDisplay}
                     </h1>
                     {user.is_workspace_admin ? (
-                      <span className="rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface-soft))] px-2.5 py-1 text-xs font-semibold text-[var(--accent)]">
+                      <span className="rounded-md border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent)_12%,var(--surface-soft))] px-2 py-0.5 text-[11px] font-semibold text-[var(--accent)] sm:px-2.5 sm:py-1 sm:text-xs">
                         Admin
                       </span>
                     ) : (
-                      <span className="rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-2.5 py-1 text-xs font-semibold text-[var(--muted)]">
+                      <span className="rounded-md border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[11px] font-semibold text-[var(--muted)] sm:px-2.5 sm:py-1 sm:text-xs">
                         Member
                       </span>
                     )}
@@ -347,13 +347,13 @@ function UserDetails() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end"
+                        className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-3 text-xs font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
                         Delete user
                       </button>
                     ) : (
-                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-2rem,20rem)] flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-lg">
-                        <p className="text-sm text-[var(--text)]">
+                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-1.5rem,20rem)] flex-col gap-2 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-3 shadow-lg sm:gap-3 sm:p-4">
+                        <p className="text-xs leading-snug text-[var(--text)] sm:text-sm">
                           Remove{" "}
                           <span className="font-semibold">{user.username}</span>{" "}
                           from this workspace? This cannot be undone.
@@ -366,12 +366,12 @@ function UserDetails() {
                             {deleteError}
                           </p>
                         ) : null}
-                        <div className="flex flex-wrap space-x-2">
+                        <div className="flex flex-wrap gap-2">
                           <button
                             type="button"
                             disabled={deleting}
                             onClick={() => setConfirmDelete(false)}
-                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50"
+                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50 sm:text-sm"
                           >
                             Cancel
                           </button>
@@ -379,7 +379,7 @@ function UserDetails() {
                             type="button"
                             disabled={deleting}
                             onClick={() => void handleDelete()}
-                            className="rounded-lg grow bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="grow rounded-lg bg-[var(--danger)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 sm:text-sm"
                           >
                             {deleting ? "Deleting…" : "Delete permanently"}
                           </button>
@@ -391,7 +391,7 @@ function UserDetails() {
               </div>
             </header>
 
-            <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-3">
+            <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
               {statBlock("Role", user.is_workspace_admin ? "Admin" : "Member")}
               {statBlock("Joined", formatShortDate(user.date_joined))}
               {statBlock(
@@ -400,18 +400,18 @@ function UserDetails() {
               )}
             </div>
 
-            <div className="h-0 grow overflow-y-auto space-y-5">
+            <div className="h-0 grow space-y-3 overflow-y-auto sm:space-y-5">
               <section
-                className="shrink-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[color:var(--surface)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_40%,transparent)]"
+                className="shrink-0 overflow-hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_40%,transparent)] sm:rounded-xl"
                 aria-label="Profile"
               >
-                <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-5 py-4">
+                <div className="flex flex-wrap items-start justify-between gap-2 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-3 py-3 sm:gap-4 sm:px-5 sm:py-4">
                   <div className="my-auto min-w-0 flex-1">
-                    <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                    <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)] sm:text-xs sm:tracking-[0.14em]">
                       Profile
                     </h2>
                     {isSelf && canEdit ? (
-                      <p className="mt-2 max-w-md text-xs leading-snug text-[var(--muted)]">
+                      <p className="mt-1 max-w-md text-xs leading-snug text-[var(--muted)] sm:mt-2">
                         Signing in for your own account can&apos;t be turned off
                         here.
                       </p>
@@ -423,7 +423,7 @@ function UserDetails() {
                     </span>
                     {!isSelf && canEdit ? (
                       <label
-                        className={`flex cursor-pointer items-center gap-2.5 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_50%,transparent)] px-3.5 py-2 transition hover:border-[color-mix(in_srgb,var(--accent)_22%,var(--border))] ${
+                        className={`flex cursor-pointer items-center gap-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_50%,transparent)] px-3 py-1.5 transition hover:border-[color-mix(in_srgb,var(--accent)_22%,var(--border))] sm:gap-2.5 sm:px-3.5 sm:py-2 ${
                           saving ? "pointer-events-none opacity-55" : ""
                         }`}
                       >
@@ -434,13 +434,13 @@ function UserDetails() {
                           onChange={(e) => setDraftIsActive(e.target.checked)}
                           className="size-[1.125rem] rounded border-[var(--border)] text-[var(--accent)] focus:ring-[var(--accent)]/30"
                         />
-                        <span className="text-xs font-semibold tabular-nums text-[var(--text)]">
+                        <span className="text-[11px] font-semibold tabular-nums text-[var(--text)] sm:text-xs">
                           {draftIsActive ? "Allowed" : "Blocked"}
                         </span>
                       </label>
                     ) : (
                       <span
-                        className={`inline-flex rounded-lg border px-3.5 py-2 text-xs font-semibold tabular-nums ${
+                        className={`inline-flex rounded-lg border px-3 py-1.5 text-[11px] font-semibold tabular-nums sm:px-3.5 sm:py-2 sm:text-xs ${
                           user.is_active
                             ? "border-[color-mix(in_srgb,var(--success)_38%,var(--border))] bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-[color-mix(in_srgb,var(--success)_92%,var(--text))]"
                             : "border-[var(--border)] bg-[var(--surface-soft)] text-[var(--muted)]"
@@ -467,7 +467,7 @@ function UserDetails() {
                         className={fieldClass}
                       />
                     ) : (
-                      <p className="text-sm font-medium text-[var(--text)]">
+                      <p className="text-xs font-medium text-[var(--text)] sm:text-sm">
                         {user.username}
                       </p>
                     ),
@@ -487,13 +487,15 @@ function UserDetails() {
                       />
                     ) : user.email?.trim() ? (
                       <p
-                        className="truncate text-sm font-medium text-[var(--text)]"
+                        className="truncate text-xs font-medium text-[var(--text)] sm:text-sm"
                         title={user.email}
                       >
                         {user.email}
                       </p>
                     ) : (
-                      <span className="text-sm text-[var(--muted)]">—</span>
+                      <span className="text-xs text-[var(--muted)] sm:text-sm">
+                        —
+                      </span>
                     ),
                   )}
                 </div>
@@ -501,14 +503,14 @@ function UserDetails() {
 
               {canEdit && !isSelf ? (
                 <section
-                  className="shrink-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[color:var(--surface)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_40%,transparent)]"
+                  className="shrink-0 overflow-hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_40%,transparent)] sm:rounded-xl"
                   aria-label="Reset password"
                 >
-                  <div className="border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-5 py-4">
-                    <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
+                  <div className="border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-3 py-3 sm:px-5 sm:py-4">
+                    <h2 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)] sm:text-xs sm:tracking-[0.14em]">
                       Reset password
                     </h2>
-                    <p className="mt-2 max-w-xl text-xs leading-snug text-[var(--muted)]">
+                    <p className="mt-1 max-w-xl text-xs leading-snug text-[var(--muted)] sm:mt-2">
                       Set a new password for this member. They will use it on
                       the next sign-in.
                     </p>
@@ -541,7 +543,7 @@ function UserDetails() {
                         className={fieldClass}
                       />,
                     )}
-                    <div className="flex flex-col gap-3 border-t border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-4 py-4 sm:flex-row sm:items-center sm:justify-end sm:gap-4 sm:px-5">
+                    <div className="flex flex-col gap-2 border-t border-[color-mix(in_srgb,var(--border)_70%,transparent)] px-3 py-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4 sm:px-5 sm:py-4">
                       {resetPasswordError ? (
                         <p
                           className="text-sm text-[var(--danger)] sm:mr-auto"
@@ -559,7 +561,7 @@ function UserDetails() {
                           resetPassword !== resetPasswordConfirm
                         }
                         onClick={() => void handleResetPassword()}
-                        className="min-h-10 w-full shrink-0 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] px-4 text-xs font-semibold text-[var(--text)] transition enabled:cursor-pointer enabled:hover:border-[color-mix(in_srgb,var(--accent)_22%,var(--border))] enabled:hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                        className="min-h-9 w-full shrink-0 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] px-3 text-xs font-semibold text-[var(--text)] transition enabled:cursor-pointer enabled:hover:border-[color-mix(in_srgb,var(--accent)_22%,var(--border))] enabled:hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-10 sm:w-auto sm:px-4"
                       >
                         {resettingPassword ? "Updating…" : "Update password"}
                       </button>
@@ -574,11 +576,11 @@ function UserDetails() {
 
       {!isLoading && user && !loadError && canEdit && isDirty ? (
         <div
-          className="shrink-0 border-t border-[color-mix(in_srgb,var(--border)_80%,transparent)] px-0 py-4"
+          className="shrink-0 border-t border-[color-mix(in_srgb,var(--border)_80%,transparent)] px-0 py-3 sm:py-4"
           role="region"
           aria-label="Save profile changes"
         >
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
             {saveError ? (
               <p className="text-sm text-[var(--danger)]" role="alert">
                 {saveError}
@@ -591,7 +593,7 @@ function UserDetails() {
                 type="button"
                 disabled={saving}
                 onClick={() => discardEdits()}
-                className="min-h-9 cursor-pointer rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-4 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-8 cursor-pointer rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-9 sm:px-4"
               >
                 Discard
               </button>
@@ -599,7 +601,7 @@ function UserDetails() {
                 type="button"
                 disabled={saving || !draftUsername.trim()}
                 onClick={() => void handleSave()}
-                className="min-h-9 cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_38%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 text-xs font-semibold text-white shadow-[0_8px_20px_-12px_color-mix(in_srgb,var(--accent-strong)_50%,transparent)] transition hover:brightness-[1.05] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-8 cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_38%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white shadow-[0_8px_20px_-12px_color-mix(in_srgb,var(--accent-strong)_50%,transparent)] transition hover:brightness-[1.05] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-9 sm:px-4"
               >
                 {saving ? "Saving…" : "Save changes"}
               </button>

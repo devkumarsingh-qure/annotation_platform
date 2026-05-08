@@ -241,8 +241,8 @@ function ProjectMember() {
 
   if (!canManage) {
     return (
-      <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 sm:p-6">
-        <nav className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 sm:p-6">
+        <nav className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6">
           <Link
             to={UI_PATHS.PROJECT_MEMBERS(projectId)}
             className="text-[var(--accent)] underline-offset-2 hover:underline"
@@ -250,10 +250,10 @@ function ProjectMember() {
             ← Back to members
           </Link>
         </nav>
-        <h2 className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+        <h2 className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-base">
           Member patients
         </h2>
-        <p className="mt-4 max-w-lg text-sm text-[var(--muted)]">
+        <p className="mt-2 max-w-lg text-xs leading-snug text-[var(--muted)] sm:mt-4 sm:text-sm">
           Only workspace administrators can view or change which patients are
           assigned to each project member.
         </p>
@@ -264,8 +264,8 @@ function ProjectMember() {
   const memberLabel = memberLoading ? "…" : (member?.username ?? "");
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 sm:p-6">
-      <nav className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 sm:p-6">
+      <nav className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6">
         <Link
           to={UI_PATHS.PROJECT_MEMBERS(projectId)}
           className="text-[var(--accent)] underline-offset-2 hover:underline"
@@ -274,7 +274,7 @@ function ProjectMember() {
         </Link>
       </nav>
 
-      <h2 className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+      <h2 className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-base">
         Member patients
       </h2>
 
@@ -290,9 +290,9 @@ function ProjectMember() {
         />
       ) : (
         <>
-          <div className="mt-4 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="mt-2 flex shrink-0 flex-col gap-2 sm:mt-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
             <div className="min-w-0">
-              <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+              <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
                 Patient access for{" "}
                 <Link
                   to={UI_PATHS.USER(userId)}
@@ -301,19 +301,19 @@ function ProjectMember() {
                   {memberLabel}
                 </Link>
               </h3>
-              <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">
+              <p className="mt-0.5 max-w-xl text-xs leading-snug text-[var(--muted)] sm:mt-1 sm:text-sm">
                 Assigned patients define which cases this member can access for
                 this project. Select rows to remove assignments in one step.
               </p>
             </div>
 
             {patientsToRemove.length > 0 ? (
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
                 <button
                   type="button"
                   onClick={cancelRemoval}
                   disabled={removeBusy}
-                  className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   Cancel
                 </button>
@@ -321,18 +321,18 @@ function ProjectMember() {
                   type="button"
                   onClick={() => void removeSelected()}
                   disabled={removeBusy || isAssignedLoading}
-                  className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_45%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] px-3 text-xs font-semibold text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_16%,var(--surface-soft))] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 rounded-lg border border-[color-mix(in_srgb,var(--danger)_45%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] px-2.5 text-xs font-semibold text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_16%,var(--surface-soft))] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   {removeBusy ? "Removing…" : "Remove"}
                 </button>
               </div>
             ) : (
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
                 <button
                   type="button"
                   onClick={enterAddMode}
                   disabled={isAssignedLoading || removeBusy}
-                  className="min-h-9 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   Assign patients
                 </button>
@@ -340,7 +340,7 @@ function ProjectMember() {
             )}
           </div>
 
-          <div className="mt-6 flex min-h-0 min-w-0 grow flex-col">
+          <div className="mt-3 flex min-h-0 min-w-0 grow flex-col sm:mt-6">
             <PaginatedTable
               isLoading={isAssignedLoading}
               columns={assignedColumns}

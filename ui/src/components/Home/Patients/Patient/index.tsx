@@ -79,12 +79,14 @@ function Patient() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[color-mix(in_srgb,var(--bg)_40%,transparent)]">
-      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-4 sm:p-6">
+      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-3 sm:p-6">
         <Link
           to={UI_PATHS.PATIENTS()}
-          className="group mb-4 w-fit pr-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
+          className="group mb-2 inline-flex w-fit items-center gap-2 pr-4 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--accent)] sm:mb-4 sm:text-sm"
         >
-          <span className="transition group-hover:-translate-x-0.5">← Back to patients</span>
+          <span className="transition group-hover:-translate-x-0.5">
+            ← Back to patients
+          </span>
         </Link>
 
         {loading ? (
@@ -104,19 +106,19 @@ function Patient() {
         ) : (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <header
-              className={`shrink-0 border-b border-[var(--border)] pb-4${confirmDelete ? " relative z-40" : ""}`}
+              className={`shrink-0 border-b border-[var(--border)] pb-3 sm:pb-4${confirmDelete ? " relative z-40" : ""}`}
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
                     DICOM patient
                   </p>
-                  <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="mt-1 flex flex-col gap-2 sm:mt-2 sm:flex-row sm:items-center sm:gap-4">
                     <div className="min-w-0 flex-1">
-                      <h1 className="font-mono text-xl font-bold tracking-tight text-[var(--text)] sm:text-2xl">
+                      <h1 className="truncate font-mono text-lg font-bold tracking-tight text-[var(--text)] sm:text-2xl">
                         {patient.PatientID}
                       </h1>
-                      <p className="mt-1 text-sm text-[var(--text)]">
+                      <p className="mt-0.5 truncate text-xs text-[var(--text)] sm:mt-1 sm:text-sm">
                         {display(patient.PatientName, "Unnamed patient")}
                       </p>
                     </div>
@@ -131,13 +133,13 @@ function Patient() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end"
+                        className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-3 text-xs font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
                         Delete patient
                       </button>
                     ) : (
-                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-2rem,20rem)] flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-lg">
-                        <p className="text-sm text-[var(--text)]">
+                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-1.5rem,20rem)] flex-col gap-2 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-3 shadow-lg sm:gap-3 sm:p-4">
+                        <p className="text-xs leading-snug text-[var(--text)] sm:text-sm">
                           Delete this patient and related studies, series, and
                           instances? This cannot be undone.
                         </p>
@@ -154,7 +156,7 @@ function Patient() {
                             type="button"
                             disabled={deleting}
                             onClick={() => setConfirmDelete(false)}
-                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50"
+                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50 sm:text-sm"
                           >
                             Cancel
                           </button>
@@ -162,7 +164,7 @@ function Patient() {
                             type="button"
                             disabled={deleting}
                             onClick={() => void handleDelete()}
-                            className="rounded-lg grow bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="grow rounded-lg bg-[var(--danger)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 sm:text-sm"
                           >
                             {deleting ? "Deleting…" : "Delete permanently"}
                           </button>
@@ -174,15 +176,15 @@ function Patient() {
               </div>
             </header>
 
-            <section className="mt-3 shrink-0">
-              <div className="grid grid-cols-1 gap-3 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-3 backdrop-blur-[12px] sm:grid-cols-2 sm:gap-4 sm:p-3">
+            <section className="mt-2 shrink-0 sm:mt-3">
+              <div className="grid grid-cols-1 gap-2 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-2.5 backdrop-blur-[12px] sm:grid-cols-2 sm:gap-4 sm:p-3">
                 <div>
-                  <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                  <h2 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.18em]">
                     Demographics
                   </h2>
-                  <dl className="mt-2 grid gap-x-4 gap-y-2 text-xs sm:grid-cols-3 sm:gap-y-1.5">
+                  <dl className="mt-1.5 grid gap-x-3 gap-y-1.5 text-xs sm:mt-2 sm:grid-cols-3 sm:gap-x-4">
                     <div className="sm:col-span-1">
-                      <dt className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
                         Patient ID
                       </dt>
                       <dd className="mt-0.5 font-mono font-medium leading-snug text-[var(--text)]">
@@ -190,7 +192,7 @@ function Patient() {
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
                         Sex
                       </dt>
                       <dd className="mt-0.5 leading-snug text-[var(--text)]">
@@ -198,7 +200,7 @@ function Patient() {
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
                         Age
                       </dt>
                       <dd className="mt-0.5 leading-snug text-[var(--text)]">
@@ -207,13 +209,13 @@ function Patient() {
                     </div>
                   </dl>
                 </div>
-                <div className="border-t border-[var(--border)]/80 pt-3 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                  <h2 className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+                <div className="border-t border-[var(--border)]/80 pt-2 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
+                  <h2 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.18em]">
                     Record
                   </h2>
-                  <dl className="mt-2 grid gap-x-4 gap-y-2 text-xs sm:grid-cols-2">
+                  <dl className="mt-1.5 grid gap-x-3 gap-y-1.5 text-xs sm:mt-2 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-2">
                     <div>
-                      <dt className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
                         Internal ID
                       </dt>
                       <dd className="mt-0.5 font-mono leading-snug text-[var(--text)]">
@@ -221,7 +223,7 @@ function Patient() {
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
                         Created
                       </dt>
                       <dd className="mt-0.5 leading-snug text-[var(--text)]">
@@ -233,40 +235,40 @@ function Patient() {
               </div>
             </section>
 
-            <section className="mt-3 flex min-h-0 flex-1 flex-col overflow-hidden">
-              <div className="mb-2 flex shrink-0 flex-col gap-0.5 sm:flex-row sm:items-end sm:justify-between">
+            <section className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden sm:mt-3">
+              <div className="mb-1.5 flex shrink-0 flex-col gap-0.5 sm:mb-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-sm font-semibold uppercase tracking-wide text-[var(--muted)]">
+                  <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-sm">
                     Studies {`(${patient.studies.length})`} &amp; series
                   </h2>
-                  <p className="text-[11px] text-[var(--muted)]">
+                  <p className="hidden text-[11px] text-[var(--muted)] sm:block">
                     DICOM hierarchy for this patient
                   </p>
                 </div>
               </div>
 
-              <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-contain rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_85%,transparent)] p-2 shadow-[inset_0_1px_0_0_color-mix(in_srgb,var(--border)_40%,transparent)] sm:p-2.5">
+              <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto overscroll-contain rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_85%,transparent)] p-1.5 shadow-[inset_0_1px_0_0_color-mix(in_srgb,var(--border)_40%,transparent)] sm:rounded-xl sm:p-2.5">
                 {patient.studies.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_90%,transparent)] px-4 py-8 text-center text-sm text-[var(--muted)]">
                     No studies linked to this patient yet.
                   </div>
                 ) : (
-                  <ul className="space-y-3">
+                  <ul className="space-y-2 sm:space-y-3">
                     {patient.studies.map((study) => (
                       <li
                         key={study.id}
-                        className="overflow-hidden rounded-xl border border-[var(--border)] bg-[color:var(--surface)] backdrop-blur-[12px]"
+                        className="overflow-hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] backdrop-blur-[12px] sm:rounded-xl"
                       >
-                        <div className="border-b border-[var(--border)]/80 bg-[var(--surface-soft)]/50 px-4 py-4 sm:px-5">
-                          <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="border-b border-[var(--border)]/80 bg-[var(--surface-soft)]/50 px-3 py-2.5 sm:px-5 sm:py-4">
+                          <div className="flex flex-wrap items-start justify-between gap-2 sm:gap-3">
                             <div className="min-w-0">
-                              <p className="text-sm font-semibold text-[var(--text)]">
+                              <p className="text-xs font-semibold text-[var(--text)] sm:text-sm">
                                 {display(
                                   study.StudyDescription,
                                   "Study (no description)",
                                 )}
                               </p>
-                              <p className="mt-1 font-mono text-[11px] text-[var(--muted)] break-all">
+                              <p className="mt-0.5 break-all font-mono text-[10px] text-[var(--muted)] sm:mt-1 sm:text-[11px]">
                                 {study.StudyInstanceUID}
                               </p>
                             </div>
@@ -279,30 +281,30 @@ function Patient() {
                           </div>
                         </div>
                         {study.series.length === 0 ? (
-                          <p className="px-4 py-4 text-sm text-[var(--muted)] sm:px-5">
+                          <p className="px-3 py-3 text-xs text-[var(--muted)] sm:px-5 sm:py-4 sm:text-sm">
                             No series in this study.
                           </p>
                         ) : (
                           <div className="overflow-x-auto">
-                            <table className="w-full min-w-[44rem] text-left text-sm">
+                            <table className="w-full min-w-[34rem] text-left text-xs sm:min-w-[44rem] sm:text-sm">
                               <thead>
                                 <tr className="border-b border-[var(--border)]/60 text-[11px] uppercase tracking-wide text-[var(--muted)]">
-                                  <th className="px-4 py-2 font-medium sm:px-5">
+                                  <th className="px-3 py-2 font-medium sm:px-5">
                                     Modality
                                   </th>
-                                  <th className="px-4 py-2 font-medium sm:px-5">
+                                  <th className="px-3 py-2 font-medium sm:px-5">
                                     Series
                                   </th>
-                                  <th className="px-4 py-2 font-medium sm:px-5">
+                                  <th className="px-3 py-2 font-medium sm:px-5">
                                     # Inst.
                                   </th>
                                   <th className="hidden px-4 py-2 font-medium sm:table-cell sm:px-5">
                                     Series UID
                                   </th>
-                                  <th className="px-4 py-2 font-medium sm:px-5">
+                                  <th className="px-3 py-2 font-medium sm:px-5">
                                     Added
                                   </th>
-                                  <th className="whitespace-nowrap px-4 py-2 text-right font-medium sm:px-5">
+                                  <th className="whitespace-nowrap px-3 py-2 text-right font-medium sm:px-5">
                                     Actions
                                   </th>
                                 </tr>
@@ -313,12 +315,12 @@ function Patient() {
                                     key={String(s.id)}
                                     className="border-b border-[var(--border)]/40 last:border-0"
                                   >
-                                    <td className="px-4 py-3 align-top sm:px-5">
+                                    <td className="px-3 py-2 align-top sm:px-5 sm:py-3">
                                       <span className="inline-flex rounded-md bg-[var(--accent-soft)]/80 px-2 py-0.5 text-xs font-semibold text-[var(--accent-strong)]">
                                         {display(s.Modality, "?")}
                                       </span>
                                     </td>
-                                    <td className="px-4 py-3 align-top text-[var(--text)] sm:px-5">
+                                    <td className="px-3 py-2 align-top text-[var(--text)] sm:px-5 sm:py-3">
                                       <span className="line-clamp-2">
                                         {display(s.SeriesDescription, "Series")}
                                       </span>
@@ -328,16 +330,16 @@ function Patient() {
                                         </span>
                                       ) : null}
                                     </td>
-                                    <td className="px-4 py-3 align-top font-mono text-xs text-[var(--text)] sm:px-5">
+                                    <td className="px-3 py-2 align-top font-mono text-xs text-[var(--text)] sm:px-5 sm:py-3">
                                       {s.total_instances}
                                     </td>
                                     <td className="hidden max-w-[12rem] px-4 py-3 align-top font-mono text-[10px] text-[var(--muted)] break-all sm:table-cell sm:px-5">
                                       {s.SeriesInstanceUID}
                                     </td>
-                                    <td className="px-4 py-3 align-top text-xs text-[var(--muted)] sm:px-5">
+                                    <td className="px-3 py-2 align-top text-xs text-[var(--muted)] sm:px-5 sm:py-3">
                                       {formatDate(s.created_at)}
                                     </td>
-                                    <td className="px-4 py-3 align-middle sm:px-5">
+                                    <td className="px-3 py-2 align-middle sm:px-5 sm:py-3">
                                       <div className="flex flex-wrap items-center justify-end gap-1.5">
                                         <Link
                                           to={UI_PATHS.VIEWER({
@@ -345,7 +347,7 @@ function Patient() {
                                             studyId: study.id,
                                             seriesId: s.id,
                                           })}
-                                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2.5 py-1.5 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35"
+                                          className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] px-2 py-1 text-xs font-medium text-[var(--text)] transition hover:border-[var(--accent)]/40 hover:bg-[var(--accent-soft)]/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 sm:px-2.5 sm:py-1.5"
                                           target="_blank"
                                         >
                                           <EyeIcon className="size-4 shrink-0" />

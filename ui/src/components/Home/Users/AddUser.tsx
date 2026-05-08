@@ -8,7 +8,7 @@ import { API_PATHS } from "../../../utils/urls";
 import XIcon from "../../../icons/XIcon";
 
 const fieldClass =
-  "w-full min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3.5 py-2.5 text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/60 focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25";
+  "w-full min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/60 focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 sm:min-h-11 sm:px-3.5 sm:py-2.5";
 
 type AddUserProps = {
   onCancel: () => void;
@@ -50,15 +50,15 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col justify-center">
+    <div className="flex h-full min-h-0 flex-col">
       <form
         onSubmit={handleSubmit}
-        className="flex h-full w-full flex-col space-y-6"
+        className="flex h-full w-full flex-col gap-4 sm:gap-6"
       >
-        <header className="flex">
-          <div className="grow space-y-3">
-            <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
-            <h2 className="text-xl font-bold tracking-tight text-[var(--text)]">
+        <header className="flex shrink-0 items-start gap-3">
+          <div className="min-w-0 grow space-y-2 sm:space-y-3">
+            <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] sm:h-1 sm:w-10" />
+            <h2 className="text-lg font-bold tracking-tight text-[var(--text)] sm:text-xl">
               New user
             </h2>
           </div>
@@ -70,15 +70,15 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
               disabled={isSubmitting}
               title="Close"
               aria-label="Close"
-              className="cursor-pointer rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] px-4 py-2.5 text-sm font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex size-10 cursor-pointer items-center justify-center rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-60 sm:size-11"
             >
-              <XIcon className="size-6 stroke-2" />
+              <XIcon className="size-5 stroke-2 sm:size-6" />
             </button>
           </div>
         </header>
 
-        <div className="flex min-h-0 flex-1 flex-col space-y-5 overflow-y-auto pb-5">
-          <div className="space-y-1.5">
+        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto pb-2 sm:gap-5 sm:pb-5">
+          <div className="space-y-1 sm:space-y-1.5">
             <label
               htmlFor="user-username"
               className="block text-xs font-medium uppercase tracking-wide text-[var(--muted)]"
@@ -97,7 +97,7 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
               disabled={isSubmitting}
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-1 sm:space-y-1.5">
             <label
               htmlFor="user-password"
               className="block text-xs font-medium uppercase tracking-wide text-[var(--muted)]"
@@ -116,7 +116,7 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
               disabled={isSubmitting}
             />
           </div>
-          <div className="space-y-1.5">
+          <div className="space-y-1 sm:space-y-1.5">
             <label
               htmlFor="user-email"
               className="block text-xs font-medium uppercase tracking-wide text-[var(--muted)]"
@@ -136,11 +136,11 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
           </div>
         </div>
 
-        <div className="flex w-full gap-3 sm:ml-auto sm:w-auto">
+        <div className="flex w-full shrink-0 gap-3 pt-1 sm:ml-auto sm:w-auto sm:pt-0">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="min-h-11 w-full cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white transition hover:brightness-[1.06] active:translate-y-px active:brightness-95 disabled:cursor-not-allowed disabled:opacity-70 sm:min-w-[8rem]"
+            className="min-h-10 w-full cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 py-2 text-xs font-semibold text-white transition hover:brightness-[1.06] active:translate-y-px active:brightness-95 disabled:cursor-not-allowed disabled:opacity-70 sm:min-h-11 sm:min-w-[8rem] sm:px-4 sm:py-2.5 sm:text-sm"
           >
             {isSubmitting ? "Creating…" : "Create user"}
           </button>

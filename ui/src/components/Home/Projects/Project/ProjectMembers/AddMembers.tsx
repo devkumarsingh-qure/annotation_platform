@@ -225,24 +225,24 @@ export default function AddMembers({
 
   return (
     <>
-      <div className="mt-4 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mt-3 flex shrink-0 flex-col gap-2 sm:mt-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+          <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
             Manage the team that works on this project.
           </h3>
 
-          <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">
+          <p className="mt-0.5 max-w-xl text-xs leading-snug text-[var(--muted)] sm:mt-1 sm:text-sm">
             Select workspace users below, then add them to this project.
           </p>
         </div>
 
         {selectedAddIds.length > 0 ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={exitAddMode}
               disabled={addBusy}
-              className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
             >
               Cancel
             </button>
@@ -251,18 +251,18 @@ export default function AddMembers({
               type="button"
               onClick={() => void addSelected()}
               disabled={addBusy || workspaceLoading}
-              className="min-h-9 w-20 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 w-16 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:w-20 sm:px-3"
             >
               {addBusy ? "Adding…" : "Add"}
             </button>
           </div>
         ) : (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={exitAddMode}
               disabled={addBusy || workspaceLoading}
-              className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
             >
               Cancel
             </button>
@@ -270,7 +270,7 @@ export default function AddMembers({
         )}
       </div>
 
-      <div className="my-3 shrink-0">
+      <div className="my-2 shrink-0 sm:my-3">
         <UserFilters />
       </div>
 

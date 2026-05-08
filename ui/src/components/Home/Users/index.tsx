@@ -78,7 +78,7 @@ function Users() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col p-4 sm:p-6">
+    <div className="h-full min-h-0 flex flex-col p-3 sm:p-6">
       {isAddingUser ? (
         <AddUser
           onCancel={() => setIsAddingUser(false)}
@@ -97,7 +97,7 @@ function Users() {
               <button
                 type="button"
                 onClick={() => setIsAddingUser(true)}
-                className="min-h-10 shrink-0 cursor-pointer self-start rounded-xl border border-[color-mix(in_srgb,var(--accent-strong)_40%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_14px_28px_-16px_color-mix(in_srgb,var(--accent-strong)_68%,transparent)] transition hover:brightness-[1.07] active:translate-y-px active:brightness-95"
+                className="min-h-9 shrink-0 cursor-pointer self-start rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_40%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 py-2 text-xs font-semibold text-white shadow-[0_14px_28px_-16px_color-mix(in_srgb,var(--accent-strong)_68%,transparent)] transition hover:brightness-[1.07] active:translate-y-px active:brightness-95 sm:min-h-10 sm:rounded-xl sm:px-4 sm:py-2.5 sm:text-sm"
               >
                 Add user
               </button>

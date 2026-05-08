@@ -93,7 +93,7 @@ function UserList({
         description={overviewDescription}
         action={overviewAction}
       />
-      <div className="mb-3 shrink-0">{filters}</div>
+      <div className="mb-2 shrink-0 sm:mb-3">{filters}</div>
       <div className="min-h-0 grow flex flex-col overflow-hidden">
         <PaginatedTable
           isLoading={isLoading}

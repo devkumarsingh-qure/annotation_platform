@@ -43,24 +43,24 @@ export type PaginatedTableProps<T> = {
 };
 
 const thBase =
-  "px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] first:pl-4 last:pr-4";
+  "px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] first:pl-3 last:pr-3 sm:px-3 sm:py-2.5 sm:text-xs sm:first:pl-4 sm:last:pr-4";
 const thSelect =
-  "w-12 px-3 py-2.5 text-center text-xs font-semibold uppercase tracking-wide text-[var(--muted)] first:pl-4";
+  "w-10 px-2 py-2 text-center text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] first:pl-3 sm:w-12 sm:px-3 sm:py-2.5 sm:text-xs sm:first:pl-4";
 const tdBase =
-  "max-w-0 min-w-0 px-3 py-2.5 text-center align-top text-[var(--text)] first:pl-4 last:pr-4 overflow-hidden";
+  "max-w-0 min-w-0 px-2 py-2 text-center align-middle text-[var(--text)] first:pl-3 last:pr-3 overflow-hidden sm:px-3 sm:py-2.5 sm:first:pl-4 sm:last:pr-4";
 const tdSelect =
-  "w-12 px-3 py-2.5 text-center align-middle text-[var(--text)] first:pl-4 overflow-hidden";
+  "w-10 px-2 py-2 text-center align-middle text-[var(--text)] first:pl-3 overflow-hidden sm:w-12 sm:px-3 sm:py-2.5 sm:first:pl-4";
 const thNo = `${thBase} w-14 min-w-[3.25rem]`;
 const tdNo = `${tdBase} w-14 min-w-[3.25rem] text-[var(--muted)] tabular-nums`;
 
 const pageSizeSelectClass =
-  "min-h-9 w-full cursor-pointer appearance-none rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] py-1 pl-2.5 pr-8 text-xs font-medium text-[var(--text)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_55%,var(--surface))] disabled:bg-[color-mix(in_srgb,var(--surface)_92%,var(--surface-soft))] disabled:text-[var(--muted)] disabled:opacity-100";
+  "min-h-8 w-full cursor-pointer appearance-none rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] py-1 pl-2.5 pr-8 text-xs font-medium text-[var(--text)] outline-none transition focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_55%,var(--surface))] disabled:bg-[color-mix(in_srgb,var(--surface)_92%,var(--surface-soft))] disabled:text-[var(--muted)] disabled:opacity-100 sm:min-h-9";
 
 const selectionCheckboxClass =
   "size-4 shrink-0 rounded border border-[var(--border)] text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--border)_65%,var(--muted))] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_75%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 disabled:grayscale";
 
 const paginationNavButtonClass =
-  "min-h-9 min-w-[4.5rem] flex-1 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 sm:flex-none";
+  "min-h-8 min-w-[4rem] flex-1 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 sm:min-h-9 sm:min-w-[4.5rem] sm:flex-none sm:px-3";
 
 function PaginatedTable<T>({
   isLoading,
@@ -123,7 +123,7 @@ function PaginatedTable<T>({
           </div>
         ) : null}
         <table
-          className={`w-full min-w-[34rem] border-collapse text-left text-sm sm:min-w-[36rem]${tableClassName ? ` ${tableClassName}` : ""}`}
+          className={`w-full min-w-[31rem] border-collapse text-left text-sm sm:min-w-[36rem]${tableClassName ? ` ${tableClassName}` : ""}`}
         >
           <thead>
             <tr className="sticky rounded-t-lg top-0 z-10 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_88%,transparent)] backdrop-blur-sm">
@@ -215,7 +215,7 @@ function PaginatedTable<T>({
       </div>
 
       {total > 0 ? (
-        <div className="flex flex-col gap-3 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-3 py-3 sm:flex-row sm:items-center sm:px-4">
+        <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-2.5 py-2.5 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3">
           {showPageSizeControl ? (
             <label className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
               <span className="whitespace-nowrap">Showing</span>

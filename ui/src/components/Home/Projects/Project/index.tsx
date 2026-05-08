@@ -94,9 +94,9 @@ function Project() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col p-4 sm:p-6">
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col p-3 sm:p-6">
         <nav
-          className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]"
+          className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6"
           aria-label="Breadcrumb"
         >
           <Link
@@ -122,17 +122,17 @@ function Project() {
         )}
 
         {!isLoading && project && !loadError && (
-          <div className="flex w-full min-h-0 flex-1 flex-col gap-8 overflow-hidden">
+          <div className="flex w-full min-h-0 flex-1 flex-col gap-4 overflow-hidden sm:gap-8">
             <header
-              className={`shrink-0 space-y-3 border-b border-[var(--border)] pb-4${confirmDelete ? " relative z-40" : ""}`}
+              className={`shrink-0 space-y-2 border-b border-[var(--border)] pb-3 sm:space-y-3 sm:pb-4${confirmDelete ? " relative z-40" : ""}`}
             >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="space-y-3">
-                  <div className="h-1 w-10 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)]" />
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+                <div className="min-w-0 space-y-2 sm:space-y-3">
+                  <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] sm:h-1 sm:w-10" />
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:text-xs sm:tracking-[0.2em]">
                     Project
                   </p>
-                  <h1 className="text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
+                  <h1 className="truncate text-xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
                     {project.name}
                   </h1>
                 </div>
@@ -145,13 +145,13 @@ function Project() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-4 py-2.5 text-sm font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end"
+                        className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-3 text-xs font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
                         Delete project
                       </button>
                     ) : (
-                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-2rem,22rem)] flex-col gap-3 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 shadow-lg">
-                        <p className="text-sm text-[var(--text)]">
+                      <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-1.5rem,22rem)] flex-col gap-2 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-3 shadow-lg sm:gap-3 sm:p-4">
+                        <p className="text-xs leading-snug text-[var(--text)] sm:text-sm">
                           Delete{" "}
                           <span className="font-semibold">{project.name}</span>{" "}
                           from this workspace? Member and patient links for this
@@ -170,7 +170,7 @@ function Project() {
                             type="button"
                             disabled={deleting}
                             onClick={() => setConfirmDelete(false)}
-                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50"
+                            className="rounded-lg border border-[var(--border)] px-3 py-2 text-xs text-[var(--muted)] hover:bg-[var(--surface-soft)] disabled:opacity-50 sm:text-sm"
                           >
                             Cancel
                           </button>
@@ -178,7 +178,7 @@ function Project() {
                             type="button"
                             disabled={deleting}
                             onClick={() => void handleDelete()}
-                            className="rounded-lg grow bg-[var(--danger)] px-3 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                            className="grow rounded-lg bg-[var(--danger)] px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50 sm:text-sm"
                           >
                             {deleting ? "Deleting…" : "Delete permanently"}
                           </button>
@@ -190,15 +190,15 @@ function Project() {
               </div>
             </header>
 
-            <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               {statBlock("Members", project.member_count)}
               {statBlock("Patients", project.patient_count)}
               {statBlock("Created", formatShortDate(project.created_at))}
               {statBlock("Updated", formatShortDate(project.updated_at))}
             </div>
 
-            <section className="h-0 grow flex min-h-0 shrink-0 flex-col space-y-2">
-              <h2 className="shrink-0 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+            <section className="h-0 grow flex min-h-0 shrink-0 flex-col space-y-1.5 sm:space-y-2">
+              <h2 className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-xs">
                 Description
               </h2>
               <div
@@ -207,7 +207,7 @@ function Project() {
                 aria-label="Project description"
               >
                 {project.description.trim() ? (
-                  <div className="h-full overflow-y-auto overflow-x-hidden px-4 py-3 text-sm leading-relaxed text-[var(--text)] break-words [scrollbar-gutter:stable]">
+                  <div className="h-full overflow-y-auto overflow-x-hidden break-words px-3 py-2.5 text-xs leading-relaxed text-[var(--text)] [scrollbar-gutter:stable] sm:px-4 sm:py-3 sm:text-sm">
                     <p className="whitespace-pre-wrap">{project.description}</p>
                   </div>
                 ) : (
@@ -218,24 +218,24 @@ function Project() {
               </div>
             </section>
 
-            <section className="shrink-0 space-y-5">
-              <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
+            <section className="shrink-0 space-y-3 sm:space-y-5">
+              <div className="grid grid-cols-1 gap-2.5 sm:gap-4 lg:grid-cols-2 lg:gap-5">
                 {user?.is_workspace_admin && (
                   <button
                     type="button"
                     onClick={() =>
                       navigate(UI_PATHS.PROJECT_MEMBERS(project.id))
                     }
-                    className="group flex w-full cursor-pointer gap-4 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:p-6"
+                    className="group flex w-full cursor-pointer gap-3 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-3 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:rounded-xl sm:p-6"
                   >
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14">
-                      <UserGroupIcon className="size-6 sm:size-7" />
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14 sm:rounded-xl">
+                      <UserGroupIcon className="size-5 sm:size-7" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center">
-                      <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+                      <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
                         Members
                       </h3>
-                      <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)]">
+                      <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] sm:mt-4">
                         Manage members
                         <span
                           className="transition group-hover:translate-x-0.5"
@@ -253,16 +253,16 @@ function Project() {
                   onClick={() =>
                     navigate(UI_PATHS.PROJECT_PATIENTS(project.id))
                   }
-                  className="group flex w-full cursor-pointer gap-4 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:p-6"
+                  className="group flex w-full cursor-pointer gap-3 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-3 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:rounded-xl sm:p-6"
                 >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14">
-                    <FolderIcon className="size-6 sm:size-7" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14 sm:rounded-xl">
+                    <FolderIcon className="size-5 sm:size-7" />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col justify-center">
-                    <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+                    <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
                       Patients
                     </h3>
-                    <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)]">
+                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--accent)] sm:mt-4">
                       Manage patients
                       <span
                         className="transition group-hover:translate-x-0.5"

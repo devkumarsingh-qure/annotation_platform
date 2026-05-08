@@ -211,9 +211,9 @@ export default function AssignPatients({
 
   return (
     <>
-      <div className="mt-4 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="mt-3 flex shrink-0 flex-col gap-2 sm:mt-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+          <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
             Patient access for{" "}
             <Link
               to={UI_PATHS.USER(userId)}
@@ -223,19 +223,19 @@ export default function AssignPatients({
             </Link>
           </h3>
 
-          <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">
+          <p className="mt-0.5 max-w-xl text-xs leading-snug text-[var(--muted)] sm:mt-1 sm:text-sm">
             Choose patients from this project that this member may work on.
             Only patients already on the project are listed.
           </p>
         </div>
 
         {selectedIds.length > 0 ? (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={exit}
               disabled={busy}
-              className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
             >
               Cancel
             </button>
@@ -243,18 +243,18 @@ export default function AssignPatients({
               type="button"
               onClick={() => void assignSelected()}
               disabled={busy || loading}
-              className="min-h-9 w-20 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 w-16 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:w-20 sm:px-3"
             >
               {busy ? "Adding…" : "Add"}
             </button>
           </div>
         ) : (
-          <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
             <button
               type="button"
               onClick={exit}
               disabled={busy || loading}
-              className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+              className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
             >
               Cancel
             </button>
@@ -262,7 +262,7 @@ export default function AssignPatients({
         )}
       </div>
 
-      <div className="mt-6 flex min-h-0 min-w-0 grow flex-col overflow-hidden bg-[color:var(--surface)]">
+      <div className="mt-3 flex min-h-0 min-w-0 grow flex-col overflow-hidden bg-[color:var(--surface)] sm:mt-6">
         <PaginatedTable
           isLoading={loading}
           columns={columns}

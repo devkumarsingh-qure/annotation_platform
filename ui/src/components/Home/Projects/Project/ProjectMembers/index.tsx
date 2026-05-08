@@ -219,8 +219,8 @@ function ProjectMembers() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 sm:p-6">
-      <nav className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-3 sm:p-6">
+      <nav className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6">
         <Link
           to={UI_PATHS.PROJECT(projectId)}
           className="text-[var(--accent)] underline-offset-2 hover:underline"
@@ -228,7 +228,7 @@ function ProjectMembers() {
           ← Back to project
         </Link>
       </nav>
-      <h2 className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+      <h2 className="shrink-0 text-[11px] font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-base">
         Members
       </h2>
 
@@ -241,25 +241,25 @@ function ProjectMembers() {
         />
       ) : (
         <>
-          <div className="mt-4 flex shrink-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div className="mt-2 flex shrink-0 flex-col gap-2 sm:mt-4 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
             <div className="min-w-0">
-              <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
+              <h3 className="text-sm font-bold tracking-tight text-[var(--text)] sm:text-base">
                 Manage the team that works on this project.
               </h3>
 
-              <p className="mt-1 max-w-xl text-sm text-[var(--muted)]">
+              <p className="mt-0.5 max-w-xl text-xs leading-snug text-[var(--muted)] sm:mt-1 sm:text-sm">
                 Select members below, then remove them from the project in one
                 step.
               </p>
             </div>
 
             {membersToRemove.length > 0 ? (
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
                 <button
                   type="button"
                   onClick={cancelRemoval}
                   disabled={removeBusy}
-                  className="min-h-9 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[var(--surface-soft)] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   Cancel
                 </button>
@@ -267,18 +267,18 @@ function ProjectMembers() {
                   type="button"
                   onClick={() => void removeSelected()}
                   disabled={removeBusy || isMembersLoading}
-                  className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_45%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] px-3 text-xs font-semibold text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_16%,var(--surface-soft))] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 rounded-lg border border-[color-mix(in_srgb,var(--danger)_45%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] px-2.5 text-xs font-semibold text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_16%,var(--surface-soft))] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   {removeBusy ? "Removing…" : "Remove"}
                 </button>
               </div>
             ) : (
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
                 <button
                   type="button"
                   onClick={enterAddMode}
                   disabled={isMembersLoading || removeBusy}
-                  className="min-h-9 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-3 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40"
+                  className="min-h-8 shrink-0 rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-2.5 text-xs font-semibold text-white transition hover:brightness-[1.06] disabled:cursor-not-allowed disabled:opacity-40 sm:min-h-9 sm:px-3"
                 >
                   Add members
                 </button>
@@ -286,10 +286,10 @@ function ProjectMembers() {
             )}
           </div>
 
-          <div className="mt-6 flex min-h-0 min-w-0 grow flex-col">
+          <div className="mt-3 flex min-h-0 min-w-0 grow flex-col sm:mt-6">
             {isMembersLoading ? (
               <div className="flex min-h-0 grow flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] isolate">
-                <div className="flex min-h-48 flex-1 items-center justify-center px-4 py-12 sm:min-h-64">
+                <div className="flex min-h-36 flex-1 items-center justify-center px-4 py-8 sm:min-h-64 sm:py-12">
                   <Loading size="lg" />
                 </div>
               </div>
