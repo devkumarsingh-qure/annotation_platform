@@ -31,7 +31,7 @@ async function prefetchCsrfIfNeeded(): Promise<void> {
 }
 
 const apiClient = axios.create({
-    baseURL,
+    baseURL: "/",
     withCredentials: true,
 });
 
