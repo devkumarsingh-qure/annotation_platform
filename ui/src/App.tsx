@@ -77,7 +77,7 @@ function AppToastContainer() {
 
 export default function App() {
   return (
-    <div className="relative flex h-screen w-screen flex-col text-[var(--text)] font-mono">
+    <div className="relative flex h-dvh w-full max-w-full flex-col overflow-hidden text-[var(--text)] font-mono">
       <BrowserRouter>
         <CookieNoticeBar />
         <AuthProvider>

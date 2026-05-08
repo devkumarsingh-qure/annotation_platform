@@ -212,14 +212,14 @@ function ProjectMembers() {
 
   if (!projectId) {
     return (
-      <div className="flex h-full items-center justify-center p-6">
+      <div className="flex h-full items-center justify-center p-4 sm:p-6">
         <p className="text-sm text-[var(--muted)]">Missing project id.</p>
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden p-6">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4 sm:p-6">
       <nav className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]">
         <Link
           to={UI_PATHS.PROJECT(projectId)}

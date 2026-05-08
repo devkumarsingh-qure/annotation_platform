@@ -82,7 +82,7 @@ function PatientFilters() {
 
   return (
     <FilterBar ariaLabel="Patient filters">
-      <div className="flex min-w-0 flex-1 items-center gap-2 sm:min-w-[200px] sm:max-w-md">
+      <div className="flex w-full min-w-0 items-center gap-2 sm:w-auto sm:min-w-[200px] sm:max-w-md sm:flex-1">
         <label htmlFor="patient-filter-search" className={LABEL_CHIP_CLASS}>
           Search
         </label>
@@ -127,7 +127,7 @@ function PatientFilters() {
         <button
           type="button"
           onClick={handleClear}
-          className="ml-auto h-8 shrink-0 cursor-pointer rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[color-mix(in_srgb,var(--surface-soft)_100%,transparent)]"
+          className="h-8 w-full shrink-0 cursor-pointer rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_85%,transparent)] px-2.5 text-xs font-semibold text-[var(--text)] transition hover:bg-[color-mix(in_srgb,var(--surface-soft)_100%,transparent)] sm:ml-auto sm:w-auto"
         >
           Clear
         </button>
@@ -165,7 +165,7 @@ function AgeInlineFields({
   const commitBoth = () => onCommit(draftMin, draftMax, minAge, maxAge);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <span id="patient-filter-age-desc" className={LABEL_CHIP_CLASS}>
         Age
       </span>

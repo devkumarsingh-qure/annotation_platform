@@ -64,7 +64,7 @@ function Projects() {
           }}
         />
       ) : (
-        <div className="flex h-full min-h-0 flex-col p-6">
+        <div className="flex h-full min-h-0 flex-col p-4 sm:p-6">
           <PageOverviewHeader
             title="Projects"
             description="Organize annotation workstreams, invite collaborators, and keep patient coverage easy to audit at a glance."
@@ -81,15 +81,15 @@ function Projects() {
             }
           />
           <div className="min-h-0 flex-1">
-          <ProjectList
-            isProjectsLoading={isProjectsLoading}
-            projects={projects}
-            page={page}
-            setPage={setPage}
-            pageSize={pageSize}
-            onPageSizeChange={handlePageSizeChange}
-            pageSizeOptions={PROJECTS_PAGE_SIZE_OPTIONS}
-          />
+            <ProjectList
+              isProjectsLoading={isProjectsLoading}
+              projects={projects}
+              page={page}
+              setPage={setPage}
+              pageSize={pageSize}
+              onPageSizeChange={handlePageSizeChange}
+              pageSizeOptions={PROJECTS_PAGE_SIZE_OPTIONS}
+            />
           </div>
         </div>
       )}

@@ -157,9 +157,23 @@ function ViewerComponent() {
     return null;
   }
 
+  const hasAnnotationPanel = Boolean(projectId && studyId && seriesId);
+
   return (
-    <div className="flex h-full">
-      <div className="w-1/5">
+    <div
+      className={[
+        "relative flex h-full min-h-0 flex-col overflow-hidden md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:flex lg:flex-row",
+        hasAnnotationPanel
+          ? "md:grid-rows-[minmax(0,1fr)_18rem]"
+          : "md:grid-rows-[minmax(0,1fr)]",
+      ].join(" ")}
+    >
+      <div
+        className={[
+          "h-36 min-h-0 shrink-0 sm:h-44 md:h-auto lg:w-1/5",
+          hasAnnotationPanel ? "md:row-span-2" : "md:row-span-1",
+        ].join(" ")}
+      >
         {isViewerInitialized && (
           <SeriesPanel
             patientId={patientId}
@@ -169,11 +183,11 @@ function ViewerComponent() {
           />
         )}
       </div>
-      <div className="flex flex-col h-full w-0 grow shrink">
-        <div className="border-b border-[var(--border)] bg-[var(--surface-soft)]">
+      <div className="relative flex min-h-0 flex-1 shrink flex-col md:col-start-2 md:row-start-1 lg:h-full lg:w-0">
+        <div className="shrink-0 overflow-x-auto border-b border-[var(--border)] bg-[var(--surface-soft)]">
           <Toolbar />
         </div>
-        <div className="grow flex bg-black">
+        <div className="flex min-h-0 grow bg-black">
           <Viewer onInitialized={handleViewerInitialized} />
         </div>
 
@@ -184,8 +198,8 @@ function ViewerComponent() {
         )}
       </div>
 
-      {projectId && studyId && seriesId && (
-        <div className="w-1/4">
+      {hasAnnotationPanel && projectId && studyId && seriesId && (
+        <div className="h-64 min-h-0 shrink-0 sm:h-72 md:col-start-2 md:row-start-2 md:h-auto lg:w-1/4">
           {isViewerInitialized && (
             <div className="h-full">
               <AnnotationPanel

@@ -78,7 +78,7 @@ function Users() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col p-6">
+    <div className="h-full min-h-0 flex flex-col p-4 sm:p-6">
       {isAddingUser ? (
         <AddUser
           onCancel={() => setIsAddingUser(false)}

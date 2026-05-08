@@ -63,8 +63,8 @@ function SeriesPanel({
   }, [seriesId, studies]);
 
   return (
-    <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-l border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px]">
-      <header className="flex items-center gap-2 h-14.5 px-3 shrink-0 border-b border-[var(--border)]">
+    <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px] md:border-b-0 md:border-r">
+      <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[var(--border)] px-3">
         <h1 className="min-w-0 font-semibold tracking-tight text-[var(--text)]">
           Studies
         </h1>

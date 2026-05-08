@@ -14,14 +14,14 @@ function Home() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
-      <div className="flex min-h-0 flex-1 gap-6 overflow-hidden px-5 pb-5 pt-5 sm:px-6 sm:pb-6 sm:pt-6">
-        <aside className="flex h-full min-h-0 w-52 shrink-0 flex-col sm:w-64">
+      <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-hidden px-3 pb-3 pt-3 sm:gap-4 sm:px-4 sm:pb-4 sm:pt-4 md:flex-row lg:gap-6 lg:px-6 lg:pb-6 lg:pt-6">
+        <aside className="flex w-full shrink-0 flex-col md:h-full md:min-h-0 md:w-56 lg:w-64">
           <LeftPanel />
         </aside>
 
         <main
           id="workspace-main"
-          className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--border)_92%,transparent)] bg-[color-mix(in_srgb,var(--surface-strong)_62%,transparent)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_55%,transparent),0_1px_0_color-mix(in_srgb,var(--border)_65%,transparent),0_28px_80px_-40px_color-mix(in_srgb,var(--accent)_22%,transparent),0_12px_32px_-24px_color-mix(in_srgb,var(--text)_12%,transparent)] backdrop-blur-[14px] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-soft)_22%,transparent)_0%,transparent_42%,transparent_100%)] before:opacity-[0.85]"
+          className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--border)_92%,transparent)] bg-[color-mix(in_srgb,var(--surface-strong)_62%,transparent)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_55%,transparent),0_1px_0_color-mix(in_srgb,var(--border)_65%,transparent),0_28px_80px_-40px_color-mix(in_srgb,var(--accent)_22%,transparent),0_12px_32px_-24px_color-mix(in_srgb,var(--text)_12%,transparent)] backdrop-blur-[14px] before:pointer-events-none before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(135deg,color-mix(in_srgb,var(--accent-soft)_22%,transparent)_0%,transparent_42%,transparent_100%)] before:opacity-[0.85] md:rounded-2xl"
         >
           <div className="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
             <Outlet />

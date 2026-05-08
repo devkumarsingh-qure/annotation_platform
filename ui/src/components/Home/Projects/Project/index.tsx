@@ -86,7 +86,7 @@ function Project() {
 
   if (!projectId) {
     return (
-      <div className="flex h-full items-center justify-center p-6">
+      <div className="flex h-full items-center justify-center p-4 sm:p-6">
         <p className="text-sm text-[var(--muted)]">Missing project id.</p>
       </div>
     );
@@ -94,7 +94,7 @@ function Project() {
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col p-6">
+      <div className="mx-auto flex min-h-0 w-full flex-1 flex-col p-4 sm:p-6">
         <nav
           className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]"
           aria-label="Breadcrumb"
@@ -226,10 +226,10 @@ function Project() {
                     onClick={() =>
                       navigate(UI_PATHS.PROJECT_MEMBERS(project.id))
                     }
-                    className="group flex w-full cursor-pointer gap-5 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-6 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30"
+                    className="group flex w-full cursor-pointer gap-4 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:p-6"
                   >
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))]">
-                      <UserGroupIcon className="size-7" />
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14">
+                      <UserGroupIcon className="size-6 sm:size-7" />
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col justify-center">
                       <h3 className="text-base font-bold tracking-tight text-[var(--text)]">
@@ -253,10 +253,10 @@ function Project() {
                   onClick={() =>
                     navigate(UI_PATHS.PROJECT_PATIENTS(project.id))
                   }
-                  className="group flex w-full cursor-pointer gap-5 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-6 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30"
+                  className="group flex w-full cursor-pointer gap-4 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-4 text-left transition hover:border-[color-mix(in_srgb,var(--accent)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface-soft)_45%,var(--surface))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/30 sm:gap-5 sm:p-6"
                 >
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))]">
-                    <FolderIcon className="size-7" />
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[color-mix(in_srgb,var(--accent)_14%,var(--surface-soft))] text-[var(--accent)] transition group-hover:bg-[color-mix(in_srgb,var(--accent)_22%,var(--surface-soft))] sm:h-14 sm:w-14">
+                    <FolderIcon className="size-6 sm:size-7" />
                   </div>
                   <div className="flex min-w-0 flex-1 flex-col justify-center">
                     <h3 className="text-base font-bold tracking-tight text-[var(--text)]">

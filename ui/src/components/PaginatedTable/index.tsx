@@ -60,7 +60,7 @@ const selectionCheckboxClass =
   "size-4 shrink-0 rounded border border-[var(--border)] text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--border)_65%,var(--muted))] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_75%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 disabled:grayscale";
 
 const paginationNavButtonClass =
-  "min-h-9 min-w-[4.5rem] rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100";
+  "min-h-9 min-w-[4.5rem] flex-1 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-3 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 sm:flex-none";
 
 function PaginatedTable<T>({
   isLoading,
@@ -112,7 +112,7 @@ function PaginatedTable<T>({
 
   return (
     <div className={root}>
-      <div className="relative min-h-0 grow overflow-auto">
+      <div className="relative min-h-0 grow overflow-auto overscroll-contain">
         {isLoading ? (
           <div
             className="absolute inset-0 z-10 flex items-center justify-center bg-[color-mix(in_srgb,var(--surface)_90%,transparent)]"
@@ -123,7 +123,7 @@ function PaginatedTable<T>({
           </div>
         ) : null}
         <table
-          className={`w-full min-w-[36rem] border-collapse text-left text-sm${tableClassName ? ` ${tableClassName}` : ""}`}
+          className={`w-full min-w-[34rem] border-collapse text-left text-sm sm:min-w-[36rem]${tableClassName ? ` ${tableClassName}` : ""}`}
         >
           <thead>
             <tr className="sticky rounded-t-lg top-0 z-10 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_88%,transparent)] backdrop-blur-sm">
@@ -215,9 +215,9 @@ function PaginatedTable<T>({
       </div>
 
       {total > 0 ? (
-        <div className="flex flex-col gap-3 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-4 py-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-3 py-3 sm:flex-row sm:items-center sm:px-4">
           {showPageSizeControl ? (
-            <label className="flex items-center gap-2 text-xs text-[var(--muted)]">
+            <label className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
               <span className="whitespace-nowrap">Showing</span>
               <span className="relative inline-flex">
                 <select
@@ -248,7 +248,7 @@ function PaginatedTable<T>({
               rows per page
             </p>
           )}
-          <p className="ml-auto text-xs text-[var(--muted)]">
+          <p className="text-xs text-[var(--muted)] sm:ml-auto">
             Showing{" "}
             <span className="font-medium text-[var(--text)]">{start}</span>
             {"–"}
@@ -257,7 +257,7 @@ function PaginatedTable<T>({
             </span> of{" "}
             <span className="font-medium text-[var(--text)]">{total}</span>
           </p>
-          <div className="flex flex-wrap items-center justify-end gap-2 sm:gap-3">
+          <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
             <button
               type="button"
               onClick={() => onPageChange(safePage - 1)}

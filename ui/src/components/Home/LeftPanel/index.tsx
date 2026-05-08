@@ -26,8 +26,8 @@ function LeftPanel() {
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col divide-y divide-[color-mix(in_srgb,var(--border)_72%,transparent)] overflow-hidden rounded-2xl border border-[color-mix(in_srgb,var(--border)_92%,transparent)] bg-[color-mix(in_srgb,var(--surface-strong)_55%,transparent)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_48%,transparent),0_1px_0_color-mix(in_srgb,var(--border)_55%,transparent),0_22px_60px_-36px_color-mix(in_srgb,var(--accent)_18%,transparent)] backdrop-blur-[12px]">
-      <div className="shrink-0 border-t border-[color-mix(in_srgb,var(--border)_48%,transparent)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--accent-soft)_40%,transparent)_0%,color-mix(in_srgb,var(--surface-soft)_32%,transparent)_55%,transparent_100%)] p-4">
+    <div className="flex min-h-0 flex-col overflow-hidden rounded-xl border border-[color-mix(in_srgb,var(--border)_92%,transparent)] bg-[color-mix(in_srgb,var(--surface-strong)_55%,transparent)] shadow-[inset_0_1px_0_color-mix(in_srgb,var(--surface-strong)_48%,transparent),0_1px_0_color-mix(in_srgb,var(--border)_55%,transparent),0_22px_60px_-36px_color-mix(in_srgb,var(--accent)_18%,transparent)] backdrop-blur-[12px] md:h-full md:rounded-2xl lg:divide-y lg:divide-[color-mix(in_srgb,var(--border)_72%,transparent)]">
+      <div className="hidden shrink-0 border-t border-[color-mix(in_srgb,var(--border)_48%,transparent)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--accent-soft)_40%,transparent)_0%,color-mix(in_srgb,var(--surface-soft)_32%,transparent)_55%,transparent_100%)] p-4 lg:block">
         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
           Signed in
         </p>
@@ -42,13 +42,13 @@ function LeftPanel() {
         </p>
       </div>
       <nav
-        className="relative flex h-full min-h-0 flex-col bg-[color-mix(in_srgb,var(--surface)_65%,transparent)]"
+        className="relative flex min-h-0 flex-col bg-[color-mix(in_srgb,var(--surface)_65%,transparent)] md:h-full"
         aria-label="Workspace sections"
       >
-        <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+        <p className="hidden px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)] lg:block">
           Workspace
         </p>
-        <ul className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto p-3 pt-2">
+        <ul className="flex min-w-0 gap-2 overflow-x-auto p-2 md:min-h-0 md:flex-1 md:flex-col md:gap-1 md:overflow-y-auto md:p-3 md:pt-3 lg:pt-2">
           {TABS.map((tab) => {
             if (!user.is_workspace_admin && tab.label === "Members") {
               return null;
@@ -63,10 +63,10 @@ function LeftPanel() {
                   end={false}
                   className={({ isActive }) =>
                     [
-                      "group relative flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-sm transition outline-none",
+                      "group relative flex min-w-[7rem] items-center gap-2 rounded-lg px-2.5 py-2.5 text-left text-sm transition outline-none md:min-w-0 md:w-full md:gap-3 md:rounded-xl md:px-3 md:py-3",
                       "focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_srgb,var(--surface)_92%,transparent)]",
                       isActive
-                        ? "border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent-soft)_65%,transparent)] font-semibold text-[var(--text)] shadow-[inset_3px_0_0_var(--accent)]"
+                        ? "border border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--accent-soft)_65%,transparent)] font-semibold text-[var(--text)] shadow-[inset_0_-3px_0_var(--accent)] md:shadow-[inset_3px_0_0_var(--accent)]"
                         : "border border-transparent font-medium text-[var(--muted)] hover:border-[var(--border)]/80 hover:bg-[var(--surface-soft)] hover:text-[var(--text)]",
                     ].join(" ")
                   }
@@ -75,7 +75,7 @@ function LeftPanel() {
                     <>
                       <span
                         className={[
-                          "flex size-9 shrink-0 items-center justify-center rounded-lg border transition",
+                          "flex size-8 shrink-0 items-center justify-center rounded-lg border transition md:size-9",
                           isActive
                             ? "border-[color-mix(in_srgb,var(--accent)_35%,var(--border))] bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-[var(--accent-strong)]"
                             : "border-[color-mix(in_srgb,var(--border)_70%,transparent)] bg-[color-mix(in_srgb,var(--surface-soft)_50%,transparent)] text-[var(--muted)] group-hover:border-[var(--border)] group-hover:text-[var(--accent)]",
@@ -83,7 +83,7 @@ function LeftPanel() {
                       >
                         <Icon className="size-5" />
                       </span>
-                      <span className="min-w-0 flex-1 leading-snug">
+                      <span className="min-w-0 flex-1 truncate leading-snug">
                         {tab.label}
                       </span>
                     </>

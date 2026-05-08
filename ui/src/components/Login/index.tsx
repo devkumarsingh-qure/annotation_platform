@@ -20,7 +20,7 @@ function Login() {
         "w-full min-h-11 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3.5 py-2.5 text-[var(--text)] shadow-inner shadow-[color-mix(in_srgb,var(--accent)_4%,transparent)] outline-none transition placeholder:text-[var(--muted)]/60 focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25";
 
     return (
-        <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden p-4 sm:p-6">
+        <div className="relative flex min-h-dvh w-full items-center justify-center overflow-hidden p-4 sm:p-6">
             <div
                 aria-hidden
                 className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,color-mix(in_srgb,var(--accent)_18%,transparent),transparent_55%)]"

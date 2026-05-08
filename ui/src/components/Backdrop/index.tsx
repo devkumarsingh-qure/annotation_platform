@@ -1,7 +1,7 @@
 function Backdrop({ onClick, className = "" }: { onClick: () => void; className?: string }) {
     return (
         <div
-            className={`fixed top-0 left-0 z-40 h-screen w-screen bg-black/35 backdrop-blur-[1px] ${className}`}
+            className={`fixed inset-0 z-40 h-dvh w-full bg-black/35 backdrop-blur-[1px] ${className}`}
             onClick={onClick}
         ></div>
     )

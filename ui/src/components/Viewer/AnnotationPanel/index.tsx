@@ -255,8 +255,8 @@ function AnnotationPanel({
   }
 
   return (
-    <aside className="flex h-full min-h-0 flex-col overflow-hidden border-l border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]">
-      <header className="shrink-0 h-14.5 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3 flex items-center justify-between space-x-2">
+    <aside className="flex h-full min-h-0 flex-col overflow-hidden border-t border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px] lg:border-l lg:border-t-0">
+      <header className="flex h-14 shrink-0 items-center justify-between space-x-2 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3">
         <h1 className="font-semibold uppercase tracking-tight text-[var(--text)]">
           Annotations
         </h1>

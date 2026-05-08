@@ -75,7 +75,7 @@ function Patients() {
   };
 
   return (
-    <div className="h-full min-h-0 flex flex-col p-6">
+    <div className="h-full min-h-0 flex flex-col p-4 sm:p-6">
       <PageOverviewHeader
         title="Patients"
         description="Browse workspace patients, filter by demographics, and open records for annotation and review."

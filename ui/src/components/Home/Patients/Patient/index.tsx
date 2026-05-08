@@ -79,7 +79,7 @@ function Patient() {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden bg-[color-mix(in_srgb,var(--bg)_40%,transparent)]">
-      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-6">
+      <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-4 sm:p-6">
         <Link
           to={UI_PATHS.PATIENTS()}
           className="group mb-4 w-fit pr-4 inline-flex items-center gap-2 text-sm font-medium text-[var(--muted)] transition hover:text-[var(--accent)]"
@@ -270,7 +270,7 @@ function Patient() {
                                 {study.StudyInstanceUID}
                               </p>
                             </div>
-                            <div className="text-right text-xs text-[var(--muted)]">
+                            <div className="text-left text-xs text-[var(--muted)] sm:text-right">
                               <p>Accession {display(study.AccessionNumber)}</p>
                               <p className="mt-1">
                                 {formatDate(study.created_at)}

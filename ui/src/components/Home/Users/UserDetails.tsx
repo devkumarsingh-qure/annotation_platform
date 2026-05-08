@@ -270,7 +270,7 @@ function UserDetails() {
 
   if (!userId) {
     return (
-      <div className="flex h-full items-center justify-center p-6">
+      <div className="flex h-full items-center justify-center p-4 sm:p-6">
         <p className="text-sm text-[var(--muted)]">Missing user id.</p>
       </div>
     );
@@ -282,8 +282,8 @@ function UserDetails() {
       : (user?.username ?? "");
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col px-6 pt-6 pb-6">
-      <div className="min-h-0 grow flex flex-col pb-6">
+    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col px-4 pt-4 pb-4 sm:px-6 sm:pt-6 sm:pb-6">
+      <div className="min-h-0 grow flex flex-col pb-4 sm:pb-6">
         <nav
           className="mb-6 shrink-0 text-xs font-medium text-[var(--muted)]"
           aria-label="Breadcrumb"
@@ -324,7 +324,7 @@ function UserDetails() {
                     Member
                   </p>
                   <div className="flex min-w-0 flex-wrap items-center gap-3">
-                    <h1 className="min-w-0 max-w-xl truncate text-2xl font-bold tracking-tight text-[var(--text)] sm:text-3xl">
+                    <h1 className="min-w-0 max-w-full truncate text-2xl font-bold tracking-tight text-[var(--text)] sm:max-w-xl sm:text-3xl">
                       {titleDisplay}
                     </h1>
                     {user.is_workspace_admin ? (

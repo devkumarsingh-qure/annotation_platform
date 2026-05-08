@@ -136,7 +136,7 @@ function AddUser({ onCancel, onCreated }: AddUserProps) {
           </div>
         </div>
 
-        <div className="ml-auto flex w-1/4 gap-3">
+        <div className="flex w-full gap-3 sm:ml-auto sm:w-auto">
           <button
             type="submit"
             disabled={isSubmitting}

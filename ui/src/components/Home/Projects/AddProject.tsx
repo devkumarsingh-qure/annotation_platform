@@ -60,7 +60,7 @@ function AddProject({ onCancel, onCreated }: AddProjectProps) {
     <div className="flex h-full min-h-0 flex-col justify-center">
       <form
         onSubmit={handleSubmit}
-        className="h-full w-full flex flex-col space-y-6 p-6"
+        className="h-full w-full flex flex-col space-y-6 p-4 sm:p-6"
       >
         <header className="flex">
           <div className="space-y-3 grow">
@@ -130,7 +130,7 @@ function AddProject({ onCancel, onCreated }: AddProjectProps) {
           </div>
         </div>
 
-        <div className="flex gap-3 w-1/4 ml-auto">
+        <div className="flex w-full gap-3 sm:ml-auto sm:w-auto">
           <button
             type="submit"
             disabled={isSubmitting}

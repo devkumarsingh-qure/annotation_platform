@@ -131,11 +131,11 @@ function FileUpload({
   };
 
   return (
-    <div className="fixed top-0 left-0 z-40 h-full w-full">
+    <div className="fixed inset-0 z-40 h-full w-full">
       <Backdrop onClick={close} />
 
       <div
-        className="absolute top-1/2 left-1/2 z-50 flex w-2/3 max-h-[min(85vh,32rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl"
+        className="absolute top-1/2 left-1/2 z-50 flex max-h-[min(88dvh,32rem)] w-[calc(100vw-1rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--surface-strong)] shadow-xl sm:w-2/3"
         role="dialog"
         aria-labelledby="file-upload-title"
         aria-modal="true"
@@ -170,7 +170,7 @@ function FileUpload({
                   Summary
                 </p>
                 <div className="rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2.5">
-                  <div className="flex items-center justify-between gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                       <p className="text-sm text-[var(--muted)]">
                         <span className="font-medium tabular-nums text-[var(--text)]">
@@ -186,7 +186,7 @@ function FileUpload({
                       </p>
                     </div>
                     {isUploading && (
-                      <div className="flex shrink-0 items-center justify-end gap-4 text-right">
+                      <div className="flex shrink-0 items-center justify-start gap-4 text-left sm:justify-end sm:text-right">
                         <div>
                           <Loading size="sm" />
                         </div>
@@ -266,7 +266,7 @@ function FileUpload({
                           }}
                           role="listitem"
                           className={classNames(
-                            "flex items-center justify-between gap-3 px-3 py-2.5 first:pt-2.5 last:pb-2.5",
+                            "flex flex-col items-start justify-between gap-1.5 px-3 py-2.5 first:pt-2.5 last:pb-2.5 sm:flex-row sm:items-center sm:gap-3",
                             {
                               "bg-[color:var(--danger)]/20":
                                 uploadFileStatuses[file.name]?.success ===
@@ -301,7 +301,7 @@ function FileUpload({
               </div>
 
               <footer className="shrink-0 border-t border-[var(--border)] px-4 py-3">
-                <div className="flex flex-wrap items-center justify-end gap-2">
+                <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
                   <button
                     type="button"
                     className={classNames(
