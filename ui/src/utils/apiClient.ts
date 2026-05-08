@@ -1,7 +1,7 @@
 import axios from "axios";
 import { API_PATHS } from "./urls";
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+// const baseURL = import.meta.env.VITE_API_BASE_URL;
 
 const CSRF_UNSAFE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
