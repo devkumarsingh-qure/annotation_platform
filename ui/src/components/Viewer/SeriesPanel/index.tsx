@@ -4,6 +4,7 @@ import { API_PATHS } from "../../../utils/urls";
 import Loading from "../../Loading";
 import StackIcon from "../../../icons/StackIcon";
 import MetadataExplorerIcon from "../../../icons/MetadataExplorerIcon";
+import XIcon from "../../../icons/XIcon";
 import type { StudyDetail } from "../../../types/Patient";
 
 const shortValue = (value: string | null | undefined, maxLength = 36) => {
@@ -17,11 +18,14 @@ const shortValue = (value: string | null | undefined, maxLength = 36) => {
 };
 
 function SeriesPanel({
+  isMobile,
   patientId,
   seriesId,
   onClickSeries,
   onOpenMetadataExplorer,
+  onClose,
 }: {
+  isMobile: boolean;
   patientId: string;
   seriesId: string | null;
   onClickSeries: ({
@@ -32,6 +36,7 @@ function SeriesPanel({
     seriesId: string;
   }) => void;
   onOpenMetadataExplorer: () => void;
+  onClose?: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [studies, setStudies] = useState<StudyDetail[]>([]);
@@ -54,36 +59,58 @@ function SeriesPanel({
   }, [patientId]);
 
   useEffect(() => {
-    if (studies.length > 0 && !seriesId) {
+    const firstStudy = studies[0];
+    const firstSeries = firstStudy?.series[0];
+    if (firstStudy && firstSeries && !seriesId) {
       onClickSeries({
-        studyId: studies[0].id,
-        seriesId: studies[0].series[0].id,
+        studyId: firstStudy.id,
+        seriesId: firstSeries.id,
       });
     }
   }, [seriesId, studies]);
 
   return (
-    <aside className="flex h-full min-h-0 w-full min-w-0 flex-col border-b border-[var(--border)] bg-[var(--surface)]/80 backdrop-blur-[10px] md:border-b-0 md:border-r">
+    <aside
+      className={[
+        "flex h-full min-h-0 w-full min-w-0 flex-col bg-[var(--surface)]/90 backdrop-blur-[10px]",
+        isMobile
+          ? "border-r border-[var(--border)] shadow-2xl"
+          : "border-b border-[var(--border)] md:border-b-0 md:border-r",
+      ].join(" ")}
+    >
       <header className="flex h-14 shrink-0 items-center gap-2 border-b border-[var(--border)] px-3">
         <h1 className="min-w-0 font-semibold tracking-tight text-[var(--text)]">
           Studies
         </h1>
         {!isLoading && (
-          <div className="grow ml-auto flex items-center justify-between">
-            <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
-              {studies.length}
-            </span>
+          <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--muted)]">
+            {studies.length}
+          </span>
+        )}
+        <div className="ml-auto flex items-center gap-2">
+          {!isLoading && (
             <button
               type="button"
               onClick={onOpenMetadataExplorer}
               title="DICOM metadata"
               aria-label="Open DICOM metadata explorer"
-              className="flex ml-auto h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--accent)]/50 hover:bg-[var(--accent-soft)]/50 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--accent)]/50 hover:bg-[var(--accent-soft)]/50 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
             >
               <MetadataExplorerIcon className="size-4" />
             </button>
-          </div>
-        )}
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              title="Close studies"
+              aria-label="Close studies panel"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--danger)]/50 hover:bg-[var(--danger)]/10 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
+            >
+              <XIcon className="size-4" />
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-2">

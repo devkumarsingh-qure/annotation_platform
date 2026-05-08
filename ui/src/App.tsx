@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Menubar from "./components/Menubar";
 import Home from "./components/Home";
 import ModalProvider from "./contexts/modal/ModalProvider";
+import DeviceProvider from "./contexts/device/DeviceProvider";
 import Projects from "./components/Home/Projects";
 import ViewerComponent from "./components/Viewer";
 import Project from "./components/Home/Projects/Project/index";
@@ -80,46 +81,48 @@ export default function App() {
     <div className="relative flex h-dvh w-full max-w-full flex-col overflow-hidden text-[var(--text)] font-mono">
       <BrowserRouter>
         <CookieNoticeBar />
-        <AuthProvider>
-          <ModalProvider>
-            <Menubar>
-              <Routes>
-                <Route path={"login/"} element={<Login />} />
-                <Route path="/" element={<Home />}>
-                  <Route
-                    index
-                    element={<Navigate to={UI_PATHS.PROJECTS()} replace />}
-                  />
-                  <Route path="projects" element={<Projects />}></Route>
-                  <Route path="projects/:projectId" element={<Project />} />
-                  <Route
-                    path="projects/:projectId/members"
-                    element={<ProjectMembers />}
-                  />
-                  <Route
-                    path="projects/:projectId/patients"
-                    element={<ProjectPatients />}
-                  />
+        <DeviceProvider>
+          <AuthProvider>
+            <ModalProvider>
+              <Menubar>
+                <Routes>
+                  <Route path={"login/"} element={<Login />} />
+                  <Route path="/" element={<Home />}>
+                    <Route
+                      index
+                      element={<Navigate to={UI_PATHS.PROJECTS()} replace />}
+                    />
+                    <Route path="projects" element={<Projects />}></Route>
+                    <Route path="projects/:projectId" element={<Project />} />
+                    <Route
+                      path="projects/:projectId/members"
+                      element={<ProjectMembers />}
+                    />
+                    <Route
+                      path="projects/:projectId/patients"
+                      element={<ProjectPatients />}
+                    />
 
-                  <Route path="users" element={<Users />} />
-                  <Route path="users/:userId" element={<UserDetails />} />
+                    <Route path="users" element={<Users />} />
+                    <Route path="users/:userId" element={<UserDetails />} />
 
-                  <Route path="patients" element={<Patients />} />
-                  <Route path="patients/:patientId" element={<Patient />} />
-                  <Route
-                    path="projects/:projectId/users/:userId/patients"
-                    element={<ProjectMember />}
-                  />
-                </Route>
-                <Route path="viewer/">
-                  <Route path=":patientId">
-                    <Route index element={<ViewerComponent />} />
+                    <Route path="patients" element={<Patients />} />
+                    <Route path="patients/:patientId" element={<Patient />} />
+                    <Route
+                      path="projects/:projectId/users/:userId/patients"
+                      element={<ProjectMember />}
+                    />
                   </Route>
-                </Route>
-              </Routes>
-            </Menubar>
-          </ModalProvider>
-        </AuthProvider>
+                  <Route path="viewer/">
+                    <Route path=":patientId">
+                      <Route index element={<ViewerComponent />} />
+                    </Route>
+                  </Route>
+                </Routes>
+              </Menubar>
+            </ModalProvider>
+          </AuthProvider>
+        </DeviceProvider>
         <AppToastContainer />
       </BrowserRouter>
     </div>

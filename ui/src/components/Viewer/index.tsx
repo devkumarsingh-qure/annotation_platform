@@ -13,10 +13,14 @@ import {
   volumeViewportRetrieveConfiguration,
 } from "./utils/configs.ts";
 import { VOLUME_MODALITIES } from "./utils/constants.ts";
+import { useDevice } from "../../contexts/device/deviceContext.ts";
+import StackIcon from "../../icons/StackIcon";
+import ClipboardListIcon from "../../icons/ClipboardListIcon";
 
 function ViewerComponent() {
   const navigate = useNavigate();
   const { patientId } = useParams();
+  const { isMobile } = useDevice();
 
   const [searchParams] = useSearchParams();
   const studyId = searchParams.get("studyId");
@@ -27,6 +31,8 @@ function ViewerComponent() {
   const [isSeriesLoading, setIsSeriesLoading] = useState(true);
   const [series, setSeries] = useState<SeriesDetail | null>(null);
   const [isMetadataExplorerOpen, setIsMetadataExplorerOpen] = useState(false);
+  const [isSeriesPanelOpen, setIsSeriesPanelOpen] = useState(false);
+  const [isAnnotationPanelOpen, setIsAnnotationPanelOpen] = useState(false);
 
   useEffect(() => {
     if (!patientId || !studyId || !seriesId) {
@@ -153,6 +159,29 @@ function ViewerComponent() {
     );
   };
 
+  const handleSeriesPanelClick = ({
+    studyId,
+    seriesId,
+  }: {
+    studyId: string;
+    seriesId: string;
+  }) => {
+    onClickSeries({ studyId, seriesId });
+    if (isMobile) {
+      setIsSeriesPanelOpen(false);
+    }
+  };
+
+  const openSeriesPanel = () => {
+    setIsAnnotationPanelOpen(false);
+    setIsSeriesPanelOpen(true);
+  };
+
+  const openAnnotationPanel = () => {
+    setIsSeriesPanelOpen(false);
+    setIsAnnotationPanelOpen(true);
+  };
+
   if (!patientId) {
     return null;
   }
@@ -168,41 +197,157 @@ function ViewerComponent() {
           : "md:grid-rows-[minmax(0,1fr)]",
       ].join(" ")}
     >
-      <div
-        className={[
-          "h-36 min-h-0 shrink-0 sm:h-44 md:h-auto lg:w-1/5",
-          hasAnnotationPanel ? "md:row-span-2" : "md:row-span-1",
-        ].join(" ")}
-      >
-        {isViewerInitialized && (
-          <SeriesPanel
-            patientId={patientId}
-            seriesId={seriesId}
-            onClickSeries={onClickSeries}
-            onOpenMetadataExplorer={() => setIsMetadataExplorerOpen(true)}
-          />
-        )}
-      </div>
+      {!isMobile && (
+        <div
+          className={[
+            "h-36 min-h-0 shrink-0 sm:h-44 md:h-auto lg:w-1/5",
+            hasAnnotationPanel ? "md:row-span-2" : "md:row-span-1",
+          ].join(" ")}
+        >
+          {isViewerInitialized && (
+            <SeriesPanel
+              isMobile={isMobile}
+              patientId={patientId}
+              seriesId={seriesId}
+              onClickSeries={onClickSeries}
+              onOpenMetadataExplorer={() => setIsMetadataExplorerOpen(true)}
+            />
+          )}
+        </div>
+      )}
       <div className="relative flex min-h-0 flex-1 shrink flex-col md:col-start-2 md:row-start-1 lg:h-full lg:w-0">
         <div className="shrink-0 overflow-x-auto border-b border-[var(--border)] bg-[var(--surface-soft)]">
           <Toolbar />
         </div>
-        <div className="flex min-h-0 grow bg-black">
+        <div className="relative flex min-h-0 grow bg-black">
           <Viewer onInitialized={handleViewerInitialized} />
+
+          {isMobile && isViewerInitialized && (
+            <div
+              className={[
+                "absolute inset-0 z-40 flex transition-colors",
+                isSeriesPanelOpen
+                  ? "pointer-events-auto bg-black/55 backdrop-blur-[2px]"
+                  : "pointer-events-none bg-transparent",
+              ].join(" ")}
+            >
+              <div
+                aria-hidden={!isSeriesPanelOpen}
+                inert={!isSeriesPanelOpen}
+                className={[
+                  "h-full w-[86vw] max-w-sm min-w-0 transition-transform duration-200 ease-out",
+                  isSeriesPanelOpen ? "translate-x-0" : "-translate-x-full",
+                ].join(" ")}
+              >
+                <SeriesPanel
+                  isMobile={isMobile}
+                  patientId={patientId}
+                  seriesId={seriesId}
+                  onClickSeries={handleSeriesPanelClick}
+                  onOpenMetadataExplorer={() => setIsMetadataExplorerOpen(true)}
+                  onClose={() => setIsSeriesPanelOpen(false)}
+                />
+              </div>
+              {isSeriesPanelOpen && (
+                <button
+                  type="button"
+                  onClick={() => setIsSeriesPanelOpen(false)}
+                  aria-label="Close studies panel"
+                  className="min-w-0 flex-1 cursor-default"
+                />
+              )}
+            </div>
+          )}
+
+          {isMobile &&
+            isViewerInitialized &&
+            hasAnnotationPanel &&
+            projectId &&
+            studyId &&
+            seriesId && (
+              <div
+                className={[
+                  "absolute inset-0 z-40 flex justify-end transition-colors",
+                  isAnnotationPanelOpen
+                    ? "pointer-events-auto bg-black/55 backdrop-blur-[2px]"
+                    : "pointer-events-none bg-transparent",
+                ].join(" ")}
+              >
+                {isAnnotationPanelOpen && (
+                  <button
+                    type="button"
+                    onClick={() => setIsAnnotationPanelOpen(false)}
+                    aria-label="Close annotations panel"
+                    className="min-w-0 flex-1 cursor-default"
+                  />
+                )}
+                <div
+                  aria-hidden={!isAnnotationPanelOpen}
+                  inert={!isAnnotationPanelOpen}
+                  className={[
+                    "h-full w-[92vw] max-w-md min-w-0 transition-transform duration-200 ease-out",
+                    isAnnotationPanelOpen
+                      ? "translate-x-0"
+                      : "translate-x-full",
+                  ].join(" ")}
+                >
+                  <AnnotationPanel
+                    isMobile={isMobile}
+                    isSeriesLoading={isSeriesLoading}
+                    projectId={projectId}
+                    patientId={patientId}
+                    studyId={studyId}
+                    seriesId={seriesId}
+                    onClose={() => setIsAnnotationPanelOpen(false)}
+                  />
+                </div>
+              </div>
+            )}
         </div>
 
+        {isMobile && (
+          <div
+            className={[
+              "grid h-14 shrink-0 gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-2",
+              hasAnnotationPanel ? "grid-cols-2" : "grid-cols-1",
+            ].join(" ")}
+          >
+            <button
+              type="button"
+              onClick={openSeriesPanel}
+              disabled={!isViewerInitialized}
+              className="inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-xs font-semibold text-[var(--text)] transition hover:border-[var(--accent)]/60 hover:bg-[var(--surface-strong)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <StackIcon className="size-4 shrink-0" />
+              <span className="truncate">Series</span>
+            </button>
+            {hasAnnotationPanel ? (
+              <button
+                type="button"
+                onClick={openAnnotationPanel}
+                disabled={!isViewerInitialized}
+                className="inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-xs font-semibold text-[var(--text)] transition hover:border-[var(--accent)]/60 hover:bg-[var(--surface-strong)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <ClipboardListIcon className="size-4 shrink-0" />
+                <span className="truncate">Annotations</span>
+              </button>
+            ) : null}
+          </div>
+        )}
+
         {isSeriesLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
             <Loading size="lg" />
           </div>
         )}
       </div>
 
-      {hasAnnotationPanel && projectId && studyId && seriesId && (
+      {!isMobile && hasAnnotationPanel && projectId && studyId && seriesId && (
         <div className="h-64 min-h-0 shrink-0 sm:h-72 md:col-start-2 md:row-start-2 md:h-auto lg:w-1/4">
           {isViewerInitialized && (
             <div className="h-full">
               <AnnotationPanel
+                isMobile={isMobile}
                 isSeriesLoading={isSeriesLoading}
                 projectId={projectId}
                 patientId={patientId}

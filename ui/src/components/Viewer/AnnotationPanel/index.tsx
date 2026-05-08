@@ -12,6 +12,7 @@ import type {
   AnnotationSetsDetails,
   AnnotationDetails,
 } from "../../../types/Viewer";
+import XIcon from "../../../icons/XIcon";
 
 function AnnotationPanel({
   isSeriesLoading,
@@ -19,12 +20,16 @@ function AnnotationPanel({
   patientId,
   studyId,
   seriesId,
+  isMobile = false,
+  onClose,
 }: {
   isSeriesLoading: boolean;
   projectId: string;
   patientId: string;
   studyId: string;
   seriesId: string;
+  isMobile?: boolean;
+  onClose?: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(true);
   const [annotationSets, setAnnotationSets] =
@@ -255,16 +260,36 @@ function AnnotationPanel({
   }
 
   return (
-    <aside className="flex h-full min-h-0 flex-col overflow-hidden border-t border-[var(--border)] bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px] lg:border-l lg:border-t-0">
+    <aside
+      className={[
+        "flex h-full min-h-0 flex-col overflow-hidden bg-gradient-to-b from-[var(--surface)] to-[var(--surface-soft)] backdrop-blur-[12px]",
+        isMobile
+          ? "border-l border-[var(--border)] shadow-2xl"
+          : "border-t border-[var(--border)] lg:border-l lg:border-t-0",
+      ].join(" ")}
+    >
       <header className="flex h-14 shrink-0 items-center justify-between space-x-2 border-b border-[var(--border)] bg-[var(--surface-strong)] px-3">
         <h1 className="font-semibold uppercase tracking-tight text-[var(--text)]">
           Annotations
         </h1>
-        {!isLoading && (
-          <span className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] text-[11px] font-medium text-[var(--muted)]">
-            {annotationSets?.annotation_sets.length}
-          </span>
-        )}
+        <div className="ml-auto flex items-center gap-2">
+          {!isLoading && (
+            <span className="h-7 w-7 flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] text-[11px] font-medium text-[var(--muted)]">
+              {annotationSets?.annotation_sets.length}
+            </span>
+          )}
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              title="Close annotations"
+              aria-label="Close annotations panel"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--border)]/80 bg-[var(--surface-soft)] text-[var(--muted)] transition hover:border-[var(--danger)]/50 hover:bg-[var(--danger)]/10 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)]"
+            >
+              <XIcon className="size-4" />
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="relative flex min-h-0 flex-1 flex-col gap-3 overflow-hidden border border-[var(--border)] bg-[var(--surface-strong)]">

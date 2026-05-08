@@ -446,10 +446,10 @@
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.126.0.tgz#9d9fa6fe9af5bc6c45996c6d9b9a3b3a4cd500e5"
   integrity sha512-oGfVtjAgwQVVpfBrbtk4e1XDyWHRFta6BS3GWVzrF8xYBT2VGQAk39yJS/wFSMrZqoiCU4oghT3Ch0HaHGIHcQ==
 
-"@qureai/react-dicom-viewer@1.7.43-main":
-  version "1.7.43-main"
-  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.43-main/b26e90a70b094c07e5acf731f9204703b9db8ad5#b26e90a70b094c07e5acf731f9204703b9db8ad5"
-  integrity sha512-VnDSZBYWvvNKBaXDnLOtdhuhFLKWnNIiU2Yp6Bfwy4nPauPoeJaGYAcitGryOnSmKCNmidGWs5ggic/LDEwoYg==
+"@qureai/react-dicom-viewer@^1.7.44-main":
+  version "1.7.44-main"
+  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.44-main/f5822ceac2ce3dcdc065d5ad6cefa185ba88d757#f5822ceac2ce3dcdc065d5ad6cefa185ba88d757"
+  integrity sha512-dMqfC9UfXnkmYhkngnUOK/yu7j+xludrcc3bvRsb4hjmvucXREgwtN72ZP626AC7rxvVX5ibfefzfqv5wU3lyw==
   dependencies:
     react-hotkeys-hook "^5.1.0"
 
@@ -1235,6 +1235,11 @@ errno@^0.1.1, errno@~0.1.1:
   integrity sha512-dJ6oBr5SQ1VSd9qkk7ByRgb/1SH4JZjCHSW/mr63/QcXO9zLVxvJ6Oy13nio03rxpSnVDDjFor75SjVeZWPW/A==
   dependencies:
     prr "~1.0.1"
+
+eruda@^3.4.3:
+  version "3.4.3"
+  resolved "https://registry.yarnpkg.com/eruda/-/eruda-3.4.3.tgz#70cb99022c0f1115160030f3d357d029074051fa"
+  integrity sha512-J2TsF4dXSspOXev5bJ6mljv0dRrxj21wklrDzbvPmYaEmVoC+2psylyRi70nUPFh1mTQfIBsSusUtAMZtUN+/w==
 
 es-define-property@^1.0.0, es-define-property@^1.0.1:
   version "1.0.1"
