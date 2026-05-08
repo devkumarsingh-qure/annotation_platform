@@ -16,6 +16,15 @@ export default defineConfig(({ command }) => ({
   worker: {
     format: "es",
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+    },
+  },
   ...(command !== "serve"
     ? {
         resolve: {
