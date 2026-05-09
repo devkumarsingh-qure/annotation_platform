@@ -145,9 +145,9 @@ function Project() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-3 text-xs font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
+                        className="min-h-9 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-3 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
-                        Delete project
+                        Actions
                       </button>
                     ) : (
                       <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-1.5rem,22rem)] flex-col gap-2 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-3 shadow-lg sm:gap-3 sm:p-4">

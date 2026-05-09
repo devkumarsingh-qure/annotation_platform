@@ -82,7 +82,7 @@ function Patient() {
       <div className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col overflow-hidden p-3 sm:p-6">
         <Link
           to={UI_PATHS.PATIENTS()}
-          className="group mb-2 inline-flex w-fit items-center gap-2 pr-4 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--accent)] sm:mb-4 sm:text-sm"
+          className="group mb-1 inline-flex w-fit items-center gap-2 pr-4 text-xs font-medium text-[var(--muted)] transition hover:text-[var(--accent)] sm:mb-4 sm:text-sm"
         >
           <span className="transition group-hover:-translate-x-0.5">
             ← Back to patients
@@ -106,26 +106,26 @@ function Patient() {
         ) : (
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <header
-              className={`shrink-0 border-b border-[var(--border)] pb-3 sm:pb-4${confirmDelete ? " relative z-40" : ""}`}
+              className={`shrink-0 border-b border-[var(--border)] pb-2 sm:pb-4${confirmDelete ? " relative z-40" : ""}`}
             >
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              <div className="flex items-start justify-between gap-2 sm:gap-3">
+                <div className="min-w-0 flex-1">
+                  <p className="hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--muted)] sm:block">
                     DICOM patient
                   </p>
-                  <div className="mt-1 flex flex-col gap-2 sm:mt-2 sm:flex-row sm:items-center sm:gap-4">
+                  <div className="flex flex-col gap-1 sm:mt-2 sm:flex-row sm:items-center sm:gap-4">
                     <div className="min-w-0 flex-1">
-                      <h1 className="truncate font-mono text-lg font-bold tracking-tight text-[var(--text)] sm:text-2xl">
+                      <h1 className="truncate font-mono text-base font-bold tracking-tight text-[var(--text)] sm:text-2xl">
                         {patient.PatientID}
                       </h1>
-                      <p className="mt-0.5 truncate text-xs text-[var(--text)] sm:mt-1 sm:text-sm">
+                      <p className="truncate text-xs text-[var(--text)] sm:mt-1 sm:text-sm">
                         {display(patient.PatientName, "Unnamed patient")}
                       </p>
                     </div>
                   </div>
                 </div>
                 {canDelete ? (
-                  <div className="relative isolate flex min-h-[2.75rem] shrink-0 flex-col items-stretch sm:items-end">
+                  <div className="relative isolate flex min-h-8 shrink-0 flex-col items-stretch sm:min-h-[2.75rem] sm:items-end">
                     {!confirmDelete ? (
                       <button
                         type="button"
@@ -133,9 +133,9 @@ function Patient() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="min-h-9 rounded-lg border border-[color-mix(in_srgb,var(--danger)_35%,var(--border))] bg-[color-mix(in_srgb,var(--danger)_6%,var(--surface))] px-3 text-xs font-medium text-[var(--danger)] transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,var(--surface))] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
+                        className="min-h-8 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-2.5 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:min-h-9 sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
-                        Delete patient
+                        Actions
                       </button>
                     ) : (
                       <div className="absolute right-0 top-0 z-30 flex w-[min(100vw-1.5rem,20rem)] flex-col gap-2 rounded-xl border border-[var(--border)] bg-[color:var(--surface)] p-3 shadow-lg sm:gap-3 sm:p-4">
@@ -176,8 +176,36 @@ function Patient() {
               </div>
             </header>
 
-            <section className="mt-2 shrink-0 sm:mt-3">
-              <div className="grid grid-cols-1 gap-2 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-2.5 backdrop-blur-[12px] sm:grid-cols-2 sm:gap-4 sm:p-3">
+            <section className="mt-1 shrink-0 sm:mt-3">
+              <div className="rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-1.5 backdrop-blur-[12px] sm:hidden">
+                <dl className="grid grid-cols-3 gap-1.5 text-xs">
+                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
+                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      Sex
+                    </dt>
+                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
+                      {display(patient.PatientSex)}
+                    </dd>
+                  </div>
+                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
+                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      Age
+                    </dt>
+                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
+                      {display(patient.PatientAge)}
+                    </dd>
+                  </div>
+                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
+                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
+                      Created
+                    </dt>
+                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
+                      {formatDate(patient.created_at)}
+                    </dd>
+                  </div>
+                </dl>
+              </div>
+              <div className="hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-2.5 backdrop-blur-[12px] sm:grid sm:grid-cols-2 sm:gap-4 sm:p-3">
                 <div>
                   <h2 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.18em]">
                     Demographics
@@ -235,7 +263,7 @@ function Patient() {
               </div>
             </section>
 
-            <section className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden sm:mt-3">
+            <section className="mt-1.5 flex min-h-0 flex-1 flex-col overflow-hidden sm:mt-3">
               <div className="mb-1.5 flex shrink-0 flex-col gap-0.5 sm:mb-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)] sm:text-sm">
