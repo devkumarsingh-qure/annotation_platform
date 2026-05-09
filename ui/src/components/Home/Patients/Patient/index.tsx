@@ -6,7 +6,7 @@ import apiClient from "../../../../utils/apiClient";
 import { toastError, toastSuccess } from "../../../../utils/toast";
 import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import { AuthContext } from "../../../../contexts/auth/authContext";
-import { display, formatDate, formatDateTime } from "../../../../utils/format";
+import { display, formatDate } from "../../../../utils/format";
 import DetailPageLoadingShell from "../../DetailPageLoadingShell";
 
 function Patient() {
@@ -176,91 +176,41 @@ function Patient() {
               </div>
             </header>
 
-            <section className="mt-1 shrink-0 sm:mt-3">
-              <div className="rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-1.5 backdrop-blur-[12px] sm:hidden">
-                <dl className="grid grid-cols-3 gap-1.5 text-xs">
-                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
-                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                      Sex
-                    </dt>
-                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
-                      {display(patient.PatientSex)}
-                    </dd>
-                  </div>
-                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
-                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                      Age
-                    </dt>
-                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
-                      {display(patient.PatientAge)}
-                    </dd>
-                  </div>
-                  <div className="min-w-0 rounded-md bg-[var(--surface-soft)]/70 px-2 py-1">
-                    <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)]">
-                      Created
-                    </dt>
-                    <dd className="truncate font-medium leading-snug text-[var(--text)]">
-                      {formatDate(patient.created_at)}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-              <div className="hidden rounded-lg border border-[var(--border)] bg-[color:var(--surface)] p-2.5 backdrop-blur-[12px] sm:grid sm:grid-cols-2 sm:gap-4 sm:p-3">
-                <div>
-                  <h2 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.18em]">
-                    Demographics
-                  </h2>
-                  <dl className="mt-1.5 grid gap-x-3 gap-y-1.5 text-xs sm:mt-2 sm:grid-cols-3 sm:gap-x-4">
-                    <div className="sm:col-span-1">
-                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
-                        Patient ID
-                      </dt>
-                      <dd className="mt-0.5 font-mono font-medium leading-snug text-[var(--text)]">
-                        {patient.PatientID}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
-                        Sex
-                      </dt>
-                      <dd className="mt-0.5 leading-snug text-[var(--text)]">
-                        {display(patient.PatientSex)}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
-                        Age
-                      </dt>
-                      <dd className="mt-0.5 leading-snug text-[var(--text)]">
-                        {display(patient.PatientAge)}
-                      </dd>
-                    </div>
-                  </dl>
+            <section className="mt-2 shrink-0 sm:mt-3">
+              <dl className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] pb-2 text-[11px] sm:gap-x-4 sm:pb-3 sm:text-xs">
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Sex
+                  </dt>
+                  <dd className="truncate font-medium text-[var(--text)]">
+                    {display(patient.PatientSex)}
+                  </dd>
                 </div>
-                <div className="border-t border-[var(--border)]/80 pt-2 sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                  <h2 className="text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.18em]">
-                    Record
-                  </h2>
-                  <dl className="mt-1.5 grid gap-x-3 gap-y-1.5 text-xs sm:mt-2 sm:grid-cols-2 sm:gap-x-4 sm:gap-y-2">
-                    <div>
-                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
-                        Internal ID
-                      </dt>
-                      <dd className="mt-0.5 font-mono leading-snug text-[var(--text)]">
-                        {patient.id}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="text-[9px] font-medium uppercase tracking-wide text-[var(--muted)] sm:text-[10px]">
-                        Created
-                      </dt>
-                      <dd className="mt-0.5 leading-snug text-[var(--text)]">
-                        {formatDateTime(patient.created_at)}
-                      </dd>
-                    </div>
-                  </dl>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Age
+                  </dt>
+                  <dd className="truncate font-medium text-[var(--text)]">
+                    {display(patient.PatientAge)}
+                  </dd>
                 </div>
-              </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Created
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {formatDate(patient.created_at)}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Studies
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {patient.studies.length}
+                  </dd>
+                </div>
+              </dl>
             </section>
 
             <section className="mt-1.5 flex min-h-0 flex-1 flex-col overflow-hidden sm:mt-3">
@@ -314,7 +264,7 @@ function Patient() {
                           </p>
                         ) : (
                           <div className="overflow-x-auto">
-                            <table className="w-full min-w-[34rem] text-left text-xs sm:min-w-[44rem] sm:text-sm">
+                            <table className="w-full min-w-[30rem] text-left text-xs sm:min-w-[44rem] sm:text-sm">
                               <thead>
                                 <tr className="border-b border-[var(--border)]/60 text-[11px] uppercase tracking-wide text-[var(--muted)]">
                                   <th className="px-3 py-2 font-medium sm:px-5">
@@ -329,7 +279,7 @@ function Patient() {
                                   <th className="hidden px-4 py-2 font-medium sm:table-cell sm:px-5">
                                     Series UID
                                   </th>
-                                  <th className="px-3 py-2 font-medium sm:px-5">
+                                  <th className="hidden px-3 py-2 font-medium sm:table-cell sm:px-5">
                                     Added
                                   </th>
                                   <th className="whitespace-nowrap px-3 py-2 text-right font-medium sm:px-5">
@@ -364,7 +314,7 @@ function Patient() {
                                     <td className="hidden max-w-[12rem] px-4 py-3 align-top font-mono text-[10px] text-[var(--muted)] break-all sm:table-cell sm:px-5">
                                       {s.SeriesInstanceUID}
                                     </td>
-                                    <td className="px-3 py-2 align-top text-xs text-[var(--muted)] sm:px-5 sm:py-3">
+                                    <td className="hidden px-3 py-2 align-top text-xs text-[var(--muted)] sm:table-cell sm:px-5 sm:py-3">
                                       {formatDate(s.created_at)}
                                     </td>
                                     <td className="px-3 py-2 align-middle sm:px-5 sm:py-3">

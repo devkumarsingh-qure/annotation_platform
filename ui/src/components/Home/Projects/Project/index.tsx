@@ -6,7 +6,6 @@ import { API_PATHS, UI_PATHS } from "../../../../utils/urls";
 import apiClient from "../../../../utils/apiClient";
 import { toastError, toastSuccess } from "../../../../utils/toast";
 import { formatShortDate } from "../../../../utils/format";
-import { statBlock } from "./StatBlock";
 import ProjectError from "./ProjectError";
 import { AuthContext } from "../../../../contexts/auth/authContext";
 import UserGroupIcon from "../../../../icons/UserGroupIcon";
@@ -126,8 +125,8 @@ function Project() {
             <header
               className={`shrink-0 space-y-2 border-b border-[var(--border)] pb-3 sm:space-y-3 sm:pb-4${confirmDelete ? " relative z-40" : ""}`}
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                <div className="min-w-0 space-y-2 sm:space-y-3">
+              <div className="flex items-start justify-between gap-2 sm:gap-4">
+                <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
                   <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] sm:h-1 sm:w-10" />
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:text-xs sm:tracking-[0.2em]">
                     Project
@@ -137,7 +136,7 @@ function Project() {
                   </h1>
                 </div>
                 {canDelete ? (
-                  <div className="relative isolate flex min-h-[2.75rem] shrink-0 flex-col items-stretch sm:items-end">
+                  <div className="relative isolate flex min-h-8 shrink-0 flex-col items-stretch sm:min-h-[2.75rem] sm:items-end">
                     {!confirmDelete ? (
                       <button
                         type="button"
@@ -145,7 +144,7 @@ function Project() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="min-h-9 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-3 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
+                        className="min-h-8 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-2.5 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:min-h-9 sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
                         Actions
                       </button>
@@ -190,11 +189,41 @@ function Project() {
               </div>
             </header>
 
-            <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
-              {statBlock("Members", project.member_count)}
-              {statBlock("Patients", project.patient_count)}
-              {statBlock("Created", formatShortDate(project.created_at))}
-              {statBlock("Updated", formatShortDate(project.updated_at))}
+            <div className="shrink-0">
+              <dl className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] pb-2 text-[11px] sm:gap-x-4 sm:pb-3 sm:text-xs">
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Members
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {project.member_count}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Patients
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {project.patient_count}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Created
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {formatShortDate(project.created_at)}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Updated
+                  </dt>
+                  <dd className="truncate font-medium tabular-nums text-[var(--text)]">
+                    {formatShortDate(project.updated_at)}
+                  </dd>
+                </div>
+              </dl>
             </div>
 
             <section className="h-0 grow flex min-h-0 shrink-0 flex-col space-y-1.5 sm:space-y-2">

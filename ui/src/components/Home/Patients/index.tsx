@@ -81,7 +81,7 @@ function Patients() {
         description="Browse workspace patients, filter by demographics, and open records for annotation and review."
       />
 
-      <div className="mb-2 shrink-0 sm:mb-3">
+      <div className="mb-2 shrink-0">
         <PatientFilters />
       </div>
 

@@ -14,7 +14,6 @@ import { toastError, toastSuccess } from "../../../utils/toast";
 import { API_PATHS, UI_PATHS } from "../../../utils/urls";
 import { formatShortDate } from "../../../utils/format";
 import DetailPageLoadingShell from "../DetailPageLoadingShell";
-import { statBlock } from "../Projects/Project/StatBlock";
 import EyeIcon from "../../../icons/EyeIcon";
 import EyeSlashIcon from "../../../icons/EyeSlashIcon";
 
@@ -30,15 +29,8 @@ function passwordFieldWithToggle(props: {
   show: boolean;
   onToggleShow: () => void;
 }) {
-  const {
-    id,
-    value,
-    onChange,
-    disabled,
-    autoComplete,
-    show,
-    onToggleShow,
-  } = props;
+  const { id, value, onChange, disabled, autoComplete, show, onToggleShow } =
+    props;
   return (
     <div className="relative min-w-0">
       <input
@@ -280,10 +272,15 @@ function UserDetails() {
     canEdit && user
       ? draftUsername.trim() || user.username
       : (user?.username ?? "");
+  const roleDisplay = user?.is_workspace_admin ? "Admin" : "Member";
+  const joinedDisplay = user ? formatShortDate(user.date_joined) : "";
+  const lastLoginDisplay = user?.last_login
+    ? formatShortDate(user.last_login)
+    : "Never";
 
   return (
-    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col px-3 pb-3 pt-3 sm:px-6 sm:pb-6 sm:pt-6">
-      <div className="min-h-0 grow flex flex-col pb-3 sm:pb-6">
+    <div className="mx-auto flex h-full min-h-0 w-full flex-1 flex-col">
+      <div className="min-h-0 grow flex flex-col pt-3 pb-3 sm:pb-6 px-3 sm:px-6 sm:pt-6">
         <nav
           className="mb-3 shrink-0 text-xs font-medium text-[var(--muted)] sm:mb-6"
           aria-label="Breadcrumb"
@@ -317,8 +314,8 @@ function UserDetails() {
             <header
               className={`shrink-0 space-y-2 sm:space-y-3${confirmDelete ? " relative z-40" : ""}`}
             >
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-                <div className="min-w-0 space-y-2 sm:space-y-3">
+              <div className="flex items-start justify-between gap-2 sm:gap-4">
+                <div className="min-w-0 flex-1 space-y-2 sm:space-y-3">
                   <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] sm:h-1 sm:w-10" />
                   <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)] sm:text-xs sm:tracking-[0.2em]">
                     Member
@@ -339,7 +336,7 @@ function UserDetails() {
                   </div>
                 </div>
                 {canDelete ? (
-                  <div className="relative isolate flex min-h-[2.75rem] shrink-0 flex-col items-stretch sm:items-end">
+                  <div className="relative isolate flex min-h-8 shrink-0 flex-col items-stretch sm:min-h-[2.75rem] sm:items-end">
                     {!confirmDelete ? (
                       <button
                         type="button"
@@ -347,7 +344,7 @@ function UserDetails() {
                           setConfirmDelete(true);
                           setDeleteError(null);
                         }}
-                        className="min-h-9 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-3 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
+                        className="min-h-8 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_70%,transparent)] px-2.5 text-xs font-medium text-[var(--muted)] transition hover:border-[color-mix(in_srgb,var(--danger)_28%,var(--border))] hover:bg-[var(--surface-soft)] hover:text-[var(--text)] sm:min-h-9 sm:self-end sm:px-4 sm:py-2.5 sm:text-sm"
                       >
                         Actions
                       </button>
@@ -391,13 +388,33 @@ function UserDetails() {
               </div>
             </header>
 
-            <div className="grid shrink-0 grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3">
-              {statBlock("Role", user.is_workspace_admin ? "Admin" : "Member")}
-              {statBlock("Joined", formatShortDate(user.date_joined))}
-              {statBlock(
-                "Last login",
-                user.last_login ? formatShortDate(user.last_login) : "Never",
-              )}
+            <div className="shrink-0">
+              <dl className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 border-b border-[color-mix(in_srgb,var(--border)_70%,transparent)] pb-2 text-[11px] sm:gap-x-4 sm:pb-3 sm:text-xs">
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Role
+                  </dt>
+                  <dd className="truncate font-medium text-[var(--text)]">
+                    {roleDisplay}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Joined
+                  </dt>
+                  <dd className="truncate font-medium text-[var(--text)]">
+                    {joinedDisplay}
+                  </dd>
+                </div>
+                <div className="flex min-w-0 items-baseline gap-1">
+                  <dt className="shrink-0 font-semibold uppercase tracking-wide text-[var(--muted)]">
+                    Login
+                  </dt>
+                  <dd className="truncate font-medium text-[var(--text)]">
+                    {lastLoginDisplay}
+                  </dd>
+                </div>
+              </dl>
             </div>
 
             <div className="h-0 grow space-y-3 overflow-y-auto sm:space-y-5">
@@ -576,19 +593,24 @@ function UserDetails() {
 
       {!isLoading && user && !loadError && canEdit && isDirty ? (
         <div
-          className="shrink-0 border-t border-[color-mix(in_srgb,var(--border)_80%,transparent)] px-0 py-3 sm:py-4"
+          className="px-3 sm:px-6 shrink-0 border-t border-[color-mix(in_srgb,var(--border)_80%,transparent)] px-0 py-3 sm:py-4"
           role="region"
           aria-label="Save profile changes"
         >
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <div className="flex items-center justify-between gap-2 sm:gap-3">
             {saveError ? (
-              <p className="text-sm text-[var(--danger)]" role="alert">
+              <p
+                className="min-w-0 flex-1 text-xs leading-snug text-[var(--danger)] sm:text-sm"
+                role="alert"
+              >
                 {saveError}
               </p>
             ) : (
-              <p className="text-sm text-[var(--muted)]">Unsaved changes</p>
+              <p className="min-w-0 flex-1 truncate text-xs font-medium text-[var(--muted)] sm:text-sm">
+                Unsaved changes
+              </p>
             )}
-            <div className="flex flex-wrap gap-2 sm:justify-end">
+            <div className="flex shrink-0 gap-2 sm:justify-end">
               <button
                 type="button"
                 disabled={saving}

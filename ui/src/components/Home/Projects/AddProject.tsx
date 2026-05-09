@@ -10,7 +10,7 @@ import XIcon from "../../../icons/XIcon";
 const fieldClass =
   "w-full min-h-10 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 py-2 text-sm text-[var(--text)] outline-none transition placeholder:text-[var(--muted)]/60 focus:border-[var(--accent)]/50 focus:ring-2 focus:ring-[var(--accent)]/25 sm:min-h-11 sm:px-3.5 sm:py-2.5";
 
-const textareaClass = `${fieldClass} min-h-[7rem] resize-none sm:h-full sm:min-h-[9rem]`;
+const textareaClass = `${fieldClass} grow resize-none`;
 
 type AddProjectProps = {
   onCancel: () => void;
@@ -91,7 +91,7 @@ function AddProject({ onCancel, onCreated }: AddProjectProps) {
           </div>
         </header>
 
-        <div className="flex min-h-0 grow flex-col gap-4 overflow-y-auto pb-2 sm:gap-5 sm:pb-5">
+        <div className="flex min-h-0 grow flex-col gap-4 pb-2 sm:gap-5">
           <div className="space-y-1 sm:space-y-1.5">
             <label
               htmlFor="project-name"
@@ -111,7 +111,7 @@ function AddProject({ onCancel, onCreated }: AddProjectProps) {
               disabled={isSubmitting}
             />
           </div>
-          <div className="min-h-0 grow space-y-1 sm:space-y-1.5">
+          <div className="min-h-0 grow flex flex-col space-y-1 sm:space-y-1.5">
             <label
               htmlFor="project-description"
               className="block text-xs font-medium uppercase tracking-wide text-[var(--muted)]"
