@@ -8,6 +8,13 @@ logger = logging.getLogger(__name__)
 
 
 class Patient(models.Model):
+    EDITABLE_DICOM_FIELDS = (
+        "PatientID",
+        "PatientName",
+        "PatientAge",
+        "PatientSex",
+    )
+
     workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -38,6 +45,31 @@ class Patient(models.Model):
             "PatientSex": self.PatientSex,
             "created_at": self.created_at,
         }
+
+    def update_dicom_fields(self, data: Dict[str, Any]) -> list[str]:
+        changed_fields: list[str] = []
+
+        for field in self.EDITABLE_DICOM_FIELDS:
+            if field not in data:
+                continue
+
+            raw_value = data.get(field)
+            value = None if raw_value is None else str(raw_value).strip()
+
+            if field == "PatientID" and not value:
+                raise ValueError("Patient ID is required.")
+
+            if field != "PatientID" and value == "":
+                value = None
+
+            if value is not None and len(value) > 255:
+                raise ValueError(f"{field} must be 255 characters or fewer.")
+
+            if getattr(self, field) != value:
+                setattr(self, field, value)
+                changed_fields.append(field)
+
+        return changed_fields
 
     def get_s3_prefix(self) -> str:
         return f"workspaces/{self.workspace.id}/patients/{self.id}"

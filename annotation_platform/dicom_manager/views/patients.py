@@ -1,5 +1,6 @@
 from typing import Optional
 
+from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -55,9 +56,7 @@ class PatientsView(APIView):
 class PatientView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, patient_id: int):
-        user: User = request.user
-        patient = resolve_patient_for_user(user, patient_id)
+    def serialize_detail(self, patient: Patient):
         studies = []
         for study in patient.study_set.all():
             studies.append(
@@ -69,13 +68,68 @@ class PatientView(APIView):
             for series in study.series_set.all():
                 studies[-1]["series"].append(series.serialize())
 
-        return Response(
-            {
-                **patient.serialize(),
-                "studies": studies,
-            },
-            status=status.HTTP_200_OK,
-        )
+        return {
+            **patient.serialize(),
+            "studies": studies,
+        }
+
+    def get(self, request, patient_id: int):
+        user: User = request.user
+        patient = resolve_patient_for_user(user, patient_id)
+        return Response(self.serialize_detail(patient), status=status.HTTP_200_OK)
+
+    def patch(self, request, patient_id: int):
+        user: User = request.user
+        check_for_admin(user)
+
+        patient = get_object_or_404(Patient, id=patient_id, workspace=user.workspace)
+        editable_fields = set(Patient.EDITABLE_DICOM_FIELDS)
+        submitted_fields = set(request.data.keys())
+        unknown_fields = submitted_fields - editable_fields
+
+        if unknown_fields:
+            return Response(
+                {
+                    "detail": (
+                        "Only PatientID, PatientName, PatientAge, and PatientSex "
+                        "can be edited."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            changed_fields = patient.update_dicom_fields(request.data)
+        except ValueError as exc:
+            return Response(
+                {"detail": str(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            "PatientID" in changed_fields
+            and Patient.objects.filter(
+                workspace=user.workspace,
+                PatientID=patient.PatientID,
+            )
+            .exclude(id=patient.id)
+            .exists()
+        ):
+            return Response(
+                {"detail": "A patient with that Patient ID already exists."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if changed_fields:
+            try:
+                patient.save(update_fields=changed_fields)
+            except IntegrityError:
+                return Response(
+                    {"detail": "A patient with that Patient ID already exists."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        return Response(self.serialize_detail(patient), status=status.HTTP_200_OK)
 
     def delete(self, request, patient_id: int):
         user: User = request.user
