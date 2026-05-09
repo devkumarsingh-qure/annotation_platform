@@ -1,4 +1,5 @@
 import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProfileIcon from "../../../icons/ProfileIcon";
 import { AuthContext } from "../../../contexts/auth/authContext";
 import SettingsIcon from "../../../icons/SettingsIcon";
@@ -8,8 +9,11 @@ import Backdrop from "../../Backdrop";
 import UploadIcon from "../../../icons/UploadIcon";
 import { ModalContext } from "../../../contexts/modal/modalContext";
 import Theme from "../Theme";
+import InfoIcon from "../../../icons/InfoIcon";
+import { UI_PATHS } from "../../../utils/urls";
 
 function Profile() {
+    const navigate = useNavigate();
     const { user, logout } = useContext(AuthContext);
     const { setIsFileUploadOpen } = useContext(ModalContext);
     const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +21,11 @@ function Profile() {
     const handleUpload = () => {
         setIsOpen(false);
         setIsFileUploadOpen(true);
+    };
+
+    const handleAbout = () => {
+        setIsOpen(false);
+        navigate(UI_PATHS.ABOUT());
     };
 
     return (
@@ -56,6 +65,7 @@ function Profile() {
                             </div>
                         ) : null}
                         <Theme variant="menu" onToggle={() => setIsOpen(false)} />
+                        <MenuItem icon={<InfoIcon className="size-5" />} label="About us" onClick={handleAbout} />
                         <MenuItem icon={<SettingsIcon className="size-5" />} label="Settings" onClick={() => { }} />
                         <MenuItem icon={<LogoutIcon className="size-5" />} label="Log out" onClick={() => logout()} />
                     </div>

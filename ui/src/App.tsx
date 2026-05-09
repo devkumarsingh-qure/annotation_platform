@@ -17,7 +17,9 @@ import UserDetails from "./components/Home/Users/UserDetails";
 import Patients from "./components/Home/Patients";
 import Patient from "./components/Home/Patients/Patient";
 import ProjectMember from "./components/Home/Projects/Project/ProjectMembers/ProjectMember/index";
+import About from "./components/Home/About";
 import { UI_PATHS } from "./utils/urls";
+import FeedbackButton from "./components/FeedbackButton";
 
 const THEME_STORAGE_KEY = "theme";
 try {
@@ -108,6 +110,7 @@ export default function App() {
 
                     <Route path="patients" element={<Patients />} />
                     <Route path="patients/:patientId" element={<Patient />} />
+                    <Route path="about" element={<About />} />
                     <Route
                       path="projects/:projectId/users/:userId/patients"
                       element={<ProjectMember />}
@@ -120,6 +123,7 @@ export default function App() {
                   </Route>
                 </Routes>
               </Menubar>
+              <FeedbackButton />
             </ModalProvider>
           </AuthProvider>
         </DeviceProvider>

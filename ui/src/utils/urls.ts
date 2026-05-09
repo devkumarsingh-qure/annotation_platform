@@ -119,6 +119,9 @@ const UI_PATHS = {
   LOGIN: () => {
     return "/login";
   },
+  ABOUT: () => {
+    return "/about";
+  },
   PROJECTS: () => {
     return "/projects";
   },
