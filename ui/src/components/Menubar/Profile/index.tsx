@@ -5,10 +5,19 @@ import SettingsIcon from "../../../icons/SettingsIcon";
 import LogoutIcon from "../../../icons/LogoutIcon";
 import MenuItem from "./MenuItem";
 import Backdrop from "../../Backdrop";
+import UploadIcon from "../../../icons/UploadIcon";
+import { ModalContext } from "../../../contexts/modal/modalContext";
+import Theme from "../Theme";
 
 function Profile() {
     const { user, logout } = useContext(AuthContext);
+    const { setIsFileUploadOpen } = useContext(ModalContext);
     const [isOpen, setIsOpen] = useState(false);
+
+    const handleUpload = () => {
+        setIsOpen(false);
+        setIsFileUploadOpen(true);
+    };
 
     return (
         <div className="relative flex h-full items-center">
@@ -41,6 +50,12 @@ function Profile() {
                             </p>
                         </div>
 
+                        {user?.is_workspace_admin ? (
+                            <div className="sm:hidden">
+                                <MenuItem icon={<UploadIcon className="size-5" />} label="Upload" onClick={handleUpload} />
+                            </div>
+                        ) : null}
+                        <Theme variant="menu" onToggle={() => setIsOpen(false)} />
                         <MenuItem icon={<SettingsIcon className="size-5" />} label="Settings" onClick={() => { }} />
                         <MenuItem icon={<LogoutIcon className="size-5" />} label="Log out" onClick={() => logout()} />
                     </div>

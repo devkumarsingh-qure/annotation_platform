@@ -60,7 +60,7 @@ const selectionCheckboxClass =
   "size-4 shrink-0 rounded border border-[var(--border)] text-[var(--accent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/35 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:border-[color-mix(in_srgb,var(--border)_65%,var(--muted))] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_75%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 disabled:grayscale";
 
 const paginationNavButtonClass =
-  "min-h-8 min-w-[4rem] flex-1 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2.5 text-xs font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 sm:min-h-9 sm:min-w-[4.5rem] sm:flex-none sm:px-3";
+  "min-h-8 min-w-12 rounded-lg border border-[var(--border)] bg-[color:var(--surface)] px-2 text-[11px] font-semibold text-[var(--text)] transition enabled:hover:bg-[var(--surface-soft)] enabled:hover:border-[color-mix(in_srgb,var(--accent)_18%,var(--border))] disabled:cursor-not-allowed disabled:pointer-events-none disabled:border-[color-mix(in_srgb,var(--border)_50%,transparent)] disabled:bg-[color-mix(in_srgb,var(--surface-soft)_55%,var(--surface))] disabled:text-[var(--muted)] disabled:opacity-100 sm:min-h-9 sm:min-w-[4.5rem] sm:px-3 sm:text-xs";
 
 function PaginatedTable<T>({
   isLoading,
@@ -215,10 +215,13 @@ function PaginatedTable<T>({
       </div>
 
       {total > 0 ? (
-        <div className="flex flex-col gap-2 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-2.5 py-2.5 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-3">
+        <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface-soft)_65%,transparent)] px-2 py-2 sm:flex sm:gap-3 sm:px-4 sm:py-3">
           {showPageSizeControl ? (
-            <label className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
-              <span className="whitespace-nowrap">Showing</span>
+            <label className="flex min-w-0 items-center gap-1.5 text-[11px] text-[var(--muted)] sm:gap-2 sm:text-xs">
+              <span className="whitespace-nowrap sm:hidden">Rows</span>
+              <span className="hidden whitespace-nowrap sm:inline">
+                Showing
+              </span>
               <span className="relative inline-flex">
                 <select
                   className={pageSizeSelectClass}
@@ -240,24 +243,34 @@ function PaginatedTable<T>({
                   <ChevronDownIcon className="size-4 shrink-0" />
                 </span>
               </span>
-              <span className="whitespace-nowrap">rows per page</span>
+              <span className="hidden whitespace-nowrap sm:inline">
+                rows per page
+              </span>
             </label>
           ) : (
-            <p className="text-xs text-[var(--muted)]">
+            <p className="text-[11px] text-[var(--muted)] sm:text-xs">
               <span className="font-medium text-[var(--text)]">{pageSize}</span>{" "}
-              rows per page
+              <span className="hidden sm:inline">rows per page</span>
+              <span className="sm:hidden">rows</span>
             </p>
           )}
-          <p className="text-xs text-[var(--muted)] sm:ml-auto">
-            Showing{" "}
-            <span className="font-medium text-[var(--text)]">{start}</span>
-            {"–"}
-            <span className="font-medium text-[var(--text)]">
-              {end}
-            </span> of{" "}
-            <span className="font-medium text-[var(--text)]">{total}</span>
+          <p className="min-w-0 truncate text-center text-[11px] text-[var(--muted)] sm:ml-auto sm:text-left sm:text-xs">
+            <span className="sm:hidden">
+              <span className="font-medium text-[var(--text)]">{start}</span>
+              {"-"}
+              <span className="font-medium text-[var(--text)]">{end}</span>
+              {" / "}
+              <span className="font-medium text-[var(--text)]">{total}</span>
+            </span>
+            <span className="hidden sm:inline">
+              Showing{" "}
+              <span className="font-medium text-[var(--text)]">{start}</span>
+              {"–"}
+              <span className="font-medium text-[var(--text)]">{end}</span> of{" "}
+              <span className="font-medium text-[var(--text)]">{total}</span>
+            </span>
           </p>
-          <div className="flex w-full flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
+          <div className="flex items-center justify-end gap-1 sm:w-auto sm:gap-3">
             <button
               type="button"
               onClick={() => onPageChange(safePage - 1)}
@@ -266,7 +279,7 @@ function PaginatedTable<T>({
             >
               Previous
             </button>
-            <span className="min-w-[5rem] text-center text-xs tabular-nums text-[var(--muted)]">
+            <span className="hidden min-w-[5rem] text-center text-xs tabular-nums text-[var(--muted)] sm:inline">
               Page {safePage} / {totalPages}
             </span>
             <button

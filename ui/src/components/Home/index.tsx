@@ -14,8 +14,8 @@ function Home() {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
-      <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden px-2 pb-2 pt-2 sm:gap-4 sm:px-4 sm:pb-4 sm:pt-4 md:flex-row lg:gap-6 lg:px-6 lg:pb-6 lg:pt-6">
-        <aside className="flex w-full shrink-0 flex-col md:h-full md:min-h-0 md:w-56 lg:w-64">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-2 pb-2 pt-2 sm:px-4 sm:pb-4 sm:pt-4 md:flex-row md:gap-4 lg:gap-6 lg:px-6 lg:pb-6 lg:pt-6">
+        <aside className="hidden shrink-0 flex-col md:flex md:h-full md:min-h-0 md:w-56 lg:w-64">
           <LeftPanel />
         </aside>
 
