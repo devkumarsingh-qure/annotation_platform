@@ -7,9 +7,7 @@ import AddProject from "./AddProject";
 import ProjectList from "./ProjectList";
 import type { PaginatedResponse } from "../../../types/PaginatedResponse";
 import { AuthContext } from "../../../contexts/auth/authContext";
-
-const DEFAULT_PROJECTS_PAGE_SIZE = 5;
-const PROJECTS_PAGE_SIZE_OPTIONS = [5, 10, 20];
+import { DEFAULT_PAGE_SIZE, PAGE_SIZE_OPTIONS } from "../../../utils/constants";
 
 function Projects() {
   const { user } = useContext(AuthContext);
@@ -17,7 +15,7 @@ function Projects() {
   const [isAddingProject, setIsAddingProject] = useState(false);
   const [isProjectsLoading, setIsProjectsLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(DEFAULT_PROJECTS_PAGE_SIZE);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [projects, setProjects] = useState<PaginatedResponse<Project>>({
     total: 0,
     results: [],
@@ -88,7 +86,7 @@ function Projects() {
               setPage={setPage}
               pageSize={pageSize}
               onPageSizeChange={handlePageSizeChange}
-              pageSizeOptions={PROJECTS_PAGE_SIZE_OPTIONS}
+              pageSizeOptions={PAGE_SIZE_OPTIONS}
             />
           </div>
         </div>
