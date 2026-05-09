@@ -92,6 +92,15 @@ function Login() {
             />
           </div>
         </div>
+
+        <div className="flex flex-col gap-3">
+          <button
+            type="submit"
+            className="w-full min-h-11 cursor-pointer rounded-lg border border-[color-mix(in_srgb,var(--accent-strong)_35%,transparent)] bg-gradient-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-[color-mix(in_srgb,var(--accent)_35%,transparent)] transition hover:brightness-[1.06] active:translate-y-px active:brightness-95"
+          >
+            Sign in
+          </button>
+        </div>
       </form>
     </div>
   );
