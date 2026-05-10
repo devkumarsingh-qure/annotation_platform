@@ -2,8 +2,8 @@ from pydicom import dcmread
 from pydicom.multival import MultiValue
 from pydicom.valuerep import PersonName
 import json
-import tempfile
 import os
+import shutil
 import subprocess
 import logging
 
@@ -30,59 +30,64 @@ class MultiValueEncoder(json.JSONEncoder):
         return super().default(obj)
 
 
-def transcode_instance(instance: Instance):
+def transcode_instance(instance: Instance, *, series_dir: str):
     instance_id = instance.id
+    instance_dir = os.path.join(series_dir, f"instance_{instance_id}")
 
-    with tempfile.TemporaryDirectory() as series_dir:
-        dicom_path = os.path.join(series_dir, f"{instance_id}.dcm")
+    if os.path.exists(instance_dir):
+        shutil.rmtree(instance_dir)
+    os.makedirs(instance_dir)
+
+    try:
+        dicom_path = os.path.join(instance_dir, f"{instance_id}.dcm")
         instance.download_p10_to_local(destination=dicom_path)
 
         ds = dcmread(dicom_path)
-
-        sop_instance_uid = ds.get("SOPInstanceUID", None)
-
-        instance_metadata = ds.to_json_dict()
-        instance_metadata["7FE00010"] = {
-            "vr": "OB",
-            "BulkDataURI": f"instances/{sop_instance_uid}/frames",
-        }
 
         pixel_representation = ds.get("PixelRepresentation", 0)
         bits_allocated = ds.get("BitsAllocated", 16)
         samples_per_pixel = ds.get("SamplesPerPixel", 1)
 
-        with tempfile.TemporaryDirectory() as instance_dir:
-            frame_files = dicom_to_decoded_raw(dicom_path, instance_dir)
+        frame_files = dicom_to_decoded_raw(ds, instance_dir)
 
-            for frame_file in frame_files:
-                frame_file_path = frame_file["temp_file_path"]
-                height = frame_file["height"]
-                width = frame_file["width"]
-                frame_number = frame_file["frame_number"]
+        for frame_file in frame_files:
+            frame_file_path = frame_file["temp_file_path"]
+            height = frame_file["height"]
+            width = frame_file["width"]
+            frame_number = frame_file["frame_number"]
 
-                destination_transcoded_frame_path = os.path.join(
-                    instance_dir, f"transcoded_frame_{frame_number}"
-                )
+            destination_transcoded_frame_path = os.path.join(
+                instance_dir, f"transcoded_frame_{frame_number}"
+            )
 
-                run_htj2k_encoder(
-                    frame_file_path=frame_file_path,
-                    output_path=destination_transcoded_frame_path,
-                    height=height,
-                    width=width,
-                    bits_allocated=bits_allocated,
-                    pixel_representation=pixel_representation,
-                    samples_per_pixel=samples_per_pixel,
-                )
+            run_htj2k_encoder(
+                frame_file_path=frame_file_path,
+                output_path=destination_transcoded_frame_path,
+                height=height,
+                width=width,
+                bits_allocated=bits_allocated,
+                pixel_representation=pixel_representation,
+                samples_per_pixel=samples_per_pixel,
+            )
 
-                instance.upload_dicomweb_to_s3(
-                    local_path=destination_transcoded_frame_path,
-                    frame_number=frame_number,
-                )
+            instance.upload_dicomweb_to_s3(
+                local_path=destination_transcoded_frame_path,
+                frame_number=frame_number,
+            )
 
-                logger.info(
-                    f"Successfully transcoded and uploaded frame {frame_number}/{len(frame_files)} for instance id {instance_id}"
-                )
-    return instance_metadata
+            logger.info(
+                f"Successfully transcoded and uploaded frame {frame_number}/{len(frame_files)} for instance id {instance_id}"
+            )
+
+        sop_instance_uid = ds.get("SOPInstanceUID", None)
+        instance_metadata = ds.to_json_dict()
+        instance_metadata["7FE00010"] = {
+            "vr": "OB",
+            "BulkDataURI": f"instances/{sop_instance_uid}/frames",
+        }
+        return instance_metadata
+    finally:
+        shutil.rmtree(instance_dir, ignore_errors=True)
 
 
 def run_htj2k_encoder(
@@ -133,9 +138,7 @@ def run_htj2k_encoder(
         )
 
 
-def dicom_to_decoded_raw(dicom_path: str, instance_dir: str):
-    ds = dcmread(dicom_path)
-
+def dicom_to_decoded_raw(ds, instance_dir: str):
     pixel_array = ds.pixel_array
     number_of_frames = int(ds.get("NumberOfFrames", 1))
 
