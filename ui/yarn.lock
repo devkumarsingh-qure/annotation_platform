@@ -446,10 +446,10 @@
   resolved "https://registry.yarnpkg.com/@oxc-project/types/-/types-0.126.0.tgz#9d9fa6fe9af5bc6c45996c6d9b9a3b3a4cd500e5"
   integrity sha512-oGfVtjAgwQVVpfBrbtk4e1XDyWHRFta6BS3GWVzrF8xYBT2VGQAk39yJS/wFSMrZqoiCU4oghT3Ch0HaHGIHcQ==
 
-"@qureai/react-dicom-viewer@^1.7.44-main":
-  version "1.7.44-main"
-  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.44-main/f5822ceac2ce3dcdc065d5ad6cefa185ba88d757#f5822ceac2ce3dcdc065d5ad6cefa185ba88d757"
-  integrity sha512-dMqfC9UfXnkmYhkngnUOK/yu7j+xludrcc3bvRsb4hjmvucXREgwtN72ZP626AC7rxvVX5ibfefzfqv5wU3lyw==
+"@qureai/react-dicom-viewer@1.7.45-main":
+  version "1.7.45-main"
+  resolved "https://npm.pkg.github.com/download/@qureai/react-dicom-viewer/1.7.45-main/ba2ec4b761c872b30c99234e45a28ae3cb914063#ba2ec4b761c872b30c99234e45a28ae3cb914063"
+  integrity sha512-wfT2xER3BqvKJ2ajIKLNDSceaxfq9I1ZwUESDfAqA7hOgy5aghz+Shr5YQDsqKfaiZ1GMR9FXMkDmJEeyuVglg==
   dependencies:
     react-hotkeys-hook "^5.1.0"
 
