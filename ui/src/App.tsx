@@ -19,7 +19,7 @@ import Patient from "./components/Home/Patients/Patient";
 import ProjectMember from "./components/Home/Projects/Project/ProjectMembers/ProjectMember/index";
 import About from "./components/Home/About";
 import { UI_PATHS } from "./utils/urls";
-import FloatingActions from "./components/FloatingActions";
+// import FloatingActions from "./components/FloatingActions";
 
 const THEME_STORAGE_KEY = "theme";
 try {
