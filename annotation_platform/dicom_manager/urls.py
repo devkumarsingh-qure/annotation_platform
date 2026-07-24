@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views.annotations import AnnotationSetsView, AnnotationSetView
+from .views.segmentations import SegmentationMasksView, SegmentationMaskView
 from .views.patients import (
     PatientsView,
     PatientView,
@@ -32,5 +33,15 @@ urlpatterns = [
         "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/annotations/<int:annotation_set_id>/",
         AnnotationSetView.as_view(),
         name="annotation_set",
+    ),
+    path(
+        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/segmentations/",
+        SegmentationMasksView.as_view(),
+        name="segmentation_masks_for_series",
+    ),
+    path(
+        "patients/<int:patient_id>/studies/<int:study_id>/series/<int:series_id>/segmentations/<int:mask_id>/",
+        SegmentationMaskView.as_view(),
+        name="segmentation_mask",
     ),
 ]

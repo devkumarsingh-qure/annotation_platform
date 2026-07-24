@@ -113,6 +113,23 @@ const API_PATHS = {
   ) => {
     return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/annotations/${annotationSetId}/?project_id=${projectId}`;
   },
+  SEGMENTATIONS_FOR_SERIES: (
+    projectId: string,
+    patientId: string,
+    studyId: string,
+    seriesId: string,
+  ) => {
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/segmentations/?project_id=${projectId}`;
+  },
+  SEGMENTATION_MASK: (
+    projectId: string,
+    patientId: string,
+    studyId: string,
+    seriesId: string,
+    maskId: string,
+  ) => {
+    return `/patients/${patientId}/studies/${studyId}/series/${seriesId}/segmentations/${maskId}/?project_id=${projectId}`;
+  },
 };
 
 const UI_PATHS = {

@@ -123,7 +123,7 @@ export default function App() {
                   </Route>
                 </Routes>
               </Menubar>
-              <FloatingActions />
+              {/* <FloatingActions /> */}
             </ModalProvider>
           </AuthProvider>
         </DeviceProvider>

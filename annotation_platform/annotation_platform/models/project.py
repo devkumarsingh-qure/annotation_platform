@@ -4,6 +4,7 @@ from annotation_platform.models.project_user_patients_assignment import (
     ProjectUserPatientsAssignment,
 )
 from dicom_manager.models.annotation_set import AnnotationSet
+from dicom_manager.models.segmentation_mask import SegmentationMask
 from annotation_platform.models.workspace import Workspace
 from authentication.models.user import User
 from dicom_manager.models.patient import Patient
@@ -57,6 +58,7 @@ class Project(models.Model):
                 project=self, user=user
             ).delete()
             AnnotationSet.objects.filter(project=self, user=user).delete()
+            SegmentationMask.objects.filter(project=self, user=user).delete()
             self.members.remove(user)
 
     def add_members(self, user_ids: List[str]):

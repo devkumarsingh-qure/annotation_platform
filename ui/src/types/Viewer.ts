@@ -42,3 +42,10 @@ export type AnnotationSetDetails = {
 };
 
 export type ViewerMode = "annotate" | "view";
+
+export type SegmentationMaskSummary = {
+  id: string;
+  label: string;
+  updated_at: string;
+  url: string;
+};

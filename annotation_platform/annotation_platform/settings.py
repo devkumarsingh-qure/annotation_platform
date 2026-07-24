@@ -53,6 +53,10 @@ AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "")
 AWS_S3_ENDPOINT_URL = os.getenv("AWS_S3_ENDPOINT_URL", "")
 AWS_S3_SIGNATURE_VERSION = os.getenv("AWS_S3_SIGNATURE_VERSION", "")
 
+SEGMENTATION_MAX_UPLOAD_BYTES = int(
+    os.getenv("SEGMENTATION_MAX_UPLOAD_BYTES", str(256 * 1024 * 1024))
+)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

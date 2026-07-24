@@ -2,9 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { viteCommonjs } from "@originjs/vite-plugin-commonjs";
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => ({
+export default defineConfig(() => ({
   plugins: [react(), tailwindcss(), viteCommonjs()],
   optimizeDeps: {
     exclude: [
@@ -25,19 +28,7 @@ export default defineConfig(({ command }) => ({
       },
     },
   },
-  ...(command !== "serve"
-    ? {
-        resolve: {
-          alias: {
-            fs: "browserify-fs",
-            path: "path-browserify",
-            stream: "stream-browserify",
-            buffer: "buffer",
-            util: "util",
-            events: "events",
-            string_decoder: "string_decoder",
-          },
-        },
-      }
-    : {}),
+  resolve: {
+    alias: [{ find: /^events\/?$/, replacement: require.resolve("events/") }],
+  },
 }));
