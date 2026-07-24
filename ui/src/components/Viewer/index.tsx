@@ -29,6 +29,85 @@ import {
   prepareSegmentationUpload,
 } from "./utils/segmentationPersistence.ts";
 
+type ViewerWorkspace = "choose" | "annotations" | "segmentations" | null;
+
+function WorkspaceChoicePanel({
+  onSelect,
+  onClose,
+}: {
+  onSelect: (workspace: Exclude<ViewerWorkspace, "choose" | null>) => void;
+  onClose: () => void;
+}) {
+  return (
+    <aside className="flex h-full min-h-0 w-full shrink-0 flex-col border-l border-[var(--border)] bg-[var(--surface-strong)] lg:w-[22rem]">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] px-3">
+        <div>
+          <h2 className="text-sm font-semibold text-[var(--text)]">
+            Choose a workspace
+          </h2>
+          <p className="text-[10px] text-[var(--muted)]">
+            You can switch at any time
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-md px-2 py-1 text-xs font-semibold text-[var(--muted)] transition hover:bg-[var(--surface-soft)] hover:text-[var(--text)]"
+        >
+          View only
+        </button>
+      </header>
+
+      <div className="flex min-h-0 flex-1 flex-col justify-center gap-3 overflow-y-auto p-4">
+        <p className="text-xs leading-relaxed text-[var(--muted)]">
+          What would you like to work on for this series?
+        </p>
+
+        <button
+          type="button"
+          onClick={() => onSelect("annotations")}
+          className="group rounded-xl border border-[var(--border)] bg-[var(--surface-soft)]/55 p-4 text-left transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+        >
+          <span className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+              <ClipboardListIcon className="size-5" />
+            </span>
+            <span>
+              <span className="block text-sm font-semibold text-[var(--text)]">
+                Annotations
+              </span>
+              <span className="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Draw measurements and regions, then save them as an annotation
+                set.
+              </span>
+            </span>
+          </span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => onSelect("segmentations")}
+          className="group rounded-xl border border-[var(--border)] bg-[var(--surface-soft)]/55 p-4 text-left transition hover:border-[var(--accent)] hover:bg-[var(--accent-soft)]/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]"
+        >
+          <span className="flex items-start gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-[var(--accent-soft)] text-[var(--accent-strong)]">
+              <PenIcon className="size-5" />
+            </span>
+            <span>
+              <span className="block text-sm font-semibold text-[var(--text)]">
+                Segmentations
+              </span>
+              <span className="mt-1 block text-xs leading-relaxed text-[var(--muted)]">
+                Paint pixel-level masks, inspect metrics, and save a DICOM SEG.
+              </span>
+            </span>
+          </span>
+        </button>
+      </div>
+    </aside>
+  );
+}
+
 function ViewerComponent() {
   const navigate = useNavigate();
   const { patientId } = useParams();
@@ -38,14 +117,16 @@ function ViewerComponent() {
   const studyId = searchParams.get("studyId");
   const seriesId = searchParams.get("seriesId");
   const projectId = searchParams.get("projectId");
+  const hasAnnotationPanel = Boolean(projectId && studyId && seriesId);
 
   const [isViewerInitialized, setIsViewerInitialized] = useState(false);
   const [isSeriesLoading, setIsSeriesLoading] = useState(true);
   const [series, setSeries] = useState<SeriesDetail | null>(null);
   const [isMetadataExplorerOpen, setIsMetadataExplorerOpen] = useState(false);
   const [isSeriesPanelOpen, setIsSeriesPanelOpen] = useState(false);
-  const [isAnnotationPanelOpen, setIsAnnotationPanelOpen] = useState(false);
-  const [isSegmentationPanelOpen, setIsSegmentationPanelOpen] = useState(false);
+  const [activeWorkspace, setActiveWorkspace] = useState<ViewerWorkspace>(
+    projectId ? "choose" : null,
+  );
   const [segmentationMaskCollection, setSegmentationMaskCollection] = useState<{
     source: string;
     masks: SegmentationMaskSummary[];
@@ -193,13 +274,18 @@ function ViewerComponent() {
   };
 
   const openSeriesPanel = () => {
-    setIsAnnotationPanelOpen(false);
+    setActiveWorkspace(null);
     setIsSeriesPanelOpen(true);
   };
 
   const openAnnotationPanel = () => {
     setIsSeriesPanelOpen(false);
-    setIsAnnotationPanelOpen(true);
+    setActiveWorkspace("annotations");
+  };
+
+  const openSegmentationPanel = () => {
+    setIsSeriesPanelOpen(false);
+    setActiveWorkspace("segmentations");
   };
 
   const segmentationCollectionUrl =
@@ -336,24 +422,15 @@ function ViewerComponent() {
     return null;
   }
 
-  const hasAnnotationPanel = Boolean(projectId && studyId && seriesId);
+  const isWorkspaceOpen =
+    activeWorkspace === "choose"
+      ? hasAnnotationPanel
+      : activeWorkspace !== null;
 
   return (
-    <div
-      className={[
-        "relative flex h-full min-h-0 flex-col overflow-hidden md:grid md:grid-cols-[15rem_minmax(0,1fr)] lg:flex lg:flex-row",
-        hasAnnotationPanel
-          ? "md:grid-rows-[minmax(0,1fr)_18rem]"
-          : "md:grid-rows-[minmax(0,1fr)]",
-      ].join(" ")}
-    >
+    <div className="relative flex h-full min-h-0 flex-col overflow-hidden md:grid md:grid-cols-[15rem_minmax(0,1fr)] md:grid-rows-[minmax(0,1fr)] lg:flex lg:flex-row">
       {!isMobile && (
-        <div
-          className={[
-            "h-36 min-h-0 shrink-0 sm:h-44 md:h-auto lg:w-1/5",
-            hasAnnotationPanel ? "md:row-span-2" : "md:row-span-1",
-          ].join(" ")}
-        >
+        <div className="h-36 min-h-0 shrink-0 sm:h-44 md:h-auto lg:w-1/5">
           {isViewerInitialized && (
             <SeriesPanel
               isMobile={isMobile}
@@ -370,19 +447,33 @@ function ViewerComponent() {
           <div className="min-w-0 flex-1 overflow-x-auto">
             <Toolbar />
           </div>
+          {hasAnnotationPanel && (
+            <button
+              type="button"
+              onClick={openAnnotationPanel}
+              disabled={!isViewerInitialized || isSeriesLoading}
+              aria-pressed={activeWorkspace === "annotations"}
+              title="Open annotations workspace"
+              className={[
+                "inline-flex shrink-0 items-center gap-2 border-l border-[var(--border)] px-3 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
+                activeWorkspace === "annotations"
+                  ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+                  : "bg-[var(--surface-soft)] text-[var(--text)] hover:bg-[var(--surface-strong)]",
+              ].join(" ")}
+            >
+              <ClipboardListIcon className="size-4" />
+              <span className="hidden xl:inline">Annotate</span>
+            </button>
+          )}
           <button
             type="button"
-            onClick={() => {
-              setIsSeriesPanelOpen(false);
-              setIsAnnotationPanelOpen(false);
-              setIsSegmentationPanelOpen(true);
-            }}
+            onClick={openSegmentationPanel}
             disabled={!isViewerInitialized || isSeriesLoading}
-            aria-pressed={isSegmentationPanelOpen}
+            aria-pressed={activeWorkspace === "segmentations"}
             title="Open segmentation workspace"
             className={[
               "inline-flex shrink-0 items-center gap-2 border-l border-[var(--border)] px-3 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
-              isSegmentationPanelOpen
+              activeWorkspace === "segmentations"
                 ? "bg-[var(--accent-soft)] text-[var(--accent-strong)]"
                 : "bg-[var(--surface-soft)] text-[var(--text)] hover:bg-[var(--surface-strong)]",
             ].join(" ")}
@@ -395,7 +486,7 @@ function ViewerComponent() {
           <div
             className={[
               "relative min-h-0 min-w-0 grow bg-black",
-              isSegmentationPanelOpen ? "hidden lg:flex" : "flex",
+              isWorkspaceOpen ? "hidden lg:flex" : "flex",
             ].join(" ")}
           >
             <Viewer onInitialized={handleViewerInitialized} />
@@ -439,51 +530,6 @@ function ViewerComponent() {
               </div>
             )}
 
-            {isMobile &&
-              isViewerInitialized &&
-              hasAnnotationPanel &&
-              projectId &&
-              studyId &&
-              seriesId && (
-                <div
-                  className={[
-                    "absolute inset-0 z-40 flex justify-end transition-colors",
-                    isAnnotationPanelOpen
-                      ? "pointer-events-auto bg-black/55 backdrop-blur-[2px]"
-                      : "pointer-events-none bg-transparent",
-                  ].join(" ")}
-                >
-                  {isAnnotationPanelOpen && (
-                    <button
-                      type="button"
-                      onClick={() => setIsAnnotationPanelOpen(false)}
-                      aria-label="Close annotations panel"
-                      className="min-w-0 flex-1 cursor-default"
-                    />
-                  )}
-                  <div
-                    aria-hidden={!isAnnotationPanelOpen}
-                    inert={!isAnnotationPanelOpen}
-                    className={[
-                      "h-full w-[92vw] max-w-md min-w-0 transition-transform duration-200 ease-out",
-                      isAnnotationPanelOpen
-                        ? "translate-x-0"
-                        : "translate-x-full",
-                    ].join(" ")}
-                  >
-                    <AnnotationPanel
-                      isMobile={isMobile}
-                      isSeriesLoading={isSeriesLoading}
-                      projectId={projectId}
-                      patientId={patientId}
-                      studyId={studyId}
-                      seriesId={seriesId}
-                      onClose={() => setIsAnnotationPanelOpen(false)}
-                    />
-                  </div>
-                </div>
-              )}
-
             {isSeriesLoading && (
               <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50">
                 <Loading size="lg" />
@@ -491,15 +537,48 @@ function ViewerComponent() {
             )}
           </div>
 
+          {isViewerInitialized &&
+            hasAnnotationPanel &&
+            activeWorkspace === "choose" && (
+              <WorkspaceChoicePanel
+                onSelect={setActiveWorkspace}
+                onClose={() => setActiveWorkspace(null)}
+              />
+            )}
+
+          {isViewerInitialized &&
+            hasAnnotationPanel &&
+            projectId &&
+            studyId &&
+            seriesId && (
+              <div
+                inert={activeWorkspace !== "annotations"}
+                className={[
+                  "h-full min-h-0 w-full shrink-0 lg:w-[22rem]",
+                  activeWorkspace === "annotations" ? "block" : "hidden",
+                ].join(" ")}
+              >
+                <AnnotationPanel
+                  isMobile={isMobile}
+                  isSeriesLoading={isSeriesLoading}
+                  projectId={projectId}
+                  patientId={patientId}
+                  studyId={studyId}
+                  seriesId={seriesId}
+                  onClose={() => setActiveWorkspace(null)}
+                />
+              </div>
+            )}
+
           {isViewerInitialized && (
             <SegmentationPanel
-              isOpen={isSegmentationPanelOpen}
+              isOpen={activeWorkspace === "segmentations"}
               masks={segmentationMasks}
               isLoading={areSegmentationMasksLoading}
               saveStatus={segmentationSaveStatus}
               onSave={handleSaveSegmentation}
               onDelete={handleDeleteSegmentation}
-              onClose={() => setIsSegmentationPanelOpen(false)}
+              onClose={() => setActiveWorkspace(null)}
             />
           )}
         </div>
@@ -508,7 +587,7 @@ function ViewerComponent() {
           <div
             className={[
               "grid h-14 shrink-0 gap-2 border-t border-[var(--border)] bg-[var(--surface)] p-2",
-              hasAnnotationPanel ? "grid-cols-2" : "grid-cols-1",
+              hasAnnotationPanel ? "grid-cols-3" : "grid-cols-2",
             ].join(" ")}
           >
             <button
@@ -525,33 +604,35 @@ function ViewerComponent() {
                 type="button"
                 onClick={openAnnotationPanel}
                 disabled={!isViewerInitialized}
-                className="inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)] px-3 text-xs font-semibold text-[var(--text)] transition hover:border-[var(--accent)]/60 hover:bg-[var(--surface-strong)] focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
+                className={[
+                  "inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
+                  activeWorkspace === "annotations"
+                    ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+                    : "border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] hover:border-[var(--accent)]/60 hover:bg-[var(--surface-strong)]",
+                ].join(" ")}
               >
                 <ClipboardListIcon className="size-4 shrink-0" />
                 <span className="truncate">Annotations</span>
               </button>
             ) : null}
+            <button
+              type="button"
+              onClick={openSegmentationPanel}
+              disabled={!isViewerInitialized || isSeriesLoading}
+              className={[
+                "inline-flex min-w-0 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50",
+                activeWorkspace === "segmentations"
+                  ? "border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent-strong)]"
+                  : "border-[var(--border)] bg-[var(--surface-soft)] text-[var(--text)] hover:border-[var(--accent)]/60 hover:bg-[var(--surface-strong)]",
+              ].join(" ")}
+            >
+              <PenIcon className="size-4 shrink-0" />
+              <span className="truncate">Segments</span>
+            </button>
           </div>
         )}
 
       </div>
-
-      {/* {!isMobile && hasAnnotationPanel && projectId && studyId && seriesId && (
-        <div className="h-64 min-h-0 shrink-0 sm:h-72 md:col-start-2 md:row-start-2 md:h-auto lg:w-1/4">
-          {isViewerInitialized && (
-            <div className="h-full">
-              <AnnotationPanel
-                isMobile={isMobile}
-                isSeriesLoading={isSeriesLoading}
-                projectId={projectId}
-                patientId={patientId}
-                studyId={studyId}
-                seriesId={seriesId}
-              />
-            </div>
-          )}
-        </div>
-      )} */}
 
       {isViewerInitialized && isMetadataExplorerOpen && (
         <div className="fixed top-0 right-0 h-full w-full z-50 bg-black/50">
