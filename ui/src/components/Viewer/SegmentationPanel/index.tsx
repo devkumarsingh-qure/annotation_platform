@@ -1,6 +1,7 @@
 import { useEffect, useReducer, useRef, useState } from "react";
 import {
   segmentationHandler,
+  type AiSegmentationPrompt,
   type ExportedSegmentation,
   type SegmentationToolName,
 } from "@qureai/react-dicom-viewer";
@@ -45,8 +46,9 @@ function SegmentationPanel({
   const [busyMaskId, setBusyMaskId] = useState<string>();
   const [error, setError] = useState("");
   const [isDirty, setIsDirty] = useState(false);
-  const [activeTool, setActiveTool] =
-    useState<SegmentationToolName>("paint");
+  const [activeTool, setActiveTool] = useState<
+    SegmentationToolName | AiSegmentationPrompt
+  >("paint");
   const [brushSize, setBrushSize] = useState(12);
 
   const showScreen = (next: "list" | "editor") => {
@@ -68,6 +70,12 @@ function SegmentationPanel({
       }),
     [],
   );
+
+  useEffect(() => {
+    if (!isOpen) {
+      segmentationHandler.ai.deactivate();
+    }
+  }, [isOpen]);
 
   const viewportId = segmentationHandler.getActiveViewportId();
   const activeSegmentation =
@@ -172,6 +180,7 @@ function SegmentationPanel({
 
   const selectTool = (tool: SegmentationToolName) => {
     try {
+      segmentationHandler.ai.deactivate();
       segmentationHandler.activateTool(tool, viewportId);
       setActiveTool(tool);
       setError("");
@@ -232,11 +241,13 @@ function SegmentationPanel({
           onBack={confirmCloseEditor}
           onSave={() => void save()}
           onToolChange={selectTool}
+          onAiPromptChange={setActiveTool}
           onBrushSizeChange={(size) => {
             setBrushSize(size);
             segmentationHandler.setBrushSize(size, viewportId);
           }}
           onMutate={() => setIsDirty(true)}
+          onError={setError}
         />
       ) : (
         <MaskList

@@ -65,6 +65,14 @@ return the saved record. Uploads default to a 256 MiB limit, configurable with
 - The editor exposes 2D and 3D brushes, threshold tools, contour and scissors
   tools, fill, selection, click segmentation, display controls, and
   active-segment voxel, volume, and intensity metrics.
+- **AI assist** loads qview's client-side SAM integration on demand. Include,
+  exclude, and box prompts generate a preview for the active segment; users can
+  apply or discard it, clear prompts, and propagate prompts between slices. The
+  WebGPU model runs in the browser and its approximately 197 MB first download
+  is cached locally.
+- Applied SAM output is exported with DICOM `SEMIAUTOMATIC` algorithm type and
+  `Segment Anything Model (SAM-B)` algorithm name rather than being mislabeled
+  as manual work.
 - Outside a project context, **Save mask** downloads the generated DICOM SEG
   locally.
 - The application calls `segmentationHandler.exportSegmentation` and owns

@@ -1,5 +1,6 @@
 import {
   segmentationHandler,
+  type AiSegmentationPrompt,
   type SegmentationState,
   type SegmentationToolName,
 } from "@qureai/react-dicom-viewer";
@@ -14,7 +15,7 @@ type SaveStatus = "saved" | "saving" | "unsaved";
 type SegmentationEditorProps = {
   segmentation: SegmentationState;
   viewportId: string;
-  activeTool: SegmentationToolName;
+  activeTool: SegmentationToolName | AiSegmentationPrompt;
   brushSize: number;
   dataRevision: number;
   isDirty: boolean;
@@ -22,8 +23,10 @@ type SegmentationEditorProps = {
   onBack: () => void;
   onSave: () => void;
   onToolChange: (tool: SegmentationToolName) => void;
+  onAiPromptChange: (prompt: AiSegmentationPrompt) => void;
   onBrushSizeChange: (size: number) => void;
   onMutate: () => void;
+  onError: (message: string) => void;
 };
 
 function SegmentationEditor({
@@ -37,8 +40,10 @@ function SegmentationEditor({
   onBack,
   onSave,
   onToolChange,
+  onAiPromptChange,
   onBrushSizeChange,
   onMutate,
+  onError,
 }: SegmentationEditorProps) {
   const segmentationVisible = segmentationHandler.getSegmentationVisibility(
     segmentation.segmentationId,
@@ -136,7 +141,9 @@ function SegmentationEditor({
           activeTool={activeTool}
           brushSize={brushSize}
           onToolChange={onToolChange}
+          onAiPromptChange={onAiPromptChange}
           onBrushSizeChange={onBrushSizeChange}
+          onError={onError}
         />
 
         <SegmentList

@@ -1,5 +1,7 @@
 import os
+import shutil
 from pathlib import Path
+from urllib.parse import quote
 
 import boto3
 from botocore.config import Config
@@ -25,7 +27,24 @@ def _s3_client():
     )
 
 
+def _local_path(key: str) -> Path:
+    """Resolve an object key below MEDIA_ROOT without allowing path traversal."""
+    media_root = Path(settings.MEDIA_ROOT).resolve()
+    path = (media_root / key.lstrip("/")).resolve()
+    try:
+        path.relative_to(media_root)
+    except ValueError as error:
+        raise ValueError(f"Invalid object key: {key}") from error
+    return path
+
+
 def get_presigned_url(key: str, expires_in_hrs: int) -> str:
+    if settings.STORAGE_BACKEND == "local":
+        _local_path(key)
+        base_url = settings.LOCAL_MEDIA_BASE_URL.rstrip("/")
+        encoded_key = quote(key.lstrip("/"), safe="/")
+        return f"{base_url}/{encoded_key}"
+
     expires_in = expires_in_hrs * 3600
     client = _s3_client()
     return client.generate_presigned_url(
@@ -39,12 +58,18 @@ def get_presigned_url(key: str, expires_in_hrs: int) -> str:
 
 
 def upload_file(file_source: str, key: str, content_type: str):
-    client = _s3_client()
-
     file_path = Path(file_source)
 
     if not file_path.is_file():
         raise FileNotFoundError(f"File does not exist: {file_source}")
+
+    if settings.STORAGE_BACKEND == "local":
+        destination = _local_path(key)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(file_path, destination)
+        return {"object_key": key}
+
+    client = _s3_client()
 
     extra_args = {
         "ContentType": content_type,
@@ -63,12 +88,19 @@ def upload_file(file_source: str, key: str, content_type: str):
 
 
 def download_file(key: str, destination: str):
-    client = _s3_client()
-
     if not os.path.exists(os.path.dirname(destination)):
         raise FileNotFoundError(
             f"Directory {os.path.dirname(destination)} does not exist"
         )
+
+    if settings.STORAGE_BACKEND == "local":
+        source = _local_path(key)
+        if not source.is_file():
+            raise FileNotFoundError(f"Object does not exist: {key}")
+        shutil.copyfile(source, destination)
+        return
+
+    client = _s3_client()
 
     client.download_file(
         settings.AWS_STORAGE_BUCKET_NAME,
@@ -78,6 +110,10 @@ def download_file(key: str, destination: str):
 
 
 def delete_s3_object(key: str) -> None:
+    if settings.STORAGE_BACKEND == "local":
+        _local_path(key).unlink(missing_ok=True)
+        return
+
     client = _s3_client()
     client.delete_object(
         Bucket=settings.AWS_STORAGE_BUCKET_NAME,

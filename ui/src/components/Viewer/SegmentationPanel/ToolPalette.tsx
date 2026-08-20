@@ -1,15 +1,19 @@
 import { useState } from "react";
 import {
   segmentationHandler,
+  type AiSegmentationPrompt,
   type SegmentationToolName,
 } from "@qureai/react-dicom-viewer";
+import AiSegmentationTools from "./AiSegmentationTools.tsx";
 
 type ToolPaletteProps = {
   viewportId: string;
-  activeTool: SegmentationToolName;
+  activeTool: SegmentationToolName | AiSegmentationPrompt;
   brushSize: number;
   onToolChange: (tool: SegmentationToolName) => void;
+  onAiPromptChange: (prompt: AiSegmentationPrompt) => void;
   onBrushSizeChange: (size: number) => void;
+  onError: (message: string) => void;
 };
 
 type ToolDefinition = {
@@ -107,7 +111,9 @@ function ToolPalette({
   activeTool,
   brushSize,
   onToolChange,
+  onAiPromptChange,
   onBrushSizeChange,
+  onError,
 }: ToolPaletteProps) {
   const [brushPreview, setBrushPreview] = useState(
     () => segmentationHandler.getBrushPreview(viewportId) ?? true,
@@ -116,6 +122,12 @@ function ToolPalette({
     () => segmentationHandler.getThresholdRange(viewportId) ?? [-100, 300],
   );
   const [selectMode, setSelectMode] = useState<"border" | "inside">("border");
+  const activeManualTool: SegmentationToolName | null =
+    activeTool === "include" ||
+    activeTool === "exclude" ||
+    activeTool === "box"
+      ? null
+      : activeTool;
 
   const updateThreshold = (range: [number, number]) => {
     setThresholdRange(range);
@@ -168,6 +180,12 @@ function ToolPalette({
         ))}
       </div>
 
+      <AiSegmentationTools
+        viewportId={viewportId}
+        onPromptChange={onAiPromptChange}
+        onError={onError}
+      />
+
       <details className="mt-2 rounded-lg border border-[var(--border)] bg-[var(--surface-soft)]/35">
         <summary className="cursor-pointer px-2.5 py-2 text-[11px] font-semibold text-[var(--muted)]">
           More segmentation tools
@@ -193,7 +211,7 @@ function ToolPalette({
         </div>
       </details>
 
-      {BRUSH_TOOLS.has(activeTool) && (
+      {activeManualTool && BRUSH_TOOLS.has(activeManualTool) && (
         <div className="mt-3 space-y-2">
           <label className="block text-[11px] font-medium text-[var(--muted)]">
             <span className="flex justify-between">
@@ -227,7 +245,7 @@ function ToolPalette({
         </div>
       )}
 
-      {THRESHOLD_TOOLS.has(activeTool) && (
+      {activeManualTool && THRESHOLD_TOOLS.has(activeManualTool) && (
         <div className="mt-3">
           <p className="text-[11px] font-medium text-[var(--muted)]">
             Intensity threshold

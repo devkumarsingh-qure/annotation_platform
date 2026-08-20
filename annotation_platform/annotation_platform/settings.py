@@ -22,27 +22,58 @@ def get_bool(env_var, default):
     )
 
 
-def get_list(env_var):
-    return [item for item in os.getenv(env_var, "").split(",") if item]
+def get_list(env_var, default=""):
+    return [item for item in os.getenv(env_var, default).split(",") if item]
 
 
 # Environment variables
-DATABASE_HOST = os.getenv("DATABASE_HOST", "")
-DATABASE_PORT = os.getenv("DATABASE_PORT", "")
-DATABASE_NAME = os.getenv("DATABASE_NAME", "")
-DATABASE_USER = os.getenv("DATABASE_USER", "")
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", "")
+APP_ENV = os.getenv("APP_ENV", "production").strip().strip('"').lower()
+DEVELOPMENT_MODE = APP_ENV == "development"
 
-ALLOWED_HOSTS = get_list("ALLOWED_HOSTS")
-CORS_ALLOWED_ORIGINS = get_list("CORS_ALLOWED_ORIGINS")
+DATABASE_HOST = os.getenv(
+    "DATABASE_HOST", "127.0.0.1" if DEVELOPMENT_MODE else ""
+)
+DATABASE_PORT = os.getenv("DATABASE_PORT", "5432" if DEVELOPMENT_MODE else "")
+DATABASE_NAME = os.getenv(
+    "DATABASE_NAME", "annotation_platform" if DEVELOPMENT_MODE else ""
+)
+DATABASE_USER = os.getenv(
+    "DATABASE_USER", "annotation_platform" if DEVELOPMENT_MODE else ""
+)
+DATABASE_PASSWORD = os.getenv(
+    "DATABASE_PASSWORD", "annotation_platform" if DEVELOPMENT_MODE else ""
+)
+DATABASE_SSLMODE = os.getenv(
+    "DATABASE_SSLMODE", "disable" if DEVELOPMENT_MODE else "require"
+)
+
+ALLOWED_HOSTS = get_list(
+    "ALLOWED_HOSTS", "localhost,127.0.0.1" if DEVELOPMENT_MODE else ""
+)
+CORS_ALLOWED_ORIGINS = get_list(
+    "CORS_ALLOWED_ORIGINS",
+    (
+        "http://localhost:5173,http://127.0.0.1:5173"
+        if DEVELOPMENT_MODE
+        else ""
+    ),
+)
 
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS.copy()
 
 SESSION_COOKIE_SAMESITE = (
-    os.getenv("SESSION_COOKIE_SAMESITE", "None").strip().strip('"')
+    os.getenv(
+        "SESSION_COOKIE_SAMESITE", "Lax" if DEVELOPMENT_MODE else "None"
+    )
+    .strip()
+    .strip('"')
 )
-CSRF_COOKIE_SAMESITE = os.getenv("CSRF_COOKIE_SAMESITE", "None").strip().strip('"')
+CSRF_COOKIE_SAMESITE = (
+    os.getenv("CSRF_COOKIE_SAMESITE", "Lax" if DEVELOPMENT_MODE else "None")
+    .strip()
+    .strip('"')
+)
 SESSION_COOKIE_SECURE = get_bool("SESSION_COOKIE_SECURE", "False")
 CSRF_COOKIE_SECURE = get_bool("CSRF_COOKIE_SECURE", "False")
 
@@ -65,10 +96,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY", "")
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-development-only" if DEVELOPMENT_MODE else "",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = get_bool("DEBUG", "True" if DEVELOPMENT_MODE else "False")
 
 # Application definition
 
@@ -131,7 +165,7 @@ DATABASES = {
         "USER": DATABASE_USER,
         "PASSWORD": DATABASE_PASSWORD,
         "OPTIONS": {
-            "sslmode": "require",
+            "sslmode": DATABASE_SSLMODE,
         },
     }
 }
@@ -219,8 +253,37 @@ LOGGING = {
     },
 }
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+STORAGE_BACKEND = os.getenv(
+    "STORAGE_BACKEND", "local" if DEVELOPMENT_MODE else "s3"
+).lower()
+if STORAGE_BACKEND not in {"local", "s3"}:
+    raise ValueError("STORAGE_BACKEND must be either 'local' or 's3'")
+
+MEDIA_ROOT = Path(os.getenv("MEDIA_ROOT", str(BASE_DIR / "media")))
+MEDIA_URL = os.getenv("MEDIA_URL", "/media/")
+LOCAL_MEDIA_BASE_URL = os.getenv(
+    "LOCAL_MEDIA_BASE_URL", "http://localhost:8000/media/"
+)
+
+if STORAGE_BACKEND == "local":
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 AUTH_USER_MODEL = "authentication.User"
-
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

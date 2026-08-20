@@ -11,12 +11,12 @@
   },
   "dependencies": {
     "@cornerstonejs/adapters": "^5.6.10",
+    "@cornerstonejs/ai": "5.6.10",
     "@cornerstonejs/core": "^5.6.10",
     "@cornerstonejs/dicom-image-loader": "^5.6.10",
     "@cornerstonejs/metadata": "^5.6.10",
     "@cornerstonejs/tools": "^5.6.10",
     "@cornerstonejs/utils": "^5.6.10",
-    "@qureai/react-dicom-viewer": "^1.9.46",
     "@tailwindcss/vite": "^4.2.3",
     "axios": "^1.15.2",
     "classnames": "^2.5.1",

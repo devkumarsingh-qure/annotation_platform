@@ -10,7 +10,10 @@ import {
 } from "@qureai/react-dicom-viewer";
 import MetadataExplorer from "./MetadataExplorer/index.tsx";
 import Loading from "../Loading/index.tsx";
-import type { SegmentationMaskSummary, SeriesDetail } from "../../types/Viewer.ts";
+import type {
+  SegmentationMaskSummary,
+  SeriesDetail,
+} from "../../types/Viewer.ts";
 import AnnotationPanel from "./AnnotationPanel/index.tsx";
 import SeriesPanel from "./SeriesPanel/index.tsx";
 import {
@@ -30,6 +33,62 @@ import {
 } from "./utils/segmentationPersistence.ts";
 
 type ViewerWorkspace = "choose" | "annotations" | "segmentations" | null;
+
+type DicomJsonElement = {
+  Value?: unknown[];
+  [key: string]: unknown;
+};
+
+type DicomJsonMetadata = Record<string, DicomJsonElement>;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function getFrameCount(value: string | null | undefined) {
+  const count = Number.parseInt(value || "1", 10);
+  return Number.isFinite(count) && count > 0 ? count : 1;
+}
+
+function getInstanceMetadata(
+  payload: unknown,
+  instance: SeriesDetail["instances"][number],
+): DicomJsonMetadata | undefined {
+  if (!isRecord(payload)) return;
+
+  const directMatch =
+    payload[String(instance.id)] ?? payload[instance.SOPInstanceUID];
+  if (isRecord(directMatch)) return directMatch as DicomJsonMetadata;
+
+  return Object.values(payload).find((candidate) => {
+    if (!isRecord(candidate)) return false;
+    const sopInstanceUid = candidate["00080018"];
+    if (!isRecord(sopInstanceUid) || !Array.isArray(sopInstanceUid.Value)) {
+      return false;
+    }
+    return String(sopInstanceUid.Value[0]) === instance.SOPInstanceUID;
+  }) as DicomJsonMetadata | undefined;
+}
+
+function getP10ImageIds(series: SeriesDetail) {
+  return [...series.instances]
+    .sort(
+      (a, b) =>
+        Number.parseInt(a.InstanceNumber || "0", 10) -
+        Number.parseInt(b.InstanceNumber || "0", 10),
+    )
+    .flatMap((instance) => {
+      const imageId = `wadouri:${instance.url_p10}`;
+      const numberOfFrames = getFrameCount(instance.NumberOfFrames);
+      if (numberOfFrames === 1) return [imageId];
+
+      const separator = instance.url_p10.includes("?") ? "&" : "?";
+      return Array.from(
+        { length: numberOfFrames },
+        (_, frameIndex) => `${imageId}${separator}frame=${frameIndex + 1}`,
+      );
+    });
+}
 
 function WorkspaceChoicePanel({
   onSelect,
@@ -136,6 +195,12 @@ function ViewerComponent() {
   >("unsaved");
 
   useEffect(() => {
+    if (!patientId) {
+      return;
+    }
+  }, [patientId]);
+
+  useEffect(() => {
     if (!patientId || !studyId || !seriesId) {
       return;
     }
@@ -157,83 +222,106 @@ function ViewerComponent() {
     if (!isViewerInitialized) return;
     if (!series) return;
 
-    const metadataUrl = series.metadata_url;
-    fetch(metadataUrl)
-      .then((res) => res.json())
-      .then((metadata) => {
-        const imageIds: string[] = [];
+    const abortController = new AbortController();
+    let cancelled = false;
+
+    const loadSeries = async () => {
+      let imageIds: string[];
+      let hasCompleteDicomWebMetadata = true;
+
+      try {
+        const response = await fetch(series.metadata_url, {
+          signal: abortController.signal,
+        });
+        if (!response.ok) {
+          throw new Error(`Metadata request failed with ${response.status}`);
+        }
+        const metadata: unknown = await response.json();
+        const dicomWebImageIds: string[] = [];
 
         for (const instance of series.instances) {
-          const instanceId = instance.id;
-          metadata[instanceId]["00280008"] = {
-            vr: "IS",
-            Value: [1],
+          const instanceMetadata = getInstanceMetadata(metadata, instance);
+          if (!instanceMetadata) {
+            throw new Error(
+              `Metadata is missing for DICOM instance ${instance.SOPInstanceUID}`,
+            );
+          }
+
+          const numberOfFrames = getFrameCount(instance.NumberOfFrames);
+          if (instance.urls_dicomweb.length < numberOfFrames) {
+            throw new Error(
+              `DICOMweb frames are missing for instance ${instance.SOPInstanceUID}`,
+            );
+          }
+
+          const frameMetadata: DicomJsonMetadata = {
+            ...instanceMetadata,
+            "00280008": {
+              vr: "IS",
+              Value: [1],
+            },
           };
 
-          const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
           for (let i = 0; i < numberOfFrames; i++) {
             const imageId = "wadors:" + instance.urls_dicomweb[i];
-            imageIds.push(imageId);
+            dicomWebImageIds.push(imageId);
             viewerProvider.metadata.wadors.addMetadataForImageId({
               imageId,
-              metadata: metadata[instanceId],
+              metadata: frameMetadata,
             });
           }
         }
 
-        if (VOLUME_MODALITIES.includes(series.Modality)) {
-          viewerProvider.retrieveConfiguration.setVolumeViewportRetrieveConfiguration(
-            volumeViewportRetrieveConfiguration,
-          );
-          viewerProvider.renderSeries({
-            imageIds,
-            scanIdentifier: series.SeriesInstanceUID,
-            viewportType: viewerProvider.utils.viewportTypes.ORTHOGRAPHIC,
-          });
-        } else {
-          if (series.instances.length > 1) {
-            viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
-              {},
-            );
-            viewerProvider.renderSeries({
-              imageIds,
-              scanIdentifier: series.SeriesInstanceUID,
-              viewportType: viewerProvider.utils.viewportTypes.STACK,
-            });
-          } else {
-            viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
-              stackViewportRetrieveConfiguration,
-            );
-            viewerProvider.renderSeries({
-              imageIds,
-              scanIdentifier: series.SeriesInstanceUID,
-              viewportType: viewerProvider.utils.viewportTypes.STACK,
-            });
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching metadata:", error);
-        series.instances.sort(
-          (a, b) => parseInt(a.InstanceNumber) - parseInt(b.InstanceNumber),
+        imageIds = dicomWebImageIds;
+      } catch (error) {
+        if (abortController.signal.aborted) return;
+        console.warn(
+          "DICOMweb metadata unavailable; using Part 10 files:",
+          error,
         );
+        hasCompleteDicomWebMetadata = false;
+        imageIds = getP10ImageIds(series);
+      }
 
-        const imageIds: string[] = [];
-        for (const instance of series.instances) {
-          const imageIdBase = `wadouri:${instance.url_p10}`;
-          const numberOfFrames = parseInt(instance.NumberOfFrames || "1");
-          for (let i = 1; i < numberOfFrames + 1; i++) {
-            const ImageId = `${imageIdBase}&frame=${i}`;
-            imageIds.push(ImageId);
-          }
-        }
+      if (cancelled || !imageIds.length) return;
 
-        viewerProvider.renderSeries({
-          imageIds,
-          scanIdentifier: series.SeriesInstanceUID,
-          viewportType: viewerProvider.utils.viewportTypes.STACK,
-        });
+      const useVolumeViewport =
+        hasCompleteDicomWebMetadata &&
+        VOLUME_MODALITIES.includes(series.Modality);
+
+      if (useVolumeViewport) {
+        viewerProvider.retrieveConfiguration.setVolumeViewportRetrieveConfiguration(
+          volumeViewportRetrieveConfiguration,
+        );
+      } else if (series.instances.length > 1) {
+        viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
+          {},
+        );
+      } else {
+        viewerProvider.retrieveConfiguration.setStackViewportRetrieveConfiguration(
+          stackViewportRetrieveConfiguration,
+        );
+      }
+
+      await viewerProvider.renderSeries({
+        imageIds,
+        scanIdentifier: series.SeriesInstanceUID,
+        viewportType: useVolumeViewport
+          ? viewerProvider.utils.viewportTypes.ORTHOGRAPHIC
+          : viewerProvider.utils.viewportTypes.STACK,
       });
+    };
+
+    void loadSeries().catch((error) => {
+      if (!cancelled) {
+        console.error("Error rendering series:", error);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      abortController.abort();
+    };
   }, [isViewerInitialized, series]);
 
   const handleViewerInitialized = () => {
@@ -344,7 +432,7 @@ function ViewerComponent() {
       : [];
   const areSegmentationMasksLoading = Boolean(
     segmentationCollectionUrl &&
-      segmentationMaskCollection?.source !== segmentationCollectionUrl,
+    segmentationMaskCollection?.source !== segmentationCollectionUrl,
   );
 
   const handleSaveSegmentation = async (
@@ -631,7 +719,6 @@ function ViewerComponent() {
             </button>
           </div>
         )}
-
       </div>
 
       {isViewerInitialized && isMetadataExplorerOpen && (

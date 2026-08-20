@@ -16,8 +16,11 @@ Including another URLconf
 """
 
 from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
 from django.urls import path, include
 from .views.health import health
+from .views.local_media import serve_local_media
 from .views.upload import UploadView
 from .views.project import (
     ProjectView,
@@ -55,3 +58,10 @@ urlpatterns = [
     path("upload/", UploadView.as_view(), name="upload"),
     path("", include("dicom_manager.urls")),
 ]
+
+if settings.DEBUG and settings.STORAGE_BACKEND == "local":
+    urlpatterns += static(
+        settings.MEDIA_URL,
+        view=serve_local_media,
+        document_root=settings.MEDIA_ROOT,
+    )
