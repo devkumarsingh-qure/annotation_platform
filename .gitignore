@@ -73,3 +73,5 @@ build/
 
 # Misc
 *.swp
+
+.npmrc
